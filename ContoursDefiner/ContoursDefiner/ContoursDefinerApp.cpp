@@ -2,7 +2,8 @@
 //
 
 #include "stdafx.h"
-#include "ContoursDefiner.h"
+#include "ContoursDefinerApp.h"
+#include "ContourDefiner.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -12,33 +13,31 @@
 BEGIN_MESSAGE_MAP(CContoursDefinerApp, CWinApp)
 END_MESSAGE_MAP()
 
-
 CContoursDefinerApp::CContoursDefinerApp()
 {
-	
 }
 
-
 CContoursDefinerApp theApp;
-
 
 BOOL CContoursDefinerApp::InitInstance()
 {
 	CWinApp::InitInstance();
-
 	return TRUE;
 }
 
 
 BOOL CContoursDefinerApp::InitApplication()
 {
-  cVDDrect = CVDirectDrawingRect();
+ /* cVDDrect = CVDirectDrawingRect();
 
   cVDDrect.Attach(DI_ActiveObject);
 
   cVDDrect.Update();
 
-  RecalcImageViews(DI_ActiveObject);
+  RecalcImageViews(DI_ActiveObject);*/
+  
+  ContourDefiner conDefiner = ContourDefiner(DI_ActiveObject);
+  conDefiner.main();
 
   return TRUE;
 }
