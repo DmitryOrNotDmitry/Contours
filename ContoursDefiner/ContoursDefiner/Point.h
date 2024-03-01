@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 
 class Point
 {
@@ -9,7 +10,6 @@ public:
 
   Point();
   Point(int x, int y);
-  //Point(const Point& other);
   
   ~Point();
 
@@ -22,5 +22,7 @@ public:
   
   bool operator==(const Point& other) const;
   bool operator!=(const Point& other) const;
+  bool operator<(const Point& other) const;
+  operator POINT*() const;
 };
 

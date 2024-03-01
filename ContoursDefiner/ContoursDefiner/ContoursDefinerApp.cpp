@@ -13,8 +13,15 @@
 BEGIN_MESSAGE_MAP(CContoursDefinerApp, CWinApp)
 END_MESSAGE_MAP()
 
+
 CContoursDefinerApp::CContoursDefinerApp()
 {
+}
+
+
+CContoursDefinerApp::~CContoursDefinerApp()
+{
+  delete draw;
 }
 
 CContoursDefinerApp theApp;
@@ -28,33 +35,21 @@ BOOL CContoursDefinerApp::InitInstance()
 
 BOOL CContoursDefinerApp::InitApplication()
 {
- /* cVDDrect = CVDirectDrawingRect();
-
-  cVDDrect.Attach(DI_ActiveObject);
-
-  cVDDrect.Update();
-
-  RecalcImageViews(DI_ActiveObject);*/
-  
-  ContourDefiner conDefiner = ContourDefiner(DI_ActiveObject);
-  conDefiner.main();
+  __main__();
 
   return TRUE;
 }
 
 
-CVDirectDrawingRect::~CVDirectDrawingRect()
+void CContoursDefinerApp::__main__()
 {
-  Detach();
-}
-
-void CVDirectDrawingRect::OnDraw(HDC hDC)
-{
-  HGDIOBJ oldPen = SelectObject(hDC, CreatePen(PS_SOLID, 1, RGB(0, 255, 0)));
-
-  POINT points[] = { {10, 10}, {50, 10}, {50, 50}, {10, 60} }; // Замкнутый многоугольник
-  int numPoints = sizeof(points) / sizeof(points[0]);
-  Polygon(hDC, points, numPoints);
+  HIMAGE hImage = DI_ActiveObject;
+  ContourDefiner conDefiner = ContourDefiner(hImage);
   
-  SelectObject(hDC, oldPen);
+  Point startPoint(187, 195);
+  //Point startPoint(4, 4);
+  contour = conDefiner.defineContour(startPoint);
+
+  draw = new ContourDrawing(hImage, contour);
 }
+

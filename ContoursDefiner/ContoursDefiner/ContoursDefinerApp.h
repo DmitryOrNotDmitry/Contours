@@ -9,24 +9,24 @@
 
 #include "resource.h"		// основные символы
 #include "ERInterface.h"
+#include "ContourDrawing.h"
+#include "Contour.h"
 
-class CVDirectDrawingRect : public CVDirectDrawing
-{
-public:
-  void OnDraw(HDC hDC);
-  virtual ~CVDirectDrawingRect();
-};
 
 class CContoursDefinerApp : public CWinApp
 {
 public:
 	CContoursDefinerApp();
+  ~CContoursDefinerApp();
 
-public:
+
 	virtual BOOL InitApplication();
   virtual BOOL InitInstance();
 
-  CVDirectDrawingRect cVDDrect;
+  ContourDrawing* draw;
+  Contour contour;
+
+  void __main__();
 	
   DECLARE_MESSAGE_MAP()
 };

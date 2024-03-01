@@ -64,6 +64,17 @@ bool Point::operator!=(const Point& other) const
   return !(*this == other);
 }
 
+bool Point::operator<(const Point& other) const
+{
+  if (this->x < other.x)
+    return true;
+  
+  if (this->x == other.x)
+    return this->y < other.y;
+
+  return false;
+}
+
 Point& Point::operator=(const Point& other)
 {
   if (this == &other)
@@ -73,5 +84,13 @@ Point& Point::operator=(const Point& other)
   this->y = other.y;
 
   return *this;
+}
+
+Point::operator POINT*() const
+{
+  POINT* point;
+  point->x = x;
+  point->y = y;
+  return point;
 }
   
