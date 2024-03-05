@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "ContourDrawing.h"
 
-
 ContourDrawing::ContourDrawing(HIMAGE hImage, Contour& contour)
   : contour(contour)
   , hImage(hImage)
@@ -18,7 +17,8 @@ ContourDrawing::~ContourDrawing()
 
 void ContourDrawing::OnDraw(HDC hDC)
 {
-  HGDIOBJ oldPen = SelectObject(hDC, CreatePen(PS_SOLID, 1, RGB(0, 255, 0)));
+  COLORREF color = RGB(0, 255, 0);
+  HGDIOBJ oldPen = SelectObject(hDC, CreatePen(PS_SOLID, 1, color));
   
   POINT* points = (POINT*)contour.getData();
   size_t numPoints = contour.size();

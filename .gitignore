@@ -5,7 +5,10 @@ ContoursDefiner/ContoursDefiner.opensdf
 ContoursDefiner/ContoursDefiner.sln
 ContoursDefiner/ContoursDefiner.suo
 ContoursDefiner/ipch
+ContoursDefiner/.vs
+ContoursDefiner/x64
 
+ContoursDefiner/ContoursDefiner/x64
 ContoursDefiner/ContoursDefiner/Debug
 ContoursDefiner/ContoursDefiner/Interface
 ContoursDefiner/ContoursDefiner/Pics
@@ -15,6 +18,8 @@ ContoursDefiner/ContoursDefiner/Source
 ContoursDefiner/ContoursDefiner/ERInterface.*
 ContoursDefiner/ContoursDefiner/ERStart.cpp
 
+ContoursDefiner/ContoursDefiner/framework.h
+ContoursDefiner/ContoursDefiner/pch*
 ContoursDefiner/ContoursDefiner/ContoursDefiner.aps
 ContoursDefiner/ContoursDefiner/ContoursDefiner.def
 ContoursDefiner/ContoursDefiner/ContoursDefiner.idc

@@ -29,7 +29,7 @@ public:
 
   int getPointValue(const Point& point, const int& offset = 0);
 
-  bool containPoint(const std::vector<Point>& vector, const Point& point);
+  //bool containPoint(const std::vector<Point>& vector, const Point& point);
 
   std::vector<Point> definePossiblePoints(const Point& basePoint);
 

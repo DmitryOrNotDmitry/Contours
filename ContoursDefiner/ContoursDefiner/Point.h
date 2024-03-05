@@ -18,11 +18,13 @@ public:
   Point toLeft(int offset = 1) const;
   Point toUp(int offset = 1) const;
 
+  double DistanceTo(const Point& to);
+
   Point& operator=(const Point& other);
   
   bool operator==(const Point& other) const;
   bool operator!=(const Point& other) const;
   bool operator<(const Point& other) const;
-  operator POINT*() const;
+  operator POINT() const;
 };
 

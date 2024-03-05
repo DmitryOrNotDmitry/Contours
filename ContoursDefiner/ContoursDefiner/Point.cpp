@@ -54,6 +54,11 @@ Point Point::toUp(int offset) const
   return newPoint;
 }
 
+double Point::DistanceTo(const Point& to)
+{
+  return sqrt(pow(this->x - to.x, 2) + pow(this->y - to.y, 2));
+}
+
 bool Point::operator==(const Point& other) const
 {
   return this->x == other.x && this->y == other.y;
@@ -86,11 +91,11 @@ Point& Point::operator=(const Point& other)
   return *this;
 }
 
-Point::operator POINT*() const
+Point::operator POINT() const
 {
-  POINT* point;
-  point->x = x;
-  point->y = y;
+  POINT point;
+  point.x = x;
+  point.y = y;
   return point;
 }
   
