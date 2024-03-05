@@ -12,12 +12,13 @@ ContourDrawing::ContourDrawing(HIMAGE hImage, Contour& contour)
 
 ContourDrawing::~ContourDrawing()
 {
-  Detach();
+  if (hImage)
+	Detach();
 }
 
 void ContourDrawing::OnDraw(HDC hDC)
 {
-  COLORREF color = RGB(0, 255, 0);
+  COLORREF color = RGB(0, 250, 0);
   HGDIOBJ oldPen = SelectObject(hDC, CreatePen(PS_SOLID, 1, color));
   
   POINT* points = (POINT*)contour.getData();

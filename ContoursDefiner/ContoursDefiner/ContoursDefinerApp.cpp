@@ -46,8 +46,8 @@ void CContoursDefinerApp::__main__()
   HIMAGE hImage = DI_ActiveObject;
   ContourDefiner conDefiner = ContourDefiner(hImage);
   
-  Point startPoint(187, 195);
-  //Point startPoint(4, 4);
+  //Point startPoint(187, 195);
+  Point startPoint(4, 4);
   contour = conDefiner.defineContour(startPoint);
 
   draw = new ContourDrawing(hImage, contour);

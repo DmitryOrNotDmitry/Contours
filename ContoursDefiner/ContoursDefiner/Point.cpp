@@ -1,5 +1,6 @@
 //#include "StdAfx.h"
 #include "Point.h"
+#include <cmath>
 
 
 Point::Point(int x, int y)
@@ -56,7 +57,7 @@ Point Point::toUp(int offset) const
 
 double Point::DistanceTo(const Point& to)
 {
-  return sqrt(pow(this->x - to.x, 2) + pow(this->y - to.y, 2));
+  return sqrt(pow((double)this->x - to.x, 2) + pow((double)this->y - to.y, 2));
 }
 
 bool Point::operator==(const Point& other) const
