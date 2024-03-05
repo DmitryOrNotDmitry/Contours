@@ -52,7 +52,7 @@ Contour ContourDefiner::defineContour(const Point& startPoint)
 
   contour.addPoints(contourPoints);
 
-  //for(int i = 0; i < 0; i++)
+  //for(int i = 0; i < 396; i++)
   while (currentInsidePoint != startContourPoint)
   {
     contourPoints = defineContourPointsAround(currentInsidePoint);
@@ -112,18 +112,81 @@ std::vector<Point> ContourDefiner::defineContourPointsAround(const Point& basePo
     }
   }
 
-  Point firstInChain = getFirstPointInChain(basePoint, contourPoints);
+  std::vector<Point> path;
+  path.reserve(8);
 
-  if (firstInChain.x >= 0)
+  for (int i = 0; i < contourPoints.size(); ++i)
   {
-    size_t realContourPointsSize = contourPoints.size();
-  
-    auto firstInChainIter = find(contourPoints.begin(), contourPoints.end(), firstInChain);
-    contourPoints.insert(contourPoints.begin(), firstInChainIter, contourPoints.end());
-  
-    contourPoints.resize(realContourPointsSize);
+    Point p = contourPoints[i];
+    if (path.size() == 0)
+    {
+      path.push_back(contourPoints[i]);
+    }
+    else
+    {
+      double minDistance = kolLines * kolPix;
+      size_t minIndex = 0;
+      for (int j = 0; j < path.size(); ++j)
+      {
+        double currentDist = path[j].DistanceTo(contourPoints[i]);
+        if (minDistance > currentDist)
+        {
+          minDistance = currentDist;
+          minIndex = j;
+        }
+      }
+
+      if (path.size() == 1)
+      {
+        if (contourPoints[i] < path[minIndex])
+          path.insert(path.cbegin() + minIndex + 0, contourPoints[i]);
+        else
+          path.insert(path.cbegin() + minIndex + 1, contourPoints[i]);
+      }
+      else if (path[minIndex] == *path.begin())
+      {
+        if (minDistance < path[minIndex].DistanceTo(path[minIndex + 1]))
+          path.insert(path.cbegin() + minIndex + 1, contourPoints[i]);
+        else
+          path.insert(path.cbegin() + minIndex + 0, contourPoints[i]);
+      }
+      else if (path[minIndex] == *path.rbegin())
+      {
+        if (minDistance < path[minIndex].DistanceTo(path[minIndex - 1]))
+          path.insert(path.cbegin() + minIndex + 0, contourPoints[i]);
+        else
+          path.insert(path.cbegin() + minIndex + 1, contourPoints[i]);
+      }
+      else
+      {
+        double distToNext = path[minIndex].DistanceTo(path[minIndex + 1]);
+        double distToPred = path[minIndex].DistanceTo(path[minIndex - 1]);
+        if (distToNext < distToPred && minDistance < distToNext)
+          path.insert(path.cbegin() + minIndex + 1, contourPoints[i]);
+        else if (minDistance <= distToPred)
+          path.insert(path.cbegin() + minIndex + 0, contourPoints[i]);
+      }
+
+    }
   }
 
+  //for (int i = 0; i < contourPoints.size(); ++i)
+  //  Point p = path[i];
+
+
+  //Point firstInChain = getFirstPointInChain(basePoint, contourPoints);
+
+  //if (firstInChain.x >= 0)
+  //{
+  //  size_t realContourPointsSize = contourPoints.size();
+  //
+  //  auto firstInChainIter = find(contourPoints.begin(), contourPoints.end(), firstInChain);
+  //  contourPoints.insert(contourPoints.begin(), firstInChainIter, contourPoints.end());
+  //
+  //  contourPoints.resize(realContourPointsSize);
+  //}
+
+  
   //size_t j = 0;
   //for (; j < numPoints; j++)
   //{
@@ -142,7 +205,7 @@ std::vector<Point> ContourDefiner::defineContourPointsAround(const Point& basePo
   //  j++;
   //}
 
-  return contourPoints;
+  return path;
 }
 
 

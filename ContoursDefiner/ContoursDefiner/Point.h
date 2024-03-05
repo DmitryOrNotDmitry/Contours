@@ -9,6 +9,7 @@ public:
   int y;
 
   Point();
+  Point(const Point& other);
   Point(int x, int y);
   
   ~Point();
@@ -21,7 +22,8 @@ public:
   double DistanceTo(const Point& to);
 
   Point& operator=(const Point& other);
-  
+  Point& operator=(Point&& other);
+
   bool operator==(const Point& other) const;
   bool operator!=(const Point& other) const;
   bool operator<(const Point& other) const;

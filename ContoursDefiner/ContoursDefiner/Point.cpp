@@ -1,7 +1,7 @@
 //#include "StdAfx.h"
 #include "Point.h"
 #include <cmath>
-
+#include <utility>
 
 Point::Point(int x, int y)
   : x(x)
@@ -12,6 +12,11 @@ Point::Point(int x, int y)
 
 Point::Point()
 {
+}
+
+Point::Point(const Point& other)
+{
+  *this = other;
 }
 
 
@@ -72,11 +77,11 @@ bool Point::operator!=(const Point& other) const
 
 bool Point::operator<(const Point& other) const
 {
-  if (this->x < other.x)
+  if (this->y < other.y)
     return true;
   
-  if (this->x == other.x)
-    return this->y < other.y;
+  if (this->y == other.y)
+    return this->x < other.x;
 
   return false;
 }
@@ -88,6 +93,14 @@ Point& Point::operator=(const Point& other)
   
   this->x = other.x;
   this->y = other.y;
+
+  return *this;
+}
+
+Point& Point::operator=(Point&& other)
+{
+  x = std::move(other.x);
+  y = std::move(other.y);
 
   return *this;
 }

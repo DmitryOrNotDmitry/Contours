@@ -13,7 +13,7 @@ public:
 
   void addPoint(int x, int y);
   void addPoint(Point point);
-  void addPoints(const std::vector<Point>& point);
+  void addPoints(std::vector<Point>& point);
 
   size_t size() const;
   Point* getData();
