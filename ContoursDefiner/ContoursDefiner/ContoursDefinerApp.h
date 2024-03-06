@@ -23,7 +23,7 @@ public:
 	virtual BOOL InitApplication();
   virtual BOOL InitInstance();
 
-  ContourDrawing* draw;
+  std::vector<ContourDrawing*> draws;
   Contour contour;
 
   void __main__();

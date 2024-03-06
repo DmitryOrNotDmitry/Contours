@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "ContoursDefinerApp.h"
 #include "ContourDefiner.h"
+#include "FirstPointSetting.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,7 +22,7 @@ CContoursDefinerApp::CContoursDefinerApp()
 
 CContoursDefinerApp::~CContoursDefinerApp()
 {
-  delete draw;
+  
 }
 
 CContoursDefinerApp theApp;
@@ -45,11 +46,15 @@ void CContoursDefinerApp::__main__()
 {
   HIMAGE hImage = DI_ActiveObject;
   ContourDefiner conDefiner = ContourDefiner(hImage);
-  
-  //Point startPoint(187, 195);
-  Point startPoint(4, 4);
-  contour = conDefiner.defineContour(startPoint);
 
-  draw = new ContourDrawing(hImage, contour);
+  FirstPointSetting dialog;
+  dialog.startPoint = Point(187, 195);
+  if (dialog.DoModal() == IDOK)
+  {
+    Point startPoint = dialog.startPoint;
+    contour = conDefiner.defineContour(startPoint);
+
+    draws.push_back(new ContourDrawing(hImage, contour));
+  }
 }
 

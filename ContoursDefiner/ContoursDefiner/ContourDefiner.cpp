@@ -161,9 +161,11 @@ std::vector<Point> ContourDefiner::defineContourPointsAround(const Point& basePo
       {
         double distToNext = path[minIndex].DistanceTo(path[minIndex + 1]);
         double distToPred = path[minIndex].DistanceTo(path[minIndex - 1]);
-        if (distToNext < distToPred && minDistance < distToNext)
+        double distToNextCurPoint = contourPoints[i].DistanceTo(path[minIndex + 1]);
+        double distToPredCurPoint = contourPoints[i].DistanceTo(path[minIndex - 1]);
+        if (distToNextCurPoint < distToNext || minDistance < distToNext)
           path.insert(path.cbegin() + minIndex + 1, contourPoints[i]);
-        else if (minDistance <= distToPred)
+        else if (distToPredCurPoint <= distToPred || minDistance < distToPred)
           path.insert(path.cbegin() + minIndex + 0, contourPoints[i]);
       }
 

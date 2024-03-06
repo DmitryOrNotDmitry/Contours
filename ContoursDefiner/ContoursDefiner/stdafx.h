@@ -9,6 +9,7 @@
 #endif
 
 #include "targetver.h"
+#include "resource.h"
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // некоторые конструкторы CString будут явными
 
