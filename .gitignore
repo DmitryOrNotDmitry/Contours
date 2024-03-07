@@ -2,7 +2,8 @@ Contours_backups
 *vs10
 
 ContoursDefiner/Debug
-
+ContoursDefiner/ContourTests
+ContoursDefiner/packages
 ContoursDefiner/ContoursDefiner.sdf
 ContoursDefiner/ContoursDefiner.opensdf
 ContoursDefiner/ContoursDefiner.sln

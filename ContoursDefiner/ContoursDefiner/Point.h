@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 
 class Point
 {
@@ -19,7 +18,7 @@ public:
   Point toLeft(int offset = 1) const;
   Point toUp(int offset = 1) const;
 
-  double DistanceTo(const Point& to);
+  double DistanceTo(const Point& to) const;
 
   Point& operator=(const Point& other);
   Point& operator=(Point&& other);
@@ -27,6 +26,5 @@ public:
   bool operator==(const Point& other) const;
   bool operator!=(const Point& other) const;
   bool operator<(const Point& other) const;
-  operator POINT() const;
 };
 

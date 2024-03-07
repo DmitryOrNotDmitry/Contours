@@ -5,6 +5,7 @@
 #include "ContoursDefinerApp.h"
 #include "ContourDefiner.h"
 #include "FirstPointSetting.h"
+#include "ERImageData.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -45,7 +46,8 @@ BOOL CContoursDefinerApp::InitApplication()
 void CContoursDefinerApp::__main__()
 {
   HIMAGE hImage = DI_ActiveObject;
-  ContourDefiner conDefiner = ContourDefiner(hImage);
+  ImageDataManager& imageManager = ERImageData(hImage);
+  ContourDefiner conDefiner = ContourDefiner(imageManager);
 
   FirstPointSetting dialog;
   dialog.startPoint = Point(187, 195);

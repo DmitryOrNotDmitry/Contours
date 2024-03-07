@@ -20,7 +20,7 @@ void ContourDrawing::OnDraw(HDC hDC)
 {
   COLORREF color = RGB(0, 250, 0);
   HGDIOBJ oldPen = SelectObject(hDC, CreatePen(PS_SOLID, 1, color));
-  
+
   POINT* points = (POINT*)contour.getData();
   size_t numPoints = contour.size();
   Polygon(hDC, points, numPoints);

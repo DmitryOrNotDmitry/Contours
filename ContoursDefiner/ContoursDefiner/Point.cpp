@@ -1,4 +1,3 @@
-//#include "StdAfx.h"
 #include "Point.h"
 #include <cmath>
 #include <utility>
@@ -60,7 +59,7 @@ Point Point::toUp(int offset) const
   return newPoint;
 }
 
-double Point::DistanceTo(const Point& to)
+double Point::DistanceTo(const Point& to) const
 {
   return sqrt(pow((double)this->x - to.x, 2) + pow((double)this->y - to.y, 2));
 }
@@ -105,11 +104,4 @@ Point& Point::operator=(Point&& other)
   return *this;
 }
 
-Point::operator POINT() const
-{
-  POINT point;
-  point.x = x;
-  point.y = y;
-  return point;
-}
   
