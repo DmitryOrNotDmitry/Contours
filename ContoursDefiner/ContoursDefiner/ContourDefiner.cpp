@@ -29,7 +29,7 @@ Contour ContourDefiner::defineContour(const Point& startPoint)
   
   Point startContourPoint = getPointNearContour(startPoint);
   
-  std::vector<Point> contourPoints = defineContourPointsAround(startContourPoint);  
+  std::vector<Point> contourPoints = convertToPath(defineContourPointsAround(startContourPoint));  
   Point currentInsidePoint = getNextPointInsideContour(startContourPoint, contourPoints);
   
   if (contourPoints.size() > 1)
@@ -40,7 +40,7 @@ Contour ContourDefiner::defineContour(const Point& startPoint)
   //for(int i = 0; i < 396; i++)
   while (currentInsidePoint != startContourPoint)
   {
-    contourPoints = defineContourPointsAround(currentInsidePoint);
+    contourPoints = convertToPath(defineContourPointsAround(currentInsidePoint));
 
     currentInsidePoint = getNextPointInsideContour(currentInsidePoint, contourPoints);
 
@@ -55,16 +55,12 @@ Point ContourDefiner::getPointNearContour(const Point& startPoint)
 {
   Point nearContourPoint = startPoint;
 
-  int insideContuorColor = 255;
-
-  int curChanValue = imageManager.getPointValue(nearContourPoint);
-  while (curChanValue == insideContuorColor && nearContourPoint.x < imageManager.lineSize())
+  while (isInternalPoint(startPoint, nearContourPoint) && nearContourPoint.x < imageManager.lineSize())
   {
     nearContourPoint = nearContourPoint.toRight();
-    curChanValue = imageManager.getPointValue(nearContourPoint);
   }
-  nearContourPoint = nearContourPoint.toLeft();
-  return nearContourPoint;
+
+  return nearContourPoint.toLeft();;
 }
 
 
@@ -72,8 +68,6 @@ std::vector<Point> ContourDefiner::defineContourPointsAround(const Point& basePo
 {
   std::vector<Point> contourPoints;
   contourPoints.reserve(8);
-
-  int baseChanValue = imageManager.getPointValue(basePoint);
 
   Point pointsForCheck[] = {
     basePoint.toRight(),
@@ -91,15 +85,13 @@ std::vector<Point> ContourDefiner::defineContourPointsAround(const Point& basePo
   {
     Point& checkedPoint = pointsForCheck[i];
 
-    if (baseChanValue != imageManager.getPointValue(checkedPoint))
+    if (!isInternalPoint(basePoint, checkedPoint))
     {
       contourPoints.push_back(checkedPoint);
     }
   }
 
-  std::vector<Point> path = convertToPath(contourPoints);
-
-  return path;
+  return contourPoints;
 }
 
 
@@ -108,60 +100,40 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point> points
   std::vector<Point> path;
   path.reserve(8);
 
-  for (int i = 0; i < points.size(); ++i)
+  
+  if (points.size() > 0)
   {
-    Point p = points[i];
-    if (path.size() == 0)
-    {
-      path.push_back(points[i]);
-    }
-    else
+    std::vector<Point> points_copy(points);
+    path.push_back(points_copy[0]);
+    points_copy.erase(points_copy.begin());
+
+    while (points_copy.size() > 0)
     {
       double minDistance = 10000 * 10000;
-      size_t minIndex = 0;
-      for (int j = 0; j < path.size(); ++j)
+      size_t minItemIndex = 0;
+      for (int i = 0; i < points_copy.size(); ++i)
       {
-        double currentDist = path[j].DistanceTo(points[i]);
+        double currentDist = points_copy[i].DistanceTo(*path.rbegin());
         if (minDistance > currentDist)
         {
           minDistance = currentDist;
-          minIndex = j;
+          minItemIndex = i;
         }
       }
 
-      if (path.size() == 1)
+
+      double distToFirst = points_copy[minItemIndex].DistanceTo(*path.begin());
+      double distToLast = minDistance;
+
+      if (distToLast > distToFirst)
       {
-        if (points[i] < path[minIndex])
-          path.insert(path.cbegin() + minIndex + 0, points[i]);
-        else
-          path.insert(path.cbegin() + minIndex + 1, points[i]);
-      }
-      else if (path[minIndex] == *path.begin())
-      {
-        if (minDistance < path[minIndex].DistanceTo(path[minIndex + 1]))
-          path.insert(path.cbegin() + minIndex + 1, points[i]);
-        else
-          path.insert(path.cbegin() + minIndex + 0, points[i]);
-      }
-      else if (path[minIndex] == *path.rbegin())
-      {
-        if (minDistance < path[minIndex].DistanceTo(path[minIndex - 1]))
-          path.insert(path.cbegin() + minIndex + 0, points[i]);
-        else
-          path.insert(path.cbegin() + minIndex + 1, points[i]);
+        path.insert(path.begin(), points_copy[minItemIndex]);
       }
       else
       {
-        double distToNext = path[minIndex].DistanceTo(path[minIndex + 1]);
-        double distToPred = path[minIndex].DistanceTo(path[minIndex - 1]);
-        double distToNextCurPoint = points[i].DistanceTo(path[minIndex + 1]);
-        double distToPredCurPoint = points[i].DistanceTo(path[minIndex - 1]);
-        if (distToNextCurPoint < distToNext || minDistance < distToNext)
-          path.insert(path.cbegin() + minIndex + 1, points[i]);
-        else if (distToPredCurPoint <= distToPred || minDistance < distToPred)
-          path.insert(path.cbegin() + minIndex + 0, points[i]);
+        path.insert(path.end(), points_copy[minItemIndex]);
       }
-
+      points_copy.erase(points_copy.begin() + minItemIndex);
     }
   }
 
@@ -173,18 +145,6 @@ Point ContourDefiner::getNextPointInsideContour(const Point& basePoint, const st
 {
   Point nextPoint;
 
-  Point pointsForCheck[] = {
-    basePoint.toRight(),
-    basePoint.toRight().toBottom(),
-    basePoint.toBottom(),
-    basePoint.toBottom().toLeft(),
-    basePoint.toLeft(),
-    basePoint.toLeft().toUp(),
-    basePoint.toUp(),
-    basePoint.toUp().toRight(),
-  };
-  int numPoints = sizeof(pointsForCheck) / sizeof(pointsForCheck[0]);
-  
   std::vector<Point> possibleNextPoints = definePossiblePoints(basePoint);
 
   nextPoint = getFirstPointInChain(basePoint, possibleNextPoints);
@@ -215,7 +175,7 @@ std::vector<Point> ContourDefiner::definePossiblePoints(const Point& basePoint)
     canPointBeTake[pointsForCheck[i]] = false;
   
   for (int i = 0; i < numPoints; i += 2)
-    if (imageManager.getPointValue(pointsForCheck[i]) == imageManager.getPointValue(basePoint))
+    if (isInternalPoint(basePoint, pointsForCheck[i]))
     {
       canPointBeTake[pointsForCheck[i + 0]] = true;
       
@@ -225,10 +185,10 @@ std::vector<Point> ContourDefiner::definePossiblePoints(const Point& basePoint)
       else
         predPoint = pointsForCheck[i - 1];
 
-      if (imageManager.getPointValue(predPoint) == imageManager.getPointValue(basePoint))
+      if (isInternalPoint(basePoint, predPoint))
         canPointBeTake[predPoint] = true;
       
-      if (imageManager.getPointValue(pointsForCheck[i + 1]) == imageManager.getPointValue(basePoint))
+      if (isInternalPoint(basePoint, pointsForCheck[i + 1]))
         canPointBeTake[pointsForCheck[i + 1]] = true;
     }
 
@@ -275,3 +235,7 @@ Point ContourDefiner::getFirstPointInChain(const Point& basePoint, const std::ve
 }
 
 
+bool ContourDefiner::isInternalPoint(const Point& innerPoint, const Point& checkedPoint)
+{
+  return imageManager.getPointValue(innerPoint) == imageManager.getPointValue(checkedPoint);
+}

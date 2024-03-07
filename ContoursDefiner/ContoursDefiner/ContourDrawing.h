@@ -14,5 +14,7 @@ public:
   virtual ~ContourDrawing();
 
   void OnDraw(HDC hDC);
+  void ReleaseContext() override;
+
 };
 

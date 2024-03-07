@@ -27,3 +27,8 @@ void ContourDrawing::OnDraw(HDC hDC)
   
   SelectObject(hDC, oldPen);
 }
+
+void ContourDrawing::ReleaseContext()
+{
+  delete this;
+}

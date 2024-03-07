@@ -28,5 +28,6 @@ public:
 
   Point ContourDefiner::getFirstPointInChain(const Point& basePoint, const std::vector<Point>& pointChain);
 
+  bool isInternalPoint(const Point& innerPoint, const Point& checkedPoint);
 };
 
