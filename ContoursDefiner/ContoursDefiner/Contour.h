@@ -17,5 +17,7 @@ public:
 
   size_t size() const;
   Point* getData();
+  bool operator==(const Contour& other) const;
+  bool operator!=(const Contour& other) const;
 };
 

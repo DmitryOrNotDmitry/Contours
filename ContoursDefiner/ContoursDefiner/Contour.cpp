@@ -75,6 +75,10 @@ void Contour::addPoints(std::vector<Point>& newPoints)
   }
 
   points.insert(points.cend(), fitPoints.begin(), fitPoints.end());
+
+  if (points.size() > 1)
+    while (*points.begin() == *points.rbegin())
+      points.erase(--points.end());
 }
 
 
@@ -87,4 +91,14 @@ size_t Contour::size() const
 Point* Contour::getData()
 {
   return points.data();
+}
+
+bool Contour::operator==(const Contour& other) const
+{
+    return this->points == other.points;
+}
+
+bool Contour::operator!=(const Contour& other) const
+{
+  return !(*this == other);
 }

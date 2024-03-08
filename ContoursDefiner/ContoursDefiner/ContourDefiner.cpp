@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <map>
 
+#define MAX_ITERATIONS 1000
 
 ContourDefiner::ContourDefiner()
   : imageManager(ImageDataManager())
@@ -31,11 +32,10 @@ Contour ContourDefiner::defineContour(const Point& startPoint)
   
   std::vector<Point> contourPoints = convertToPath(defineContourPointsAround(startContourPoint));  
   Point currentInsidePoint = getNextPointInsideContour(startContourPoint, contourPoints);
-  
-  if (contourPoints.size() > 1)
-    contourPoints.erase(contourPoints.begin());
 
   contour.addPoints(contourPoints);
+
+  int countIterations = 0;
 
   //for(int i = 0; i < 396; i++)
   while (currentInsidePoint != startContourPoint)
@@ -45,6 +45,10 @@ Contour ContourDefiner::defineContour(const Point& startPoint)
     currentInsidePoint = getNextPointInsideContour(currentInsidePoint, contourPoints);
 
     contour.addPoints(contourPoints);
+
+    countIterations++;
+    if (countIterations > MAX_ITERATIONS)
+      break;
   }
   
   return contour;
