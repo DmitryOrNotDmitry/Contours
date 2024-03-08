@@ -26,8 +26,11 @@ public:
 
   std::vector<Point> definePossiblePoints(const Point& basePoint);
 
-  Point ContourDefiner::getFirstPointInChain(const Point& basePoint, const std::vector<Point>& pointChain);
+  Point getFirstPointInChain(const Point& basePoint, const std::vector<Point>& pointChain);
 
   bool isInternalPoint(const Point& innerPoint, const Point& checkedPoint);
+
+  template<class T>
+  void removeIndexesFromVector(std::vector<T>& vector, std::vector<size_t>& indexes);
 };
 

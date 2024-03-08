@@ -64,7 +64,7 @@ Point ContourDefiner::getPointNearContour(const Point& startPoint)
     nearContourPoint = nearContourPoint.toRight();
   }
 
-  return nearContourPoint.toLeft();;
+  return nearContourPoint.toLeft();
 }
 
 
@@ -108,40 +108,91 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point> points
   if (points.size() > 0)
   {
     std::vector<Point> points_copy(points);
+    if (points.size() == 3)
+      int tt = 0;
+
+    std::sort(points_copy.begin(), points_copy.end());
+
     path.push_back(points_copy[0]);
     points_copy.erase(points_copy.begin());
 
     while (points_copy.size() > 0)
     {
-      double minDistance = 10000 * 10000;
-      size_t minItemIndex = 0;
+      double minDistanceToLast = 10000 * 10000;
+      double minDistanceToFirst = 10000 * 10000;
+      size_t minItemIndexToLast = 0;
+      size_t minItemIndexToFirst = 0;
       for (int i = 0; i < points_copy.size(); ++i)
       {
-        double currentDist = points_copy[i].DistanceTo(*path.rbegin());
-        if (minDistance > currentDist)
+        double curDistToLast = points_copy[i].DistanceTo(*path.rbegin());
+        double curDistToFirst = points_copy[i].DistanceTo(*path.begin());
+        if (curDistToFirst < minDistanceToFirst)
         {
-          minDistance = currentDist;
-          minItemIndex = i;
+          minDistanceToFirst = curDistToFirst;
+          minItemIndexToFirst = i;
+        }
+        if (curDistToLast < minDistanceToLast)
+        {
+          minDistanceToLast = curDistToLast;
+          minItemIndexToLast = i;
         }
       }
 
-
-      double distToFirst = points_copy[minItemIndex].DistanceTo(*path.begin());
-      double distToLast = minDistance;
-
-      if (distToLast > distToFirst)
+      std::vector<size_t> indexesToDel;
+      
+      if (minItemIndexToLast == minItemIndexToFirst)
       {
-        path.insert(path.begin(), points_copy[minItemIndex]);
+        if (minDistanceToLast <= minDistanceToFirst)
+        {
+          path.insert(path.end(), points_copy[minItemIndexToLast]);
+          indexesToDel.push_back(minItemIndexToLast);
+        }
+        else
+        {
+          path.insert(path.begin(), points_copy[minItemIndexToFirst]);
+          indexesToDel.push_back(minItemIndexToFirst);
+        }
       }
       else
       {
-        path.insert(path.end(), points_copy[minItemIndex]);
+        double distMinItemToFirstTowardEndPath = points_copy[minItemIndexToFirst].DistanceTo(*path.rbegin());
+        double distMinItemToLastTowardBeginPath = points_copy[minItemIndexToLast].DistanceTo(*path.begin());
+
+        if (minDistanceToLast < distMinItemToLastTowardBeginPath)
+        {
+          path.insert(path.end(), points_copy[minItemIndexToLast]);
+          indexesToDel.push_back(minItemIndexToLast);
+        }
+
+        if (minDistanceToFirst < distMinItemToFirstTowardEndPath)
+        {
+          path.insert(path.begin(), points_copy[minItemIndexToFirst]);
+          indexesToDel.push_back(minItemIndexToFirst);
+        }
       }
-      points_copy.erase(points_copy.begin() + minItemIndex);
+      
+      
+
+      
+
+      removeIndexesFromVector(points_copy, indexesToDel);
+
     }
   }
 
   return path;
+}
+
+template<class T>
+void ContourDefiner::removeIndexesFromVector(std::vector<T>& vector, std::vector<size_t>& indexes)
+{
+  std::sort(indexes.begin(), indexes.end());
+  auto last = std::unique(indexes.begin(), indexes.end());
+  indexes.erase(last, indexes.end());
+  for (auto iter = indexes.rbegin(); iter != indexes.rend(); ++iter)
+  {
+    vector.erase(vector.begin() + *iter);
+  }
 }
 
 
