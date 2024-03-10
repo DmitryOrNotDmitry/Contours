@@ -1,8 +1,11 @@
 Contours_backups
 *vs10
 
+ContoursDefiner/ContourTests/*
+!ContoursDefiner/ContourTests/*.h
+!ContoursDefiner/ContourTests/*.cpp
+
 ContoursDefiner/Debug
-ContoursDefiner/ContourTests
 ContoursDefiner/packages
 ContoursDefiner/ContoursDefiner.sdf
 ContoursDefiner/ContoursDefiner.opensdf
