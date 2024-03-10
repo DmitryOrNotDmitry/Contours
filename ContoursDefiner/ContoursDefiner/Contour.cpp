@@ -24,10 +24,12 @@ void Contour::addPoint(int x, int y)
 }
 
 
-void Contour::addPoints(std::vector<Point>& newPoints)
+std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
 {
+  std::vector<Point> fitPoints;
+  
   if (newPoints.size() == 0)
-    return;
+    return fitPoints;
 
   if (points.size() > 0 && newPoints.size() > 1)
   {
@@ -35,10 +37,10 @@ void Contour::addPoints(std::vector<Point>& newPoints)
       std::reverse(newPoints.begin(), newPoints.end());
   }
 
-  std::vector<Point> fitPoints;
   size_t numNewPoints = newPoints.size();
   if (points.size() < numNewPoints)
     numNewPoints = points.size();
+  fitPoints.reserve(numNewPoints);
   
   for (auto iter = newPoints.begin(); iter != newPoints.end(); iter++)
   {
@@ -51,8 +53,6 @@ void Contour::addPoints(std::vector<Point>& newPoints)
         break;
       }
     }
-    size_t t = fitPoints.size();
-    size_t tt = newPoints.size();
 
     if (isUniquePoint)
     {
@@ -79,6 +79,13 @@ void Contour::addPoints(std::vector<Point>& newPoints)
   if (points.size() > 1)
     while (*points.begin() == *points.rbegin())
       points.erase(--points.end());
+
+  return fitPoints;
+}
+
+Point Contour::getLastPoint()
+{
+  return *points.rbegin();
 }
 
 

@@ -13,7 +13,9 @@ public:
 
   void addPoint(int x, int y);
   void addPoint(Point point);
-  void addPoints(std::vector<Point>& newPoints);
+  std::vector<Point> addPoints(std::vector<Point>& newPoints);
+
+  Point getLastPoint();
 
   size_t size() const;
   Point* getData();

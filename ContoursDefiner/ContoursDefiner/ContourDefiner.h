@@ -22,7 +22,9 @@ public:
 
   std::vector<Point> convertToPath(const std::vector<Point> points);
 
-  Point getNextPointInsideContour(const Point& basePoint, const std::vector<Point>& contourPoints);
+  Point getNextPointInsideContour(const Point& basePoint, const std::vector<Point>& addedToContourPoints);
+  
+  Point getNextPointAfterChain(const Point& basePoint, const std::vector<Point>& pointChain, const Point& lastContourPoint);
 
   std::vector<Point> definePossiblePoints(const Point& basePoint);
 
@@ -32,5 +34,7 @@ public:
 
   template<class T>
   void removeIndexesFromVector(std::vector<T>& vector, std::vector<size_t>& indexes);
+
+  Point getNextPoint(const Point& basePoint, const Point& predPoint);
 };
 
