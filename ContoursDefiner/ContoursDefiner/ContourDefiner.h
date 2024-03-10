@@ -22,13 +22,7 @@ public:
 
   std::vector<Point> convertToPath(const std::vector<Point> points);
 
-  Point getNextPointInsideContour(const Point& basePoint, const std::vector<Point>& addedToContourPoints);
-  
-  Point getNextPointAfterChain(const Point& basePoint, const std::vector<Point>& pointChain, const Point& lastContourPoint);
-
   std::vector<Point> definePossiblePoints(const Point& basePoint);
-
-  Point getFirstPointInChain(const Point& basePoint, const std::vector<Point>& pointChain);
 
   bool isInternalPoint(const Point& innerPoint, const Point& checkedPoint);
 
