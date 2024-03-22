@@ -8,18 +8,30 @@
 
 #define MAX_ITERATIONS 1000
 
+
 ContourDefiner::ContourDefiner()
-  : imageManager(ImageDataManager())
 {
 }
 
-ContourDefiner::ContourDefiner(ImageDataManager& imageManager)
+ContourDefiner::ContourDefiner(const ContourDefiner& other)
+{
+  this->imageManager = other.imageManager;
+}
+
+ContourDefiner::ContourDefiner(ImageDataManager* imageManager)
   : imageManager(imageManager)
 {
 }
 
 ContourDefiner::~ContourDefiner()
 {
+}
+
+ContourDefiner& ContourDefiner::operator=(const ContourDefiner& other)
+{
+  this->imageManager = other.imageManager;
+
+  return *this;
 }
 
 
@@ -64,7 +76,7 @@ Point ContourDefiner::getPointNearContour(const Point& startPoint)
 {
   Point nearContourPoint = startPoint;
 
-  while (isInternalPoint(startPoint, nearContourPoint) && nearContourPoint.x < imageManager.lineSize())
+  while (isInternalPoint(startPoint, nearContourPoint) && nearContourPoint.x < imageManager->lineSize())
   {
     nearContourPoint = nearContourPoint.toRight();
   }
@@ -247,7 +259,7 @@ std::vector<Point> ContourDefiner::definePossiblePoints(const Point& basePoint)
 
 bool ContourDefiner::isInternalPoint(const Point& innerPoint, const Point& checkedPoint)
 {
-  return imageManager.getPointValue(innerPoint) == imageManager.getPointValue(checkedPoint);
+  return imageManager->getPointValue(innerPoint) == imageManager->getPointValue(checkedPoint);
 }
 
 Point ContourDefiner::getNextPoint(const Point& basePoint, const Point& predPoint)

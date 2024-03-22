@@ -11,5 +11,7 @@ public:
   virtual int lineSize();
   virtual int getCountLines();
 
+  virtual ~ImageDataManager();
+
 };
 

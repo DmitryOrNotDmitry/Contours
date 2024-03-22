@@ -11,6 +11,8 @@
 #include "ERInterface.h"
 #include "ContourDrawing.h"
 #include "Contour.h"
+#include "ContourDefiner.h"
+#include "ImageDataManager.h"
 
 
 class CContoursDefinerApp : public CWinApp
@@ -25,9 +27,12 @@ public:
 
   std::vector<ContourDrawing*> draws;
   Contour contour;
+  HIMAGE hImage;
+  ImageDataManager* imageManager;
+  ContourDefiner conDefiner;
 
   void __main__();
-	
+
   DECLARE_MESSAGE_MAP()
 };
 

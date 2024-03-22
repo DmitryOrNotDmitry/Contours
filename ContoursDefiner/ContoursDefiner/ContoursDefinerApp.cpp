@@ -1,5 +1,6 @@
 // ContoursDefiner.cpp: определяет процедуры инициализации для DLL.
 //
+#pragma once
 
 #include "stdafx.h"
 #include "ContoursDefinerApp.h"
@@ -16,14 +17,28 @@ BEGIN_MESSAGE_MAP(CContoursDefinerApp, CWinApp)
 END_MESSAGE_MAP()
 
 
-CContoursDefinerApp::CContoursDefinerApp()
+CContoursDefinerApp::CContoursDefinerApp() 
 {
+  hImage = DI_ActiveObject;
+  imageManager = new ERImageData(hImage);
+  conDefiner = ContourDefiner(imageManager);
 }
 
 
 CContoursDefinerApp::~CContoursDefinerApp()
 {
-  
+  if (imageManager)
+    delete imageManager;
+
+  for (int i = 0; i < draws.size(); i++)
+  {
+    if (draws[i])
+    {
+      void* toDel = (void *)draws[i];
+      toDel = nullptr;
+      delete toDel;
+    }
+  }
 }
 
 CContoursDefinerApp theApp;
@@ -43,14 +58,57 @@ BOOL CContoursDefinerApp::InitApplication()
 }
 
 
+struct Context
+{
+  CContoursDefinerApp* app;
+};
+
+
+void MouseProc(void* pContext,           // Контекст
+  long MouseFileX,          // Координаты курсора по файлу
+  long MouseFileY,          // /-/
+  long Operation,           // Тип операции
+                            // WM_MOUSEMOVE, WM_LBUTTONDOWN, WM_LBUTTONUP
+  long MouseKeyStatus)      // Флаг нажатых кнопок (как в ON_MOUSEMOVE() )
+{
+
+  if (Operation == WM_LBUTTONDOWN)
+  {
+    Context* pcc = (Context*)pContext;
+    Point startPoint = Point(MouseFileX, MouseFileY);
+
+    pcc->app->contour = pcc->app->conDefiner.defineContour(startPoint);
+
+    pcc->app->draws.push_back(new ContourDrawing(pcc->app->hImage, pcc->app->contour));
+  }
+}
+
+
+void ReleaseContext(void* pContext)
+{
+  Context* pCC = (Context*)pContext;
+
+  delete pCC;
+}
+
+
+
 void CContoursDefinerApp::__main__()
 {
-  HIMAGE hImage = DI_ActiveObject;
-  ImageDataManager& imageManager = ERImageData(hImage);
-  ContourDefiner conDefiner = ContourDefiner(imageManager);
+  Context* pCC = new Context;
+  pCC->app = this;
 
+  char* cFilterName = "MouseHandler";
+
+  AddRasterFilterEx(hImage, pCC, nullptr, cFilterName);
+  SetRasterFilterEx(hImage, pCC, cFilterName, SRF_MouseProc, MouseProc);
+  SetRasterFilterEx(hImage, pCC, cFilterName, SRF_ReleaseProc, ReleaseContext);
+  
+
+  /*
   FirstPointSetting dialog;
   dialog.startPoint = Point(187, 195);
+ 
   if (dialog.DoModal() == IDOK)
   {
     Point startPoint = dialog.startPoint;
@@ -58,5 +116,8 @@ void CContoursDefinerApp::__main__()
 
     draws.push_back(new ContourDrawing(hImage, contour));
   }
+  */
 }
+
+
 

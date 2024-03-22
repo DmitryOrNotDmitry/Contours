@@ -6,13 +6,16 @@
 class ContourDefiner
 {
 
-  ImageDataManager& imageManager;
+  ImageDataManager* imageManager;
 
 public:
 
   ContourDefiner();
-  ContourDefiner(ImageDataManager& imageManager);
+  ContourDefiner(const ContourDefiner& other);
+  ContourDefiner(ImageDataManager* imageManager);
   ~ContourDefiner();
+
+  ContourDefiner& operator=(const ContourDefiner& other);
 
   Contour defineContour(const Point& basePoint);
   

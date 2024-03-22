@@ -13,7 +13,7 @@ ContourDrawing::ContourDrawing(HIMAGE hImage, Contour& contour)
 ContourDrawing::~ContourDrawing()
 {
   if (hImage)
-	Detach();
+	  Detach();
 }
 
 void ContourDrawing::OnDraw(HDC hDC)
