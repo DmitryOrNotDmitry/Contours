@@ -24,10 +24,12 @@ public:
   DECLARE_MESSAGE_MAP()
 
   afx_msg void OnBnClickedOk();
+  afx_msg void OnBnClickedCancel();
 
+  CListCtrl contoursTable;
 public:
-
-  Point startPoint;
+  void addColumn(int fmt, int width, char* capture, int numCol);
+  void addRow(int rowNum, CString name);
 
 };
 

@@ -13,6 +13,9 @@
 #endif
 
 
+#define MOUSE_FILTER_NAME "MouseHandler"
+
+
 BEGIN_MESSAGE_MAP(CContoursDefinerApp, CWinApp)
 END_MESSAGE_MAP()
 
@@ -23,6 +26,7 @@ CContoursDefinerApp::CContoursDefinerApp()
   imageManager = new ERImageData(hImage);
   conDefiner = ContourDefiner(imageManager);
   contoursDrawer = new ContourDrawing(hImage);
+
 }
 
 
@@ -31,8 +35,6 @@ CContoursDefinerApp::~CContoursDefinerApp()
   if (imageManager)
     delete imageManager;
 
-  //if (contoursDrawer)
-  //  delete contoursDrawer;
 }
 
 CContoursDefinerApp theApp;
@@ -66,7 +68,7 @@ void MouseProc(void* pContext,           // Контекст
   long MouseKeyStatus)      // Флаг нажатых кнопок (как в ON_MOUSEMOVE() )
 {
 
-  if (Operation == WM_LBUTTONDOWN)
+  if (Operation == WM_LBUTTONDOWN && (MouseKeyStatus & MK_CONTROL))
   {
     Context* pcc = (Context*)pContext;
     Point startPoint = Point(MouseFileX, MouseFileY);
@@ -74,6 +76,8 @@ void MouseProc(void* pContext,           // Контекст
     pcc->app->contour = pcc->app->conDefiner.defineContour(startPoint);
 
     pcc->app->contoursDrawer->addContour(pcc->app->contour);
+
+    pcc->app->dlg.addRow(pcc->app->contoursDrawer->getCountContours() - 1, "Очередной контур");
   }
 }
 
@@ -92,12 +96,20 @@ void CContoursDefinerApp::__main__()
   Context* pCC = new Context;
   pCC->app = this;
 
-  char* cFilterName = "MouseHandler";
+  char* cFilterName = MOUSE_FILTER_NAME;
 
-  AddRasterFilterEx(hImage, pCC, nullptr, cFilterName);
+  AddRasterFilterEx(hImage, pCC, m_hInstance, cFilterName);
   SetRasterFilterEx(hImage, pCC, cFilterName, SRF_MouseProc, MouseProc);
   SetRasterFilterEx(hImage, pCC, cFilterName, SRF_ReleaseProc, ReleaseContext);
-  
+
+
+  // Проверка на успешное создание диалога
+  if (dlg.Create(IDD_DIALOG_first_point_setting, NULL))
+  {
+    // Отображение диалогового окна
+    dlg.ShowWindow(SW_SHOW);
+  }
+
 
   /*
   FirstPointSetting dialog;
