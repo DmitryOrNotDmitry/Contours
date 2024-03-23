@@ -22,6 +22,7 @@ CContoursDefinerApp::CContoursDefinerApp()
   hImage = DI_ActiveObject;
   imageManager = new ERImageData(hImage);
   conDefiner = ContourDefiner(imageManager);
+  contoursDrawer = new ContourDrawing(hImage);
 }
 
 
@@ -30,15 +31,8 @@ CContoursDefinerApp::~CContoursDefinerApp()
   if (imageManager)
     delete imageManager;
 
-  for (int i = 0; i < draws.size(); i++)
-  {
-    if (draws[i])
-    {
-      void* toDel = (void *)draws[i];
-      toDel = nullptr;
-      delete toDel;
-    }
-  }
+  //if (contoursDrawer)
+  //  delete contoursDrawer;
 }
 
 CContoursDefinerApp theApp;
@@ -79,7 +73,7 @@ void MouseProc(void* pContext,           // Контекст
 
     pcc->app->contour = pcc->app->conDefiner.defineContour(startPoint);
 
-    pcc->app->draws.push_back(new ContourDrawing(pcc->app->hImage, pcc->app->contour));
+    pcc->app->contoursDrawer->addContour(pcc->app->contour);
   }
 }
 

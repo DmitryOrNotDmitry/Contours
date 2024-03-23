@@ -25,7 +25,7 @@ public:
 	virtual BOOL InitApplication();
   virtual BOOL InitInstance();
 
-  std::vector<ContourDrawing*> draws;
+  ContourDrawing* contoursDrawer;
   Contour contour;
   HIMAGE hImage;
   ImageDataManager* imageManager;

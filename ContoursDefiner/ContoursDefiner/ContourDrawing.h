@@ -6,15 +6,17 @@
 
 class ContourDrawing : public CVDirectDrawing
 {
-  Contour& contour;
+  std::vector<Contour> contours;
   HIMAGE hImage;
 
 public:
-  ContourDrawing(HIMAGE hImage, Contour& contour);
+  ContourDrawing(HIMAGE hImage);
   virtual ~ContourDrawing();
 
   void OnDraw(HDC hDC);
   void ReleaseContext() override;
+
+  void addContour(Contour& contour);
 
 };
 
