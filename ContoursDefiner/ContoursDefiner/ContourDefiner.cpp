@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <map>
 
-#define MAX_ITERATIONS 1000
+#define MAX_ITERATIONS 10000
 
 
 ContourDefiner::ContourDefiner()

@@ -5,6 +5,7 @@ IMPLEMENT_DYNAMIC(FirstPointSetting, CDialog)
 BEGIN_MESSAGE_MAP(FirstPointSetting, CDialog)
   ON_BN_CLICKED(IDOK, &FirstPointSetting::OnBnClickedOk)
   ON_BN_CLICKED(IDCANCEL, &FirstPointSetting::OnBnClickedCancel)
+  ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTcontours_table, &FirstPointSetting::OnLvnItemchangedChanlist)
 END_MESSAGE_MAP()
 
 FirstPointSetting::FirstPointSetting(CWnd* pParent /*=NULL*/)
@@ -80,6 +81,31 @@ void FirstPointSetting::addRow(int rowNum, CString name)
   this->contoursTable.SetCheck(rowNum, true); //По-умолчанию делаем все каналы
 }
 
+std::vector<ContourState> FirstPointSetting::getContoursStates() const
+{
+  int numRows = contoursTable.GetItemCount();
+  std::vector<ContourState> result(numRows, ContourState::VISIBLE);
+
+  for (int i = 0; i < numRows; i++)
+  {
+    if (!contoursTable.GetCheck(i))
+    {
+      result[i] = ContourState::HIDDEN;
+      continue;
+    }
+
+    if (isRowSelected(i))
+    {
+      result[i] = ContourState::SELECTED;
+      continue;
+    }
+    
+  }
+
+  return result;
+}
+
+
 
 void FirstPointSetting::setValueToDlgItem(int dlgItem, int value)
 {
@@ -96,3 +122,22 @@ int FirstPointSetting::getIntFromDlgItem(int dlgItem)
 }
 
 
+void FirstPointSetting::OnLvnItemchangedChanlist(NMHDR* pNMHDR, LRESULT* pResult)
+{
+  LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+  *pResult = 0;
+
+  RecalcImageViews(hImage);
+}
+
+bool FirstPointSetting::isRowSelected(int row) const
+{
+  UINT nState = contoursTable.GetItemState(row, LVIS_SELECTED);
+
+  if (nState & LVIS_SELECTED)
+  {
+    return true;
+  }
+
+  return false;
+}

@@ -25,7 +25,7 @@ CContoursDefinerApp::CContoursDefinerApp()
   hImage = DI_ActiveObject;
   imageManager = new ERImageData(hImage);
   conDefiner = ContourDefiner(imageManager);
-  contoursDrawer = new ContourDrawing(hImage);
+  contoursDrawer = new ContourDrawing(hImage, dlg);
 
 }
 
@@ -77,7 +77,9 @@ void MouseProc(void* pContext,           // Контекст
 
     pcc->app->contoursDrawer->addContour(pcc->app->contour);
 
-    pcc->app->dlg.addRow(pcc->app->contoursDrawer->getCountContours() - 1, "Очередной контур");
+    CString name;
+    name.Format("Контур (%d, %d)", startPoint.x, startPoint.y);
+    pcc->app->dlg.addRow(pcc->app->contoursDrawer->getCountContours() - 1, name);
   }
 }
 
@@ -106,6 +108,7 @@ void CContoursDefinerApp::__main__()
   // Проверка на успешное создание диалога
   if (dlg.Create(IDD_DIALOG_first_point_setting, NULL))
   {
+    dlg.hImage = hImage;
     // Отображение диалогового окна
     dlg.ShowWindow(SW_SHOW);
   }

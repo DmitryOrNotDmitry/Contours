@@ -1,6 +1,10 @@
 #pragma once
 #include "stdafx.h"
 #include "Point.h"
+#include <vector>
+#include "ERInterface.h"
+#include "ContourState.h"
+
 
 class FirstPointSetting : public CDialog
 {
@@ -25,11 +29,19 @@ public:
 
   afx_msg void OnBnClickedOk();
   afx_msg void OnBnClickedCancel();
+  void OnLvnItemchangedChanlist(NMHDR* pNMHDR, LRESULT* pResult);
 
   CListCtrl contoursTable;
+
+  bool isRowSelected(int row) const;
+
 public:
+  HIMAGE hImage;
+
   void addColumn(int fmt, int width, char* capture, int numCol);
   void addRow(int rowNum, CString name);
+
+  std::vector<ContourState> getContoursStates() const;
 
 };
 
