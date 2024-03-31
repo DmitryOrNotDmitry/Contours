@@ -17,6 +17,7 @@ public:
   void addPoint(int x, int y);
   void addPoint(Point point);
   std::vector<Point> addPoints(std::vector<Point>& newPoints);
+  std::vector<Point>& getPoints();
 
   Point getLastPoint();
 
@@ -27,5 +28,12 @@ public:
   Point* getData();
   bool operator==(const Contour& other) const;
   bool operator!=(const Contour& other) const;
+  Point& operator [](int i);
+  Point operator [](int i) const;
+
+  bool isEmpty() const;
+
+  int findNearestPointTo(const Point& destination, int from, int to, int step) const;
+  int findNearestPointTo(const Point& destination, int step = 1) const;
 };
 

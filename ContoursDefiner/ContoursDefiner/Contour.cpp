@@ -83,6 +83,11 @@ std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
   return fitPoints;
 }
 
+std::vector<Point>& Contour::getPoints()
+{
+  return points;
+}
+
 Point Contour::getLastPoint()
 {
   return *points.rbegin();
@@ -118,4 +123,47 @@ bool Contour::operator==(const Contour& other) const
 bool Contour::operator!=(const Contour& other) const
 {
   return !(*this == other);
+}
+
+Point& Contour::operator[](int i)
+{
+  return points[i];
+}
+
+Point Contour::operator[](int i) const
+{
+  return points[i];
+}
+
+bool Contour::isEmpty() const
+{
+  return points.empty();
+}
+
+int Contour::findNearestPointTo(const Point& destination, int from, int to, int step) const
+{
+  double minDist = 1e20;
+  int minItemIndex = 0;
+
+  int realindex;
+  for (int i = from; i < to; i += step)
+  {
+    if (i >= size() || i < 0)
+      realindex = i + size();
+    realindex = i % size();
+
+    double curDist = points[realindex].DistanceTo(destination);
+    if (curDist < minDist)
+    {
+      minDist = curDist;
+      minItemIndex = realindex;
+    }
+  }
+
+  return minItemIndex;
+}
+
+int Contour::findNearestPointTo(const Point& destination, int step) const
+{
+  return findNearestPointTo(destination, 0, points.size(), step);
 }

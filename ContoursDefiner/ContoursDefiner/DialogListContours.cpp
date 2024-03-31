@@ -40,9 +40,12 @@ void DialogListContours::OnBnClickedCalcControlPoints()
     return;
   }
  
-  std::pair<Point, Point> points = ControlPointsCalculator::calculate(selectedRows[0], selectedRows[1]);
+  std::vector<Contour>& conts = dataManager.getContours();
+  std::pair<Point, Point> points = ControlPointsCalculator::calculate(conts[selectedRows[0]], conts[selectedRows[1]]);
   dataManager.addControlPoint(points.first);
   dataManager.addControlPoint(points.second);
+
+  RecalcImageViews(hImage);
 }
 
 void DialogListContours::DoDataExchange(CDataExchange* pDX)

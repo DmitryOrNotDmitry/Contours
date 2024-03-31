@@ -7,8 +7,7 @@ class ControlPointsCalculator
 
 public:
 
-
-  static std::pair<Point, Point> calculate(const int& firstIndex, const int& secondIndex);
+  static std::pair<Point, Point> calculate(const Contour& first, const Contour& second);
 
 };
 
