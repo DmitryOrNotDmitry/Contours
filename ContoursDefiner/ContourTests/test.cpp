@@ -63,7 +63,7 @@ TEST(ContourDefinerTest, TestDefineContourPointsAround) {
   manager.addLine({ 0, 255,   0,   0, 255 });
   manager.addLine({ 0, 255,   0,   0, 255 });
   manager.addLine({ 0,   0, 255, 255,   0 });
-  ContourDefiner cd(manager);
+  ContourDefiner cd(&manager);
 
   std::vector<Point> actual = cd.defineContourPointsAround(Point(2, 1));
 
@@ -126,7 +126,7 @@ TEST(ContourDefinerTest, TestDefinePossiblePoints) {
   manager.addLine({ 0, 255,   0,   0, 255 });
   manager.addLine({ 0, 255,   0,   0, 255 });
   manager.addLine({ 0,   0, 255, 255,   0 });
-  ContourDefiner cd(manager);
+  ContourDefiner cd(&manager);
 
   std::vector<Point> actual = cd.definePossiblePoints(Point(2, 3));
 
@@ -156,7 +156,7 @@ TEST(ContourDefinerTest, TestDefineContour) {
   manager.addLine({ 0, 255,   0,   0, 255 });
   manager.addLine({ 0, 255,   0,   0, 255 });
   manager.addLine({ 0,   0, 255, 255,   0 });
-  ContourDefiner cd(manager);
+  ContourDefiner cd(&manager);
 
   Contour actual = cd.defineContour(Point(2, 2));
 
@@ -296,7 +296,7 @@ TEST(GetNextPointTest, OnlyOnePointPossible) {
   manager.addLine({ 255, 255, 255});
   manager.addLine({ 255,   0, 255});
   manager.addLine({ 255,   0, 255});
-  ContourDefiner cd(manager);
+  ContourDefiner cd(&manager);
 
   Point basePoint(1, 1);
   Point predPoint(1, 2);
@@ -314,7 +314,7 @@ TEST(GetNextPointTest, VertToUp) {
   manager.addLine({ 255,   0, 255 });
   manager.addLine({ 255,   0, 255 });
   manager.addLine({ 255,   0, 255 });
-  ContourDefiner cd(manager);
+  ContourDefiner cd(&manager);
 
   Point basePoint(1, 1);
   Point predPoint(1, 2);
@@ -332,7 +332,7 @@ TEST(GetNextPointTest, VertToDown) {
   manager.addLine({ 255,   0, 255 });
   manager.addLine({ 255,   0, 255 });
   manager.addLine({ 255,   0, 255 });
-  ContourDefiner cd(manager);
+  ContourDefiner cd(&manager);
 
   Point basePoint(1, 1);
   Point predPoint(1, 0);

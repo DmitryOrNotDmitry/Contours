@@ -4,44 +4,53 @@
 #include <vector>
 #include "ERInterface.h"
 #include "ContourState.h"
+#include "ControlPointsCalculator.h"
+#include "DataStorageManager.h"
 
-
-class FirstPointSetting : public CDialog
+class DialogListContours : public CDialog
 {
-  DECLARE_DYNAMIC(FirstPointSetting)
+  DECLARE_DYNAMIC(DialogListContours)
 
   enum { IDD = IDD_DIALOG_first_point_setting };
+
+
+  DataStorageManager& dataManager;
+
+  void setValueToDlgItem(int dlgItem, int value);
+
+  int getIntFromDlgItem(int dlgItem);
 
 protected:
   virtual void DoDataExchange(CDataExchange* pDX);
 
   virtual BOOL OnInitDialog();
 
-  void setValueToDlgItem(int dlgItem, int value);
-
-  int getIntFromDlgItem(int dlgItem);
-
+  
 public:
-  FirstPointSetting(CWnd* pParent =NULL);
-  virtual ~FirstPointSetting();
+  DialogListContours(CWnd* pParent =NULL);
+  virtual ~DialogListContours();
 
   DECLARE_MESSAGE_MAP()
 
   afx_msg void OnBnClickedOk();
   afx_msg void OnBnClickedCancel();
+  afx_msg void OnBnClickedCalcControlPoints();
   void OnLvnItemchangedChanlist(NMHDR* pNMHDR, LRESULT* pResult);
 
   CListCtrl contoursTable;
+  CButton buttonControlPoints;
 
   bool isRowSelected(int row) const;
+
+  std::vector<int> getSelectedRows() const;
+
+  void setContoursStates() const;
 
 public:
   HIMAGE hImage;
 
   void addColumn(int fmt, int width, char* capture, int numCol);
   void addRow(int rowNum, CString name);
-
-  std::vector<ContourState> getContoursStates() const;
 
 };
 

@@ -5,8 +5,9 @@
 #include "stdafx.h"
 #include "ContoursDefinerApp.h"
 #include "ContourDefiner.h"
-#include "FirstPointSetting.h"
+#include "DialogListContours.h"
 #include "ERImageData.h"
+#include "ControlPointsCalculator.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,12 +22,12 @@ END_MESSAGE_MAP()
 
 
 CContoursDefinerApp::CContoursDefinerApp() 
+  : dataManager(DataStorageManager::getInstance())
 {
   hImage = DI_ActiveObject;
   imageManager = new ERImageData(hImage);
   conDefiner = ContourDefiner(imageManager);
   contoursDrawer = new ContourDrawing(hImage, dlg);
-
 }
 
 
@@ -75,11 +76,11 @@ void MouseProc(void* pContext,           // Контекст
 
     pcc->app->contour = pcc->app->conDefiner.defineContour(startPoint);
 
-    pcc->app->contoursDrawer->addContour(pcc->app->contour);
+    pcc->app->dataManager.addContour(pcc->app->contour);
 
     CString name;
     name.Format("Контур (%d, %d)", startPoint.x, startPoint.y);
-    pcc->app->dlg.addRow(pcc->app->contoursDrawer->getCountContours() - 1, name);
+    pcc->app->dlg.addRow(pcc->app->dataManager.getCountContours() - 1, name);
   }
 }
 
@@ -114,18 +115,6 @@ void CContoursDefinerApp::__main__()
   }
 
 
-  /*
-  FirstPointSetting dialog;
-  dialog.startPoint = Point(187, 195);
- 
-  if (dialog.DoModal() == IDOK)
-  {
-    Point startPoint = dialog.startPoint;
-    contour = conDefiner.defineContour(startPoint);
-
-    draws.push_back(new ContourDrawing(hImage, contour));
-  }
-  */
 }
 
 

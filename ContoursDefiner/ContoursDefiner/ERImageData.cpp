@@ -12,7 +12,7 @@ ERImageData::ERImageData(HIMAGE hImage)
     QChans = *image.dwQChans;
 
     imageLines = new unsigned char* [kolLines];
-    for (int i = 0; i < kolLines; i++)
+    for (DWORD i = 0; i < kolLines; i++)
     {
       imageLines[i] = new unsigned char[kolPix * QChans];
       image.ReadDataStream(imageLines[i], i, FORMAT_8);
@@ -45,7 +45,7 @@ ERImageData::~ERImageData()
 {
   if (kolLines > 0)
   {
-    for (int i = 0; i < kolPix; i++)
+    for (DWORD i = 0; i < kolPix; i++)
     {
       if (imageLines[i])
         delete[] imageLines[i];

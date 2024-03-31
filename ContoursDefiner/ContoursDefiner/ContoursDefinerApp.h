@@ -13,7 +13,8 @@
 #include "Contour.h"
 #include "ContourDefiner.h"
 #include "ImageDataManager.h"
-#include "FirstPointSetting.h"
+#include "DialogListContours.h"
+#include "DataStorageManager.h"
 
 
 class CContoursDefinerApp : public CWinApp
@@ -31,8 +32,9 @@ public:
   HIMAGE hImage;
   ImageDataManager* imageManager;
   ContourDefiner conDefiner;
+  DataStorageManager& dataManager;
 
-  FirstPointSetting dlg;
+  DialogListContours dlg;
 
   void __main__();
 

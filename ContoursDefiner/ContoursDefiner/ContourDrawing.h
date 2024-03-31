@@ -2,34 +2,29 @@
 
 #include "ERInterface.h"
 #include "Contour.h"
-#include "FirstPointSetting.h"
+#include "DialogListContours.h"
 #include "ContourState.h"
-
-
-struct ContourView
-{
-  ContourView(Contour contour, ContourState state = ContourState::VISIBLE);
-
-  Contour contour;
-  ContourState state;
-};
+#include "DataStorageManager.h"
 
 
 class ContourDrawing : public CVDirectDrawing
 {
-  std::vector<ContourView> contours;
   HIMAGE hImage;
-  const FirstPointSetting& contoursDlg;
+  const DialogListContours& contoursDlg;
+
+  DataStorageManager& dataManager;
+
+  std::vector<Contour>& contours;
+  std::vector<Point>& controlPoints;
+
+  void drawControlPoints(HDC hDC);
 
 public:
-  ContourDrawing(HIMAGE hImage, const FirstPointSetting& contoursDlg);
+  ContourDrawing(HIMAGE hImage, const DialogListContours& contoursDlg);
   virtual ~ContourDrawing();
 
   void OnDraw(HDC hDC);
   void ReleaseContext() override;
-
-  void addContour(Contour& contour);
-  int getCountContours();
 
 };
 

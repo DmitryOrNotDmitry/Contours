@@ -88,6 +88,16 @@ Point Contour::getLastPoint()
   return *points.rbegin();
 }
 
+ContourState Contour::getState() const
+{
+  return state;
+}
+
+void Contour::setState(ContourState state)
+{
+  this->state = state;
+}
+
 
 size_t Contour::size() const
 {

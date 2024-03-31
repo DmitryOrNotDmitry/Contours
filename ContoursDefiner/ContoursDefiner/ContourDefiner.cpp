@@ -139,7 +139,7 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point> points
       double minDistanceToFirst = 10000 * 10000;
       size_t minItemIndexToLast = 0;
       size_t minItemIndexToFirst = 0;
-      for (int i = 0; i < points_copy.size(); ++i)
+      for (size_t i = 0; i < points_copy.size(); ++i)
       {
         double curDistToLast = points_copy[i].DistanceTo(*path.rbegin());
         double curDistToFirst = points_copy[i].DistanceTo(*path.begin());

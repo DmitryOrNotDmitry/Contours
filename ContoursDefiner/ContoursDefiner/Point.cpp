@@ -88,7 +88,7 @@ bool Point::operator<(const Point& other) const
 Point& Point::operator=(const Point& other)
 {
   if (this == &other)
-      return *this;
+    return *this;
   
   this->x = other.x;
   this->y = other.y;
@@ -103,5 +103,3 @@ Point& Point::operator=(Point&& other)
 
   return *this;
 }
-
-  
