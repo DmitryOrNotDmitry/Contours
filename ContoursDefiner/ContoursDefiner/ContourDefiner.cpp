@@ -125,9 +125,7 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point> points
   if (points.size() > 0)
   {
     std::vector<Point> points_copy(points);
-    if (points.size() == 3)
-      int tt = 0;
-
+    
     std::sort(points_copy.begin(), points_copy.end());
 
     path.push_back(points_copy[0]);
@@ -135,8 +133,8 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point> points
 
     while (points_copy.size() > 0)
     {
-      double minDistanceToLast = 10000 * 10000;
-      double minDistanceToFirst = 10000 * 10000;
+      double minDistanceToLast = 1e20;
+      double minDistanceToFirst = 1e20;
       size_t minItemIndexToLast = 0;
       size_t minItemIndexToFirst = 0;
       for (size_t i = 0; i < points_copy.size(); ++i)
@@ -192,7 +190,31 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point> points
       removeIndexesFromVector(points_copy, indexesToDel);
 
     }
+
+    Point& lastPoint = *path.rbegin();
+    double distToNext = 0;
+    double distToLast = 0;
+    int count = 0;
+    while (count < path.size())
+    {
+      count++;
+
+      distToLast = path.begin()->DistanceTo(lastPoint);
+      distToNext = path.begin()->DistanceTo(*(path.begin() + 1));
+      if (distToLast <= distToNext)
+      {
+        Point tmp = *path.begin();
+        path.erase(path.begin());
+        path.push_back(tmp);
+        lastPoint = *path.rbegin();
+      }
+      else
+      {
+        break;
+      }
+    }
   }
+
 
   return path;
 }

@@ -44,6 +44,9 @@ std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
   
   for (auto iter = newPoints.begin(); iter != newPoints.end(); iter++)
   {
+    if (*iter == Point(206, 188))
+      int t = 0;
+
     bool isUniquePoint = true;
     for (size_t i = 0; i < numNewPoints; i++)
     {
@@ -148,7 +151,7 @@ int Contour::findNearestPointTo(const Point& destination, int from, int to, int 
   int realindex;
   for (int i = from; i < to; i += step)
   {
-    if (i >= size() || i < 0)
+    if (i >= (int)size() || i < 0)
       realindex = i + size();
     realindex = i % size();
 

@@ -48,7 +48,7 @@ std::pair<Point, Point> ControlPointsCalculator::calculate(const Contour& first,
 
   int step = 3;
 
-  int maxSize = first.size();
+  size_t maxSize = first.size();
   if (second.size() > maxSize)
     maxSize = second.size();
 

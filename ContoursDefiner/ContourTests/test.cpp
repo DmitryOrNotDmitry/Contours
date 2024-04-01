@@ -207,7 +207,7 @@ TEST(ConvertToPathTest, TestConvertToPath4) {
 }
 
 
-TEST(ConvertToPathTest, TestConvertToPath5) {
+TEST(ConvertToPathTest, DeepToUp) {
   ContourDefiner cd;
   std::vector<Point> points = {
     Point(5, 2),
@@ -239,7 +239,71 @@ TEST(ConvertToPathTest, TestConvertToPath5) {
 }
 
 
-TEST(ConvertToPathTest, TestConvertToPathCorner) {
+TEST(ConvertToPathTest, DeepToLeft) {
+  ContourDefiner cd;
+  std::vector<Point> points = {
+    Point(5, 3),
+    Point(4, 3),
+    Point(3, 3),
+    Point(3, 2),
+    Point(3, 1),
+    Point(4, 1),
+    Point(5, 1),
+  };
+
+
+  std::vector<Point> actual = cd.convertToPath(points);
+
+  std::vector<Point> expected = {
+    Point(5, 3),
+    Point(4, 3),
+    Point(3, 3),
+    Point(3, 2),
+    Point(3, 1),
+    Point(4, 1),
+    Point(5, 1),
+  };
+
+  std::vector<Point> reversed_expected(expected);
+  std::reverse(reversed_expected.begin(), reversed_expected.end());
+
+  ASSERT_TRUE(actual == expected || actual == reversed_expected);
+}
+
+
+TEST(ConvertToPathTest, DeepToRight) {
+  ContourDefiner cd;
+  std::vector<Point> points = {
+    Point(5, 2),
+    Point(5, 3),
+    Point(4, 3),
+    Point(3, 3),
+    Point(3, 1),
+    Point(4, 1),
+    Point(5, 1),
+  };
+
+
+  std::vector<Point> actual = cd.convertToPath(points);
+
+  std::vector<Point> expected = {
+    Point(3, 1),
+    Point(4, 1),
+    Point(5, 1),
+    Point(5, 2),
+    Point(5, 3),
+    Point(4, 3),
+    Point(3, 3),
+  };
+
+  std::vector<Point> reversed_expected(expected);
+  std::reverse(reversed_expected.begin(), reversed_expected.end());
+
+  ASSERT_TRUE(actual == expected || actual == reversed_expected);
+}
+
+
+TEST(ConvertToPathTest, Corner) {
   ContourDefiner cd;
   std::vector<Point> points = {
     Point(2, 4),
@@ -263,7 +327,7 @@ TEST(ConvertToPathTest, TestConvertToPathCorner) {
 }
 
 
-TEST(ConvertToPathTest, TestConvertToPathLeft5Points) {
+TEST(ConvertToPathTest, Left5Points) {
   ContourDefiner cd;
   std::vector<Point> points = {
     Point(3, 3),
@@ -282,6 +346,36 @@ TEST(ConvertToPathTest, TestConvertToPathLeft5Points) {
     Point(2, 4),
     Point(2, 5),
     Point(3, 5),
+  };
+
+  std::vector<Point> reversed_expected(expected);
+  std::reverse(reversed_expected.begin(), reversed_expected.end());
+
+  ASSERT_TRUE(actual == expected || actual == reversed_expected);
+}
+
+
+TEST(ConvertToPathTest, DeepToDown) {
+  ContourDefiner cd;
+  std::vector<Point> points = {
+    Point(2, 1),
+    Point(2, 2),
+    Point(1, 2),
+    Point(0, 1),
+    Point(0, 0),
+    Point(2, 0),
+  };
+
+
+  std::vector<Point> actual = cd.convertToPath(points);
+
+  std::vector<Point> expected = {
+    Point(2, 0),
+    Point(2, 1),
+    Point(2, 2),
+    Point(1, 2),
+    Point(0, 1),
+    Point(0, 0),
   };
 
   std::vector<Point> reversed_expected(expected);
