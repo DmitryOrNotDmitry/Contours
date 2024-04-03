@@ -28,6 +28,7 @@ public:
   Point* getData();
   bool operator==(const Contour& other) const;
   bool operator!=(const Contour& other) const;
+  //bool operator<(const Contour& other) const;
   Point& operator [](int i);
   Point operator [](int i) const;
 

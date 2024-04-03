@@ -1,8 +1,6 @@
 #include "ControlPointsCalculator.h"
-#include <iostream>
 #include <vector>
-#include <cmath>
-#include <algorithm>
+
 
 void provideValideCycleIndex(const Contour& contour, int& index)
 {
@@ -105,3 +103,22 @@ std::pair<Point, Point> ControlPointsCalculator::calculate(const Contour& first,
 
   return result;
 }
+
+
+//std::pair<std::pair<int, int>, std::pair<int, int>> ControlPointsCalculator::defineGeneralBorders(const Contour& first, const Contour& second)
+//{
+//  std::pair<std::pair<int, int>, std::pair<int, int>> result;
+//  std::pair<int, int> firstBorder;
+//  std::pair<int, int> secondBorder;
+//  firstBorder.first = 0;
+//  firstBorder.second = 10;
+//  secondBorder.first = 0;
+//  secondBorder.second = 10;
+//
+//
+//  result.first = firstBorder;
+//  result.second = secondBorder;
+//  return result;
+//}
+
+

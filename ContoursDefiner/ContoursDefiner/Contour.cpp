@@ -128,6 +128,11 @@ bool Contour::operator!=(const Contour& other) const
   return !(*this == other);
 }
 
+//bool Contour::operator<(const Contour& other) const
+//{
+//  return this->points < other.points;
+//}
+
 Point& Contour::operator[](int i)
 {
   return points[i];

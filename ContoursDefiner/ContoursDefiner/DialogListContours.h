@@ -6,6 +6,7 @@
 #include "ContourState.h"
 #include "ControlPointsCalculator.h"
 #include "DataStorageManager.h"
+//#include "Border.h"
 
 class DialogListContours : public CDialog
 {
