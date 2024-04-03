@@ -1,7 +1,7 @@
 #pragma once
 #include "Contour.h"
 
-class Border
+class LineBorder
 {
 
   Contour& owner;
@@ -10,8 +10,7 @@ class Border
 
 public:
 
-  Border(Contour& owner);
-  Border(Contour& owner, int fromIndex, int toIndex);
+  LineBorder(Contour& owner, int fromIndex, int toIndex);
 
   Contour& getOwner();
   int getFromIndex();

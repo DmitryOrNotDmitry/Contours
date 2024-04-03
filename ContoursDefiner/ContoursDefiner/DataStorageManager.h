@@ -2,17 +2,16 @@
 #include <vector>
 #include <map>
 
-//#include "Border.h"
 #include "Contour.h"
 #include "ContourState.h"
-
+#include "LineBorder.h"
 
 class DataStorageManager
 {
 
   std::vector<Contour> contours;
   std::vector<Point> controlPoints;
-  //std::vector<Border> borders;
+  std::vector<LineBorder> borders;
 
   DataStorageManager();
   static DataStorageManager instance;
@@ -36,8 +35,8 @@ public:
 
 
 
-  /*void addBorder(const Border& border);
+  void addBorder(const LineBorder& border);
 
-  std::vector<Border>& getBorders();*/
+  std::vector<LineBorder>& getBorders();
 };
 

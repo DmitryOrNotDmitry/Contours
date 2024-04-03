@@ -37,14 +37,14 @@ std::vector<Point>& DataStorageManager::getControlPoints()
   return controlPoints;
 }
 
-//
-//void DataStorageManager::addBorder(const Border& border)
-//{
-//  borders.push_back(border);
-//}
-//
-//
-//std::vector<Border>& DataStorageManager::getBorders()
-//{
-//  return borders;
-//}
+
+void DataStorageManager::addBorder(const LineBorder& border)
+{
+  borders.push_back(border);
+}
+
+
+std::vector<LineBorder>& DataStorageManager::getBorders()
+{
+  return borders;
+}

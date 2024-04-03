@@ -41,14 +41,17 @@ void DialogListContours::OnBnClickedCalcControlPoints()
   }
  
   std::vector<Contour>& conts = dataManager.getContours();
-  //Contour& firstCont = conts[selectedRows[0]];
-  //Contour& secondCont = conts[selectedRows[1]];
-  //std::pair<std::pair<int, int>, std::pair<int, int>> bordersIndexes = ControlPointsCalculator::defineGeneralBorders(firstCont, secondCont);
+  
+  //std::pair<Point, Point> points = ControlPointsCalculator::calculate(conts[selectedRows[0]], conts[selectedRows[1]]);
   //dataManager.addControlPoint(points.first);
   //dataManager.addControlPoint(points.second);
-  //dataManager.addBorder(Border(firstCont, bordersIndexes.first.first, bordersIndexes.first.second));
-  //dataManager.addBorder(Border(secondCont, bordersIndexes.second.first, bordersIndexes.second.second));
-
+  
+  Contour& firstCont = conts[selectedRows[0]];
+  Contour& secondCont = conts[selectedRows[1]];
+  std::pair<std::pair<int, int>, std::pair<int, int>> bordersIndexes = ControlPointsCalculator::defineGeneralBorders(firstCont, secondCont);
+  dataManager.addBorder(LineBorder(firstCont, bordersIndexes.first.first, bordersIndexes.first.second));
+  dataManager.addBorder(LineBorder(secondCont, bordersIndexes.second.first, bordersIndexes.second.second));
+  
   RecalcImageViews(hImage);
 }
 
