@@ -1,13 +1,13 @@
 #include "LineBorder.h"
 
-LineBorder::LineBorder(Contour& owner, int fromIndex, int toIndex)
+LineBorder::LineBorder(std::vector<Contour>::iterator& owner, int fromIndex, int toIndex)
   : owner(owner)
   , fromIndex(fromIndex)
   , toIndex(toIndex)
 {
 }
 
-Contour& LineBorder::getOwner()
+std::vector<Contour>::iterator& LineBorder::getOwner()
 {
   return owner;
 }

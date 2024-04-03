@@ -42,7 +42,7 @@ void ContourDrawing::drawBorders(HDC& hDC)
 
   for (size_t i = 0; i < borders.size(); i++)
   {
-    const std::vector<Point>& points = borders[i].getOwner().getPoints();
+    const std::vector<Point>& points = borders[i].getOwner()->getPoints();
     int numPoints = (int) points.size();
 
     int from = borders[i].getFromIndex();

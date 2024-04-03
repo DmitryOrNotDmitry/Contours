@@ -4,15 +4,15 @@
 class LineBorder
 {
 
-  Contour& owner;
+  std::vector<Contour>::iterator owner;
   int fromIndex;
   int toIndex;
 
 public:
 
-  LineBorder(Contour& owner, int fromIndex, int toIndex);
+  LineBorder(std::vector<Contour>::iterator& owner, int fromIndex, int toIndex);
 
-  Contour& getOwner();
+  std::vector<Contour>::iterator& getOwner();
   int getFromIndex();
   int getToIndex();
 
