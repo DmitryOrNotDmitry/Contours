@@ -110,9 +110,9 @@ std::pair<std::pair<int, int>, std::pair<int, int>> ControlPointsCalculator::def
   std::pair<std::pair<int, int>, std::pair<int, int>> result;
   std::pair<int, int> firstBorder;
   std::pair<int, int> secondBorder;
-  firstBorder.first = 0;
+  firstBorder.first = first.size() - 10;
   firstBorder.second = 10;
-  secondBorder.first = 0;
+  secondBorder.first = second.size() - 10;
   secondBorder.second = 10;
 
 

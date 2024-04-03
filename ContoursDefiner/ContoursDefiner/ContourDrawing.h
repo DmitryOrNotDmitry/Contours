@@ -2,6 +2,7 @@
 
 #include "ERInterface.h"
 #include "Contour.h"
+#include "LineBorder.h"
 #include "DialogListContours.h"
 #include "ContourState.h"
 #include "DataStorageManager.h"
@@ -16,8 +17,11 @@ class ContourDrawing : public CVDirectDrawing
 
   std::vector<Contour>& contours;
   std::vector<Point>& controlPoints;
+  std::vector<LineBorder>& borders;
 
-  void drawControlPoints(HDC hDC);
+  void drawControlPoints(HDC& hDC);
+  
+  void drawBorders(HDC& hDC);
 
 public:
   ContourDrawing(HIMAGE hImage, const DialogListContours& contoursDlg);

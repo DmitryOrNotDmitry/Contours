@@ -7,6 +7,7 @@ ContourDrawing::ContourDrawing(HIMAGE hImage, const DialogListContours& contours
   , dataManager(DataStorageManager::getInstance())
   , contours(dataManager.getContours())
   , controlPoints(dataManager.getControlPoints())
+  , borders(dataManager.getBorders())
 {
   Attach(this->hImage);
   Update();
@@ -22,7 +23,7 @@ ContourDrawing::~ContourDrawing()
   }
 }
 
-void ContourDrawing::drawControlPoints(HDC hDC)
+void ContourDrawing::drawControlPoints(HDC& hDC)
 {
   HGDIOBJ oldPen = SelectObject(hDC, CreatePen(PS_SOLID, 1, RGB(255, 0, 0)));
   
@@ -32,6 +33,31 @@ void ContourDrawing::drawControlPoints(HDC hDC)
     LineTo(hDC, controlPoints[i].x, controlPoints[i].y);
   }
   
+  SelectObject(hDC, oldPen);
+}
+
+void ContourDrawing::drawBorders(HDC& hDC)
+{
+  HGDIOBJ oldPen = SelectObject(hDC, CreatePen(PS_SOLID, 1, RGB(255, 0, 0)));
+
+  for (size_t i = 0; i < borders.size(); i++)
+  {
+    const std::vector<Point>& points = borders[i].getOwner().getPoints();
+    int numPoints = (int) points.size();
+
+    int from = borders[i].getFromIndex();
+    int to = borders[i].getToIndex();
+
+    MoveToEx(hDC, points[from].x, points[from].y, NULL);
+    for (int j = from; j != (to + 1); j++)
+    {
+      if (j >= numPoints)
+        j = 0;
+
+      LineTo(hDC, points[j].x, points[j].y);
+    }
+  }
+
   SelectObject(hDC, oldPen);
 }
 
@@ -68,6 +94,8 @@ void ContourDrawing::OnDraw(HDC hDC)
   }
 
   drawControlPoints(hDC);
+
+  drawBorders(hDC);
   
   SelectObject(hDC, oldPen);
 }
