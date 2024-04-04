@@ -106,15 +106,12 @@ void CContoursDefinerApp::__main__()
   SetRasterFilterEx(hImage, pCC, cFilterName, SRF_ReleaseProc, ReleaseContext);
 
 
-  // Проверка на успешное создание диалога
   if (dlg.Create(IDD_DIALOG_first_point_setting, NULL))
   {
     dlg.hImage = hImage;
-    // Отображение диалогового окна
+
     dlg.ShowWindow(SW_SHOW);
   }
-
-
 }
 
 

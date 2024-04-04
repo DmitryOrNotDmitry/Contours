@@ -9,7 +9,8 @@ DataStorageManager& DataStorageManager::getInstance()
 
 DataStorageManager::DataStorageManager()
 {
-
+  // TODO: IT WILL NOT WORK IF NUMBER OF CONTOURS IS MORE THAN 100
+  contours.reserve(100);
 }
 
 void DataStorageManager::addContour(Contour& contour)

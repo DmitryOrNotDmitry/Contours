@@ -10,17 +10,16 @@ void provideValideCycleIndex(const Contour& contour, int& index)
 
   if (index > size - 1)
   {
-    index += size;
     index %= size;
   }
 }
 
 
-std::pair<Point, Point> ControlPointsCalculator::calculate(const Contour& first, const Contour& second)
+std::pair<int, int> ControlPointsCalculator::calculateNearestPointsIdx(const Contour& first, const Contour& second)
 {
-  std::pair<Point, Point> result;
-  result.first = Point(1, 1);
-  result.second = Point(2, 2);
+  std::pair<int, int> result;
+  result.first = -1;
+  result.second = -1;
 
   if (first.isEmpty() || second.isEmpty())
     return result;
@@ -98,10 +97,45 @@ std::pair<Point, Point> ControlPointsCalculator::calculate(const Contour& first,
   firstCurIndex = first.findNearestPointTo(second[secondCurIndex], firstCurIndex - 5, firstCurIndex + 5, 1);
   secondCurIndex = second.findNearestPointTo(first[firstCurIndex], secondCurIndex - 5, secondCurIndex + 5, 1);
 
-  result.first = first[firstCurIndex];
-  result.second = second[secondCurIndex];
+  result.first = firstCurIndex;
+  result.second = secondCurIndex;
 
   return result;
+}
+
+
+double calcDistDeltaByIterations(const Contour& first, const Contour& second, const std::pair<int, int>& controlPointsIndexes, bool isDiffSteps = true)
+{
+  int countCheckedPoints = 5;
+  int step = 1;
+  
+  int firstIndex = controlPointsIndexes.first;
+  int secondIndex = controlPointsIndexes.second;
+
+  double delta = 0;
+  for (int i = 0; i < countCheckedPoints; i++)
+  {
+    firstIndex += step;
+    if (isDiffSteps)
+      secondIndex -= step;
+    else
+      secondIndex += step;
+
+    provideValideCycleIndex(first, firstIndex);
+    provideValideCycleIndex(second, secondIndex);
+
+    delta += first[firstIndex].DistanceTo(second[secondIndex]);
+  }
+  return delta;
+}
+
+
+bool ControlPointsCalculator::haveContoursSameDirection(const Contour& first, const Contour& second, const std::pair<int, int>& controlPointsIndexes)
+{
+  double deltaDistSameSteps = calcDistDeltaByIterations(first, second, controlPointsIndexes, false);
+  double deltaDistDiffSteps = calcDistDeltaByIterations(first, second, controlPointsIndexes);
+
+  return deltaDistSameSteps < deltaDistDiffSteps;
 }
 
 
@@ -116,9 +150,45 @@ std::pair<std::pair<int, int>, std::pair<int, int>> ControlPointsCalculator::def
   secondBorder.second = 10;
 
 
-
+  std::pair<int, int> controlPoints = ControlPointsCalculator::calculateNearestPointsIdx(first, second);
   
+  int stepFirst = 1;
+  int stepSecond = -1;
+  if (haveContoursSameDirection(first, second, controlPoints))
+    stepSecond = 1;
 
+  int firstIndex = controlPoints.first;
+  int secondIndex = controlPoints.second;
+
+  while (first[firstIndex].DistanceTo(second[secondIndex]) < 10)
+  {
+    firstIndex += stepFirst;
+    secondIndex += stepSecond;
+    provideValideCycleIndex(first, firstIndex);
+    provideValideCycleIndex(second, secondIndex);
+  }
+
+  firstBorder.second = firstIndex;
+  secondBorder.first = secondIndex;
+
+
+
+  stepFirst = -stepFirst;
+  stepSecond = -stepSecond;
+
+  firstIndex = controlPoints.first;
+  secondIndex = controlPoints.second;
+
+  while (first[firstIndex].DistanceTo(second[secondIndex]) < 10)
+  {
+    firstIndex += stepFirst;
+    secondIndex += stepSecond;
+    provideValideCycleIndex(first, firstIndex);
+    provideValideCycleIndex(second, secondIndex);
+  }
+
+  firstBorder.first = firstIndex;
+  secondBorder.second = secondIndex;
 
 
   result.first = firstBorder;

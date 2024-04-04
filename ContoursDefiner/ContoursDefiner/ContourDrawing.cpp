@@ -25,7 +25,8 @@ ContourDrawing::~ContourDrawing()
 
 void ContourDrawing::drawControlPoints(HDC& hDC)
 {
-  HGDIOBJ oldPen = SelectObject(hDC, CreatePen(PS_SOLID, 1, RGB(255, 0, 0)));
+  HPEN controlPointPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+  HGDIOBJ oldPen = SelectObject(hDC, controlPointPen);
   
   for (size_t i = 0; i < controlPoints.size(); i++)
   {
@@ -33,12 +34,15 @@ void ContourDrawing::drawControlPoints(HDC& hDC)
     LineTo(hDC, controlPoints[i].x, controlPoints[i].y);
   }
   
+  DeleteObject(controlPointPen);
+  
   SelectObject(hDC, oldPen);
 }
 
 void ContourDrawing::drawBorders(HDC& hDC)
 {
-  HGDIOBJ oldPen = SelectObject(hDC, CreatePen(PS_SOLID, 1, RGB(255, 0, 0)));
+  HPEN bordersPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+  HGDIOBJ oldPen = SelectObject(hDC, bordersPen);
 
   for (size_t i = 0; i < borders.size(); i++)
   {
@@ -58,14 +62,18 @@ void ContourDrawing::drawBorders(HDC& hDC)
     }
   }
 
+  DeleteObject(bordersPen);
+
   SelectObject(hDC, oldPen);
 }
 
 void ContourDrawing::OnDraw(HDC hDC)
 {
-  COLORREF visibleColor = RGB(0, 250, 0);
-  COLORREF selectedColor = RGB(0, 250, 250);
-  HGDIOBJ oldPen = SelectObject(hDC, CreatePen(PS_SOLID, 1, visibleColor));
+  COLORREF visibleColor = RGB(0, 250, 250);
+  COLORREF selectedColor = RGB(0, 250, 0);
+  HPEN visiblePen = CreatePen(PS_SOLID, 1, visibleColor);
+  HPEN selectedPen = CreatePen(PS_SOLID, 1, selectedColor);
+  HGDIOBJ oldPen = SelectObject(hDC, visiblePen);
 
   for (size_t i = 0; i < contours.size(); i++)
   {
@@ -73,10 +81,10 @@ void ContourDrawing::OnDraw(HDC hDC)
       continue;
 
     if (contours[i].getState() == VISIBLE)
-      SelectObject(hDC, CreatePen(PS_SOLID, 1, visibleColor));
+      SelectObject(hDC, visiblePen);
 
     if (contours[i].getState() == SELECTED)
-      SelectObject(hDC, CreatePen(PS_SOLID, 1, selectedColor));
+      SelectObject(hDC, selectedPen);
 
 
     Point* points = contours[i].getData();
@@ -91,12 +99,16 @@ void ContourDrawing::OnDraw(HDC hDC)
       LineTo(hDC, points[j].x, points[j].y);
     }
     LineTo(hDC, points[0].x, points[0].y);
+  
   }
 
-  drawControlPoints(hDC);
+  DeleteObject(visiblePen);
+  DeleteObject(selectedPen);
 
-  drawBorders(hDC);
+  drawControlPoints(hDC);
   
+  drawBorders(hDC);
+ 
   SelectObject(hDC, oldPen);
 }
 
