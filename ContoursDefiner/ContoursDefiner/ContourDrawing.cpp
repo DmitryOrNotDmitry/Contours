@@ -77,6 +77,30 @@ void ContourDrawing::drawBorders(HDC& hDC, double scaleX, double scaleY)
 }
 
 
+void ContourDrawing::drawContoursWithState(HDC& hDC, double scaleX, double scaleY, ContourState state)
+{
+  for (size_t i = 0; i < contours.size(); i++)
+  {
+    if (contours[i].getState() != state)
+      continue;
+
+    size_t numPoints = contours[i].size();
+
+    if (numPoints < 1)
+      continue;
+
+    std::vector<Point>& points = contours[i].getPoints();;
+
+    MoveToEx(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY), NULL);
+    for (size_t j = 1; j < numPoints; j++)
+    {
+      LineTo(hDC, toFloatDraw(points[j].x, scaleX), toFloatDraw(points[j].y, scaleY));
+    }
+    LineTo(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY));
+  }
+}
+
+
 void ContourDrawing::OnFLoatDraw(HDC hDC, double scaleX, double scaleY)
 {
   COLORREF visibleColor = RGB(0, 250, 250);
@@ -84,8 +108,14 @@ void ContourDrawing::OnFLoatDraw(HDC hDC, double scaleX, double scaleY)
   int penWidth = 5;
   HPEN visiblePen = CreatePen(PS_SOLID, penWidth, visibleColor);
   HPEN selectedPen = CreatePen(PS_SOLID, penWidth, selectedColor);
+  
   HGDIOBJ oldPen = SelectObject(hDC, visiblePen);
+  drawContoursWithState(hDC, scaleX, scaleY, VISIBLE);
 
+
+  SelectObject(hDC, selectedPen);
+  drawContoursWithState(hDC, scaleX, scaleY, SELECTED);
+  /*
   for (size_t i = 0; i < contours.size(); i++)
   {
     if (contours[i].getState() == HIDDEN)
@@ -112,7 +142,7 @@ void ContourDrawing::OnFLoatDraw(HDC hDC, double scaleX, double scaleY)
     LineTo(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY));
   
   }
-
+  */
   DeleteObject(visiblePen);
   DeleteObject(selectedPen);
 

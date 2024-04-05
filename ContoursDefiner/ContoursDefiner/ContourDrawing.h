@@ -22,6 +22,8 @@ class ContourDrawing : public CVDirectDrawing
   void drawControlPoints(HDC& hDC, double scaleX, double scaleY);
   
   void drawBorders(HDC& hDC, double scaleX, double scaleY);
+  
+  void drawContoursWithState(HDC& hDC, double scaleX, double scaleY, ContourState state = VISIBLE);
 
 public:
   ContourDrawing(HIMAGE hImage, const DialogListContours& contoursDlg);
