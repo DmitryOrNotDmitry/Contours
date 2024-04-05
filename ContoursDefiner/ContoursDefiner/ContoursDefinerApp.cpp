@@ -27,7 +27,6 @@ CContoursDefinerApp::CContoursDefinerApp()
   hImage = DI_ActiveObject;
   imageManager = new ERImageData(hImage);
   conDefiner = ContourDefiner(imageManager);
-  contoursDrawer = new ContourDrawing(hImage, dlg);
 }
 
 
@@ -57,17 +56,19 @@ BOOL CContoursDefinerApp::InitApplication()
 
 struct Context
 {
+  DialogListContours* dlg;
+  
   CContoursDefinerApp* app;
 };
 
 
-void MouseProc(void* pContext,           // Контекст
-  long MouseFileX,          // Координаты курсора по файлу
-  long MouseFileY,          // /-/
-  long Operation,           // Тип операции
-                            // WM_MOUSEMOVE, WM_LBUTTONDOWN, WM_LBUTTONUP
-  long MouseKeyStatus)      // Флаг нажатых кнопок (как в ON_MOUSEMOVE() )
-{
+void MouseProc(void* pContext,            // Контекст
+                long MouseFileX,          // Координаты курсора по файлу
+                long MouseFileY,          // /-/
+                long Operation,           // Тип операции
+                                          // WM_MOUSEMOVE, WM_LBUTTONDOWN, WM_LBUTTONUP
+                long MouseKeyStatus)      // Флаг нажатых кнопок (как в ON_MOUSEMOVE() )
+  {
 
   if (Operation == WM_LBUTTONDOWN && (MouseKeyStatus & MK_CONTROL))
   {
@@ -80,7 +81,7 @@ void MouseProc(void* pContext,           // Контекст
 
     CString name;
     name.Format("Контур (%d, %d)", startPoint.x, startPoint.y);
-    pcc->app->dlg.addRow(pcc->app->dataManager.getCountContours() - 1, name);
+    pcc->dlg->addRow(pcc->app->dataManager.getCountContours() - 1, name);
   }
 }
 
@@ -89,6 +90,7 @@ void ReleaseContext(void* pContext)
 {
   Context* pCC = (Context*)pContext;
 
+  delete pCC->dlg;
   delete pCC;
 }
 
@@ -106,11 +108,15 @@ void CContoursDefinerApp::__main__()
   SetRasterFilterEx(hImage, pCC, cFilterName, SRF_ReleaseProc, ReleaseContext);
 
 
-  if (dlg.Create(IDD_DIALOG_first_point_setting, NULL))
+  CWnd* pMainWnd = CWnd::FromHandle(NS_MAIN_WND);
+  pCC->dlg = new DialogListContours();
+  contoursDrawer = new ContourDrawing(hImage, *pCC->dlg);
+  if (pCC->dlg->Create(IDD_DIALOG_first_point_setting, pMainWnd))
   {
-    dlg.hImage = hImage;
+    pCC->dlg->hImage = hImage;
 
-    dlg.ShowWindow(SW_SHOW);
+    pCC->dlg->ShowWindow(SW_NORMAL);
+    pCC->dlg->UpdateWindow();
   }
 }
 

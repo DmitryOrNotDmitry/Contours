@@ -34,7 +34,6 @@ public:
   ContourDefiner conDefiner;
   DataStorageManager& dataManager;
 
-  DialogListContours dlg;
 
   void __main__();
 
