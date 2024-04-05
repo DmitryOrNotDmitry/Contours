@@ -23,15 +23,24 @@ ContourDrawing::~ContourDrawing()
   }
 }
 
-void ContourDrawing::drawControlPoints(HDC& hDC)
+
+int toFloatDraw(int coordinate, double scale)
 {
-  HPEN controlPointPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+  return (int)((coordinate + 0.5) * scale);
+}
+
+
+void ContourDrawing::drawControlPoints(HDC& hDC, double scaleX, double scaleY)
+{
+  HPEN controlPointPen = CreatePen(PS_SOLID, 5, RGB(255, 0, 0));
   HGDIOBJ oldPen = SelectObject(hDC, controlPointPen);
   
   for (size_t i = 0; i < controlPoints.size(); i++)
   {
-    MoveToEx(hDC, controlPoints[i].x, controlPoints[i].y, NULL);
-    LineTo(hDC, controlPoints[i].x, controlPoints[i].y);
+    int x = toFloatDraw(controlPoints[i].x, scaleX);
+    int y = toFloatDraw(controlPoints[i].y, scaleY);
+    MoveToEx(hDC, x, y, NULL);
+    LineTo(hDC, x, y);
   }
   
   DeleteObject(controlPointPen);
@@ -39,9 +48,9 @@ void ContourDrawing::drawControlPoints(HDC& hDC)
   SelectObject(hDC, oldPen);
 }
 
-void ContourDrawing::drawBorders(HDC& hDC)
+void ContourDrawing::drawBorders(HDC& hDC, double scaleX, double scaleY)
 {
-  HPEN bordersPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+  HPEN bordersPen = CreatePen(PS_SOLID, 5, RGB(255, 0, 0));
   HGDIOBJ oldPen = SelectObject(hDC, bordersPen);
 
   for (size_t i = 0; i < borders.size(); i++)
@@ -52,13 +61,13 @@ void ContourDrawing::drawBorders(HDC& hDC)
     int from = borders[i].getFromIndex();
     int to = borders[i].getToIndex();
 
-    MoveToEx(hDC, points[from].x, points[from].y, NULL);
+    MoveToEx(hDC, toFloatDraw(points[from].x, scaleX), toFloatDraw(points[from].y, scaleY), NULL);
     for (int j = from; j != (to + 1); j++)
     {
       if (j >= numPoints)
         j = 0;
 
-      LineTo(hDC, points[j].x, points[j].y);
+      LineTo(hDC, toFloatDraw(points[j].x, scaleX), toFloatDraw(points[j].y, scaleY));
     }
   }
 
@@ -67,12 +76,14 @@ void ContourDrawing::drawBorders(HDC& hDC)
   SelectObject(hDC, oldPen);
 }
 
-void ContourDrawing::OnDraw(HDC hDC)
+
+void ContourDrawing::OnFLoatDraw(HDC hDC, double scaleX, double scaleY)
 {
   COLORREF visibleColor = RGB(0, 250, 250);
   COLORREF selectedColor = RGB(0, 250, 0);
-  HPEN visiblePen = CreatePen(PS_SOLID, 1, visibleColor);
-  HPEN selectedPen = CreatePen(PS_SOLID, 1, selectedColor);
+  int penWidth = 5;
+  HPEN visiblePen = CreatePen(PS_SOLID, penWidth, visibleColor);
+  HPEN selectedPen = CreatePen(PS_SOLID, penWidth, selectedColor);
   HGDIOBJ oldPen = SelectObject(hDC, visiblePen);
 
   for (size_t i = 0; i < contours.size(); i++)
@@ -93,21 +104,21 @@ void ContourDrawing::OnDraw(HDC hDC)
     if (numPoints < 1)
       continue;
 
-    MoveToEx(hDC, points[0].x, points[0].y, NULL);
+    MoveToEx(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY), NULL);
     for (size_t j = 1; j < numPoints; j++)
     {
-      LineTo(hDC, points[j].x, points[j].y);
+      LineTo(hDC, toFloatDraw(points[j].x, scaleX), toFloatDraw(points[j].y, scaleY));
     }
-    LineTo(hDC, points[0].x, points[0].y);
+    LineTo(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY));
   
   }
 
   DeleteObject(visiblePen);
   DeleteObject(selectedPen);
 
-  drawControlPoints(hDC);
+  drawControlPoints(hDC, scaleX, scaleY);
   
-  drawBorders(hDC);
+  drawBorders(hDC, scaleX, scaleY);
  
   SelectObject(hDC, oldPen);
 }

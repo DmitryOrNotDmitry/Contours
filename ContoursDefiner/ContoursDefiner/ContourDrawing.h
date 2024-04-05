@@ -19,15 +19,15 @@ class ContourDrawing : public CVDirectDrawing
   std::vector<Point>& controlPoints;
   std::vector<LineBorder>& borders;
 
-  void drawControlPoints(HDC& hDC);
+  void drawControlPoints(HDC& hDC, double scaleX, double scaleY);
   
-  void drawBorders(HDC& hDC);
+  void drawBorders(HDC& hDC, double scaleX, double scaleY);
 
 public:
   ContourDrawing(HIMAGE hImage, const DialogListContours& contoursDlg);
   virtual ~ContourDrawing();
 
-  void OnDraw(HDC hDC);
+  void OnFLoatDraw(HDC hDC, double scaleX, double scaleY) override;
   void ReleaseContext() override;
 
 };
