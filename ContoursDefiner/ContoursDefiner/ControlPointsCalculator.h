@@ -2,7 +2,7 @@
 #include "Contour.h"
 #include "Point.h"
 
-class ControlPointsCalculator
+class GeneralBorderCalculator
 {
   static std::pair<int, int> calculateNearestPointsIdx(const Contour& first, const Contour& second);
 

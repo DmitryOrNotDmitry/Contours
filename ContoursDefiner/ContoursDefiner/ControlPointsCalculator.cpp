@@ -15,7 +15,7 @@ void provideValideCycleIndex(const Contour& contour, int& index)
 }
 
 
-std::pair<int, int> ControlPointsCalculator::calculateNearestPointsIdx(const Contour& first, const Contour& second)
+std::pair<int, int> GeneralBorderCalculator::calculateNearestPointsIdx(const Contour& first, const Contour& second)
 {
   std::pair<int, int> result;
   result.first = -1;
@@ -130,7 +130,7 @@ double calcDistDeltaByIterations(const Contour& first, const Contour& second, co
 }
 
 
-bool ControlPointsCalculator::haveContoursSameDirection(const Contour& first, const Contour& second, const std::pair<int, int>& controlPointsIndexes)
+bool GeneralBorderCalculator::haveContoursSameDirection(const Contour& first, const Contour& second, const std::pair<int, int>& controlPointsIndexes)
 {
   double deltaDistSameSteps = calcDistDeltaByIterations(first, second, controlPointsIndexes, false);
   double deltaDistDiffSteps = calcDistDeltaByIterations(first, second, controlPointsIndexes);
@@ -139,7 +139,7 @@ bool ControlPointsCalculator::haveContoursSameDirection(const Contour& first, co
 }
 
 
-std::pair<std::pair<int, int>, std::pair<int, int>> ControlPointsCalculator::defineGeneralBorders(const Contour& first, const Contour& second)
+std::pair<std::pair<int, int>, std::pair<int, int>> GeneralBorderCalculator::defineGeneralBorders(const Contour& first, const Contour& second)
 {
   std::pair<std::pair<int, int>, std::pair<int, int>> result;
   std::pair<int, int> firstBorder;
@@ -150,7 +150,7 @@ std::pair<std::pair<int, int>, std::pair<int, int>> ControlPointsCalculator::def
   secondBorder.second = 10;
 
 
-  std::pair<int, int> controlPoints = ControlPointsCalculator::calculateNearestPointsIdx(first, second);
+  std::pair<int, int> controlPoints = GeneralBorderCalculator::calculateNearestPointsIdx(first, second);
   
   int stepFirst = 1;
   int stepSecond = -1;

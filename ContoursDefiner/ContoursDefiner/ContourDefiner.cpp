@@ -116,8 +116,72 @@ std::vector<Point> ContourDefiner::defineContourPointsAround(const Point& basePo
 }
 
 
-std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point> points)
+std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point>& points)
 {
+  /*std::vector<Point> path;
+  path.reserve(8);
+
+  if (points.size() == 0)
+    return path;
+    
+  std::vector<Point> points_copy(points);
+  path.push_back(points_copy[0]);
+  points_copy.erase(points_copy.begin());
+
+  while (points_copy.size() > 0)
+  {
+    Point& end_path = *path.rbegin();
+    double min_dist = 10e20;
+    size_t min_idx = 0;
+    double cur_dist = 0;
+
+    for (size_t i = 0; i < points_copy.size(); i++)
+    {
+      cur_dist = end_path.DistanceTo(points_copy[i]);
+      if (cur_dist < min_dist)
+      {
+        min_dist = cur_dist;
+        min_idx = i;
+      }
+    }
+
+    path.push_back(points_copy[min_idx]);
+    points_copy.erase(points_copy.begin() + min_idx);
+  }
+
+
+  std::vector<double> distances;
+  size_t path_size = path.size();
+  distances.resize(path_size);
+
+  for (size_t i = 0; i < path_size; i++)
+  {
+    distances[i] = path[i].DistanceTo(path[(i + 1) % path_size]);
+  }
+
+  double max_dist = -1;
+  double max_idx = 0;
+  for (size_t i = 0; i < path_size; i++)
+  {
+    if (distances[i] > max_dist)
+    {
+      max_dist = distances[i];
+      max_idx = i;
+    }
+  }
+
+  for (size_t i = 0; i <= max_idx; i++)
+  {
+    Point tmp = *path.begin();
+    path.erase(path.begin());
+    path.push_back(tmp);
+  }
+
+
+  std::reverse(path.begin(), path.end());
+  return path;*/
+
+  
   std::vector<Point> path;
   path.reserve(8);
 
@@ -191,7 +255,7 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point> points
 
     }
 
-    Point& lastPoint = *path.rbegin();
+    /*Point& lastPoint = *path.rbegin();
     double distToNext = 0;
     double distToLast = 0;
     int count = 0;
@@ -212,11 +276,39 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point> points
       {
         break;
       }
+    }*/
+
+    std::vector<double> distances;
+    size_t path_size = path.size();
+    distances.resize(path_size);
+
+    for (size_t i = 0; i < path_size; i++)
+    {
+      distances[i] = path[i].DistanceTo(path[(i + 1) % path_size]);
+    }
+
+    double max_dist = -1;
+    double max_idx = 0;
+    for (size_t i = 0; i < path_size; i++)
+    {
+      if (distances[i] > max_dist)
+      {
+        max_dist = distances[i];
+        max_idx = i;
+      }
+    }
+
+    for (size_t i = 0; i <= max_idx; i++)
+    {
+      Point tmp = *path.begin();
+      path.erase(path.begin());
+      path.push_back(tmp);
     }
   }
 
 
   return path;
+  
 }
 
 template<class T>

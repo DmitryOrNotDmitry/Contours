@@ -42,13 +42,9 @@ void DialogListContours::OnBnClickedCalcControlPoints()
  
   std::vector<Contour>& conts = dataManager.getContours();
   
-  //std::pair<Point, Point> points = ControlPointsCalculator::calculate(conts[selectedRows[0]], conts[selectedRows[1]]);
-  //dataManager.addControlPoint(points.first);
-  //dataManager.addControlPoint(points.second);
-  
   auto firstCont = conts.begin() + selectedRows[0];
   auto secondCont = conts.begin() + selectedRows[1];
-  std::pair<std::pair<int, int>, std::pair<int, int>> bordersIndexes = ControlPointsCalculator::defineGeneralBorders(*firstCont, *secondCont);
+  std::pair<std::pair<int, int>, std::pair<int, int>> bordersIndexes = GeneralBorderCalculator::defineGeneralBorders(*firstCont, *secondCont);
   dataManager.addBorder(LineBorder(firstCont, bordersIndexes.first.first, bordersIndexes.first.second));
   dataManager.addBorder(LineBorder(secondCont, bordersIndexes.second.first, bordersIndexes.second.second));
   

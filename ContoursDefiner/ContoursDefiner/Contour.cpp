@@ -4,6 +4,7 @@
 
 Contour::Contour()
 {
+  lastKAddedPoints.resize(K);
 }
 
 
@@ -27,9 +28,12 @@ void Contour::addPoint(int x, int y)
 std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
 {
   std::vector<Point> fitPoints;
-  
+
   if (newPoints.size() == 0)
     return fitPoints;
+
+
+  //deleteYetAddedPoints(newPoints);
 
   if (points.size() > 0 && newPoints.size() > 1)
   {
@@ -37,51 +41,60 @@ std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
       std::reverse(newPoints.begin(), newPoints.end());
   }
 
-  size_t numNewPoints = newPoints.size();
-  if (points.size() < numNewPoints)
-    numNewPoints = points.size();
-  fitPoints.reserve(numNewPoints);
+  if (points.size() > 1 && points.size() < 8 && newPoints.size() > 0)
+  {
+    if (newPoints.begin()->DistanceTo(*points.begin()) < newPoints.begin()->DistanceTo(*points.rbegin()))
+      std::reverse(points.begin(), points.end());
+  }
+  
   
   for (auto iter = newPoints.begin(); iter != newPoints.end(); iter++)
   {
-    if (*iter == Point(206, 188))
-      int t = 0;
+    double distance = 0;
 
-    bool isUniquePoint = true;
-    for (size_t i = 0; i < numNewPoints; i++)
+    if (fitPoints.size() > 0)
     {
-      if (*iter == *(points.rbegin() + i))
-      {
-        isUniquePoint = false;
-        break;
-      }
-    }
-
-    if (isUniquePoint)
-    {
-      if (fitPoints.size() > 0)
-      {
-        if ((*fitPoints.rbegin()).DistanceTo(*iter) < 2)
-          fitPoints.push_back(*iter);
-      }
-      else if (points.size() > 0)
-      {
-        if ((*points.rbegin()).DistanceTo(*iter) < 2)
-          fitPoints.push_back(*iter);
-      }
-      else
-      {
+      distance = fitPoints.rbegin()->DistanceTo(*iter);
+      if (distance < 2)
         fitPoints.push_back(*iter);
-      }
+    }
+    else if (points.size() > 0)
+    {
+      distance = points.rbegin()->DistanceTo(*iter);
+      if (distance < 2)
+        fitPoints.push_back(*iter);
+    }
+    else
+    {
+      fitPoints.push_back(*iter);
     }
 
   }
 
   points.insert(points.cend(), fitPoints.begin(), fitPoints.end());
 
-  if (points.size() > 1)
+  /*if (points.size() > 1)
     while (*points.begin() == *points.rbegin())
-      points.erase(--points.end());
+      points.erase(--points.end());*/
+
+  
+  //std::vector<Point> qwe(fitPoints);
+
+  //memoryLastAddedPoints(std::move(qwe));
+
+  int numFitPoints = fitPoints.size();
+  for (int i = 0; i < numFitPoints; i++)
+  {
+    Point& curPoint = *(points.rbegin() + i);
+    int idx = findRight(curPoint, numFitPoints, 40);
+    if (idx != -1 && (points.size() - (i + 1) - idx <= 8))
+    {
+      points.erase(points.begin() + idx, points.end() - (i + 1));
+      i--;
+      numFitPoints--;
+    }
+  }
+
 
   return fitPoints;
 }
@@ -128,11 +141,6 @@ bool Contour::operator!=(const Contour& other) const
   return !(*this == other);
 }
 
-//bool Contour::operator<(const Contour& other) const
-//{
-//  return this->points < other.points;
-//}
-
 Point& Contour::operator[](int i)
 {
   return points[i];
@@ -171,7 +179,54 @@ int Contour::findNearestPointTo(const Point& destination, int from, int to, int 
   return minItemIndex;
 }
 
+
 int Contour::findNearestPointTo(const Point& destination, int step) const
 {
   return findNearestPointTo(destination, 0, points.size(), step);
+}
+
+
+void Contour::memoryLastAddedPoints(std::vector<Point>&& points)
+{
+  for (size_t i = K - 1; i > 0; i--)
+  {
+    lastKAddedPoints[i] = std::move(lastKAddedPoints[i - 1]);
+  }
+  if (K > 0)
+    lastKAddedPoints[0] = std::move(points);
+}
+
+
+void Contour::deleteYetAddedPoints(std::vector<Point>& deletedPoints)
+{
+  for (size_t i = 0; i < K; i++)
+  {
+    for (size_t j = 0; j < lastKAddedPoints[i].size(); j++)
+    {
+      auto foundedPoint = std::find(deletedPoints.begin(), deletedPoints.end(), lastKAddedPoints[i][j]);
+      if (foundedPoint != deletedPoints.end())
+        deletedPoints.erase(foundedPoint);
+    }
+  }
+}
+
+
+int Contour::findRight(const Point& value, int start, int count)
+{
+  int result = -1;
+
+  count += start;
+  if (points.size() < count)
+    count = points.size();
+
+  for (int i = start; i < count; i++)
+  {
+    if (value == points[points.size() - i])
+    {
+      result = points.size() - i;
+      break;
+    }
+  }
+
+  return result;
 }

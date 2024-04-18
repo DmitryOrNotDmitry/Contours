@@ -179,6 +179,45 @@ TEST(ContourDefinerTest, TestDefineContour) {
 }
 
 
+TEST(ContourDefinerTest, TestDefineContourWithStick) {
+  TestImageData manager;
+  manager.addLine({ 0,   0, 255, 255, 255,   0 });
+  manager.addLine({ 0, 255,   0,   0,   0, 255 });
+  manager.addLine({ 0, 255,   0,   0,   0, 255 });
+  manager.addLine({ 0, 255,   0, 255,   0, 255 });
+  manager.addLine({ 0, 255,   0, 255,   0, 255 });
+  manager.addLine({ 0,   0, 255, 255, 255,  0 });
+  ContourDefiner cd(&manager);
+
+  Contour actual = cd.defineContour(Point(2, 2));
+
+  Contour expected;
+  std::vector<Point> points = {
+    Point(5, 1),
+    Point(5, 2),
+    Point(5, 3),
+    Point(5, 4),
+    Point(4, 5),
+    Point(3, 5),
+    Point(3, 4),
+    Point(3, 3),
+    Point(3, 4),
+    Point(3, 5),
+    Point(2, 5),
+    Point(1, 4),
+    Point(1, 3),
+    Point(1, 2),
+    Point(1, 1),
+    Point(2, 0),
+    Point(3, 0),
+    Point(4, 0),
+  };
+  expected.addPoints(points);
+
+  ASSERT_EQ(actual, expected);
+}
+
+
 TEST(ConvertToPathTest, TestConvertToPath4) {
   ContourDefiner cd;
   std::vector<Point> points = {

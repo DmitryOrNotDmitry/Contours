@@ -1,12 +1,17 @@
 #pragma once
 #include <vector>
+#include <algorithm>
 #include "Point.h"
 #include "ContourState.h"
+
+#define K 4
 
 class Contour
 {
 
   std::vector<Point> points;
+  
+  std::vector<std::vector<Point>> lastKAddedPoints;
 
   ContourState state;
 
@@ -28,7 +33,6 @@ public:
   Point* getData();
   bool operator==(const Contour& other) const;
   bool operator!=(const Contour& other) const;
-  //bool operator<(const Contour& other) const;
   Point& operator [](int i);
   Point operator [](int i) const;
 
@@ -36,5 +40,15 @@ public:
 
   int findNearestPointTo(const Point& destination, int from, int to, int step) const;
   int findNearestPointTo(const Point& destination, int step = 1) const;
+
+private:
+
+  void memoryLastAddedPoints(std::vector<Point>&& points);
+
+  void deleteYetAddedPoints(std::vector<Point>& deletedPoints);
+
+
+  int findRight(const Point& value, int start = 0, int count=20);
+
 };
 

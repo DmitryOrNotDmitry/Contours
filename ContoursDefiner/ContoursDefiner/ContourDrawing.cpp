@@ -109,40 +109,14 @@ void ContourDrawing::OnFLoatDraw(HDC hDC, double scaleX, double scaleY)
   HPEN visiblePen = CreatePen(PS_SOLID, penWidth, visibleColor);
   HPEN selectedPen = CreatePen(PS_SOLID, penWidth, selectedColor);
   
+
   HGDIOBJ oldPen = SelectObject(hDC, visiblePen);
   drawContoursWithState(hDC, scaleX, scaleY, VISIBLE);
 
-
   SelectObject(hDC, selectedPen);
   drawContoursWithState(hDC, scaleX, scaleY, SELECTED);
-  /*
-  for (size_t i = 0; i < contours.size(); i++)
-  {
-    if (contours[i].getState() == HIDDEN)
-      continue;
-
-    if (contours[i].getState() == VISIBLE)
-      SelectObject(hDC, visiblePen);
-
-    if (contours[i].getState() == SELECTED)
-      SelectObject(hDC, selectedPen);
-
-
-    Point* points = contours[i].getData();
-    size_t numPoints = contours[i].size();
-    
-    if (numPoints < 1)
-      continue;
-
-    MoveToEx(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY), NULL);
-    for (size_t j = 1; j < numPoints; j++)
-    {
-      LineTo(hDC, toFloatDraw(points[j].x, scaleX), toFloatDraw(points[j].y, scaleY));
-    }
-    LineTo(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY));
   
-  }
-  */
+
   DeleteObject(visiblePen);
   DeleteObject(selectedPen);
 
