@@ -41,6 +41,8 @@ public:
   int findNearestPointTo(const Point& destination, int from, int to, int step) const;
   int findNearestPointTo(const Point& destination, int step = 1) const;
 
+  void removeSamePointsAtEnds();
+
 private:
 
   void memoryLastAddedPoints(std::vector<Point>&& points);

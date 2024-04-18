@@ -172,6 +172,45 @@ int Contour::findNearestPointTo(const Point& destination, int step) const
 }
 
 
+void Contour::removeSamePointsAtEnds()
+{
+  if (points.size() == 0)
+    return;
+
+  Point& lastPoint = *points.rbegin();
+  
+  int sameIdx = -1;
+  for (int i = 0; i < 8; i++)
+  {
+    if (points[i] == lastPoint)
+    {
+      sameIdx = i;
+      break;
+    }
+  }
+
+  if (sameIdx == -1)
+    return;
+
+  bool isEqualsPointChain = true;
+  for (int i = 0; i < sameIdx; i++)
+  {
+    if (*(points.rbegin() + i) != points[sameIdx - i])
+    {
+      isEqualsPointChain = false;
+      break;
+    }
+  }
+
+  if (isEqualsPointChain)
+  {
+    int size = points.size();
+    points.erase(points.end() - (sameIdx + 1), points.end());
+  }
+
+}
+
+
 void Contour::memoryLastAddedPoints(std::vector<Point>&& points)
 {
   if (points.size() == 0)
