@@ -4,7 +4,7 @@
 
 Contour::Contour()
 {
-  lastKAddedPoints.resize(K);
+  lastKAddedPoints.resize(K, Point(-1, -1));
 }
 
 
@@ -33,7 +33,7 @@ std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
     return fitPoints;
 
 
-  //deleteYetAddedPoints(newPoints);
+  deleteYetAddedPoints(newPoints);
 
   if (points.size() > 0 && newPoints.size() > 1)
   {
@@ -78,23 +78,9 @@ std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
       points.erase(--points.end());*/
 
   
-  //std::vector<Point> qwe(fitPoints);
+  std::vector<Point> qwe(fitPoints);
 
-  //memoryLastAddedPoints(std::move(qwe));
-
-  int numFitPoints = fitPoints.size();
-  for (int i = 0; i < numFitPoints; i++)
-  {
-    Point& curPoint = *(points.rbegin() + i);
-    int idx = findRight(curPoint, numFitPoints, 40);
-    if (idx != -1 && (points.size() - (i + 1) - idx <= 8))
-    {
-      points.erase(points.begin() + idx, points.end() - (i + 1));
-      i--;
-      numFitPoints--;
-    }
-  }
-
+  memoryLastAddedPoints(std::move(qwe));
 
   return fitPoints;
 }
@@ -188,12 +174,18 @@ int Contour::findNearestPointTo(const Point& destination, int step) const
 
 void Contour::memoryLastAddedPoints(std::vector<Point>&& points)
 {
-  for (size_t i = K - 1; i > 0; i--)
+  if (points.size() == 0)
+    points.push_back(Point(-1, -1));
+
+  for (size_t i = 0; i < points.size(); i++)
   {
-    lastKAddedPoints[i] = std::move(lastKAddedPoints[i - 1]);
+    for (size_t i = K - 1; i > 0; i--)
+    {
+      lastKAddedPoints[i] = std::move(lastKAddedPoints[i - 1]);
+    }
+    if (K > 0)
+      lastKAddedPoints[0] = std::move(points[i]);
   }
-  if (K > 0)
-    lastKAddedPoints[0] = std::move(points);
 }
 
 
@@ -201,12 +193,9 @@ void Contour::deleteYetAddedPoints(std::vector<Point>& deletedPoints)
 {
   for (size_t i = 0; i < K; i++)
   {
-    for (size_t j = 0; j < lastKAddedPoints[i].size(); j++)
-    {
-      auto foundedPoint = std::find(deletedPoints.begin(), deletedPoints.end(), lastKAddedPoints[i][j]);
-      if (foundedPoint != deletedPoints.end())
-        deletedPoints.erase(foundedPoint);
-    }
+    auto foundedPoint = std::find(deletedPoints.begin(), deletedPoints.end(), lastKAddedPoints[i]);
+    if (foundedPoint != deletedPoints.end())
+      deletedPoints.erase(foundedPoint);
   }
 }
 

@@ -366,6 +366,56 @@ TEST(ConvertToPathTest, Corner) {
 }
 
 
+TEST(ConvertToPathTest, HorizontalLine) {
+  ContourDefiner cd;
+  std::vector<Point> points = {
+    Point(4, 3),
+    Point(3, 3),
+    Point(2, 3),
+  };
+
+
+  std::vector<Point> actual = cd.convertToPath(points);
+
+  std::vector<Point> expected = {
+    Point(4, 3),
+    Point(3, 3),
+    Point(2, 3),
+  };
+
+  std::vector<Point> reversed_expected(expected);
+  std::reverse(reversed_expected.begin(), reversed_expected.end());
+
+  ASSERT_TRUE(actual == expected || actual == reversed_expected);
+}
+
+
+TEST(ConvertToPathTest, ReserseL) {
+  ContourDefiner cd;
+  std::vector<Point> points = {
+    Point(2, 1),
+    Point(2, 2),
+    Point(1, 0),
+    Point(2, 0),
+  };
+
+
+  std::vector<Point> actual = cd.convertToPath(points);
+
+  std::vector<Point> expected = {
+    Point(1, 0),
+    Point(2, 0),
+    Point(2, 1),
+    Point(2, 2),
+  };
+
+  std::vector<Point> reversed_expected(expected);
+  std::reverse(reversed_expected.begin(), reversed_expected.end());
+
+  ASSERT_TRUE(actual == expected || actual == reversed_expected);
+}
+
+
 TEST(ConvertToPathTest, Left5Points) {
   ContourDefiner cd;
   std::vector<Point> points = {

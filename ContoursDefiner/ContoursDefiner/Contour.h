@@ -11,7 +11,7 @@ class Contour
 
   std::vector<Point> points;
   
-  std::vector<std::vector<Point>> lastKAddedPoints;
+  std::vector<Point> lastKAddedPoints;
 
   ContourState state;
 

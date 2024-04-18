@@ -118,36 +118,46 @@ std::vector<Point> ContourDefiner::defineContourPointsAround(const Point& basePo
 
 std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point>& points)
 {
-  /*std::vector<Point> path;
-  path.reserve(8);
+  std::vector<Point> path(points);
+  //path.reserve(8);
 
-  if (points.size() == 0)
-    return path;
-    
-  std::vector<Point> points_copy(points);
-  path.push_back(points_copy[0]);
-  points_copy.erase(points_copy.begin());
+  //if (points.size() == 0)
+  //  return path;
+  //  
+  //std::vector<Point> points_copy(points);
+  ////std::sort(points_copy.begin(), points_copy.end());
 
-  while (points_copy.size() > 0)
-  {
-    Point& end_path = *path.rbegin();
-    double min_dist = 10e20;
-    size_t min_idx = 0;
-    double cur_dist = 0;
+  //path.push_back(points_copy[0]);
+  //points_copy.erase(points_copy.begin());
 
-    for (size_t i = 0; i < points_copy.size(); i++)
-    {
-      cur_dist = end_path.DistanceTo(points_copy[i]);
-      if (cur_dist < min_dist)
-      {
-        min_dist = cur_dist;
-        min_idx = i;
-      }
-    }
+  //while (points_copy.size() > 0)
+  //{
+  //  Point& end_path = *path.rbegin();
+  //  double min_dist = 10e20;
+  //  size_t min_idx = 0;
+  //  double cur_dist = 0;
 
-    path.push_back(points_copy[min_idx]);
-    points_copy.erase(points_copy.begin() + min_idx);
-  }
+  //  for (size_t i = 0; i < points_copy.size(); i++)
+  //  {
+  //    cur_dist = end_path.DistanceTo(points_copy[i]);
+  //    if (cur_dist < min_dist)
+  //    {
+  //      min_dist = cur_dist;
+  //      min_idx = i;
+  //    }
+  //  }
+
+  //  double dist_to_first = points_copy[min_idx].DistanceTo(path[0]);
+  //  if (dist_to_first < min_dist)
+  //  {
+  //    path.insert(path.begin(), points_copy[min_idx]);
+  //  }
+  //  else
+  //  {
+  //    path.push_back(points_copy[min_idx]);
+  //  }
+  //  points_copy.erase(points_copy.begin() + min_idx);
+  //}
 
 
   std::vector<double> distances;
@@ -179,9 +189,9 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point>& point
 
 
   std::reverse(path.begin(), path.end());
-  return path;*/
+  return path;
 
-  
+  /*
   std::vector<Point> path;
   path.reserve(8);
 
@@ -255,28 +265,28 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point>& point
 
     }
 
-    /*Point& lastPoint = *path.rbegin();
-    double distToNext = 0;
-    double distToLast = 0;
-    int count = 0;
-    while (count < path.size())
-    {
-      count++;
+    //Point& lastPoint = *path.rbegin();
+    //double distToNext = 0;
+    //double distToLast = 0;
+    //int count = 0;
+    //while (count < path.size())
+    //{
+    //  count++;
 
-      distToLast = path.begin()->DistanceTo(lastPoint);
-      distToNext = path.begin()->DistanceTo(*(path.begin() + 1));
-      if (distToLast <= distToNext)
-      {
-        Point tmp = *path.begin();
-        path.erase(path.begin());
-        path.push_back(tmp);
-        lastPoint = *path.rbegin();
-      }
-      else
-      {
-        break;
-      }
-    }*/
+    //  distToLast = path.begin()->DistanceTo(lastPoint);
+    //  distToNext = path.begin()->DistanceTo(*(path.begin() + 1));
+    //  if (distToLast <= distToNext)
+    //  {
+    //    Point tmp = *path.begin();
+    //    path.erase(path.begin());
+    //    path.push_back(tmp);
+    //    lastPoint = *path.rbegin();
+    //  }
+    //  else
+    //  {
+    //    break;
+    //  }
+    //}
 
     std::vector<double> distances;
     size_t path_size = path.size();
@@ -306,7 +316,7 @@ std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point>& point
     }
   }
 
-
+  */
   return path;
   
 }
