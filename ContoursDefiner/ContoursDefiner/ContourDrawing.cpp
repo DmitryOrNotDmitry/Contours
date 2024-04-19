@@ -55,7 +55,7 @@ void ContourDrawing::drawBorders(HDC& hDC, double scaleX, double scaleY)
 
   for (size_t i = 0; i < borders.size(); i++)
   {
-    const std::vector<Point>& points = borders[i].getOwner()->getPoints();
+    const std::vector<Point>& points = borders[i].getOwner().getPoints();
     int numPoints = (int) points.size();
 
     int from = borders[i].getFromIndex();
@@ -67,6 +67,29 @@ void ContourDrawing::drawBorders(HDC& hDC, double scaleX, double scaleY)
       if (j >= numPoints)
         j = 0;
 
+      LineTo(hDC, toFloatDraw(points[j].x, scaleX), toFloatDraw(points[j].y, scaleY));
+    }
+  }
+
+  DeleteObject(bordersPen);
+
+  SelectObject(hDC, oldPen);
+}
+
+void ContourDrawing::drawAverageBorders(HDC& hDC, double scaleX, double scaleY)
+{
+  HPEN bordersPen = CreatePen(PS_SOLID, 5, RGB(0, 0, 255));
+  HGDIOBJ oldPen = SelectObject(hDC, bordersPen);
+
+  int count_borders = dataManager.getAverageBorders().size();
+  for (size_t i = 0; i < count_borders; i++)
+  {
+    const std::vector<Point>& points = dataManager.getAverageBorders()[i];
+    int numPoints = (int)points.size();
+
+    MoveToEx(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY), NULL);
+    for (int j = 0; j < numPoints; j++)
+    {
       LineTo(hDC, toFloatDraw(points[j].x, scaleX), toFloatDraw(points[j].y, scaleY));
     }
   }
@@ -123,6 +146,8 @@ void ContourDrawing::OnFLoatDraw(HDC hDC, double scaleX, double scaleY)
   drawControlPoints(hDC, scaleX, scaleY);
   
   drawBorders(hDC, scaleX, scaleY);
+
+  drawAverageBorders(hDC, scaleX, scaleY);
  
   SelectObject(hDC, oldPen);
 }

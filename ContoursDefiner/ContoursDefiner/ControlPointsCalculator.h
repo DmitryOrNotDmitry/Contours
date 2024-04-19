@@ -1,6 +1,7 @@
 #pragma once
 #include "Contour.h"
 #include "Point.h"
+#include "LineBorder.h"
 
 class GeneralBorderCalculator
 {
@@ -10,7 +11,9 @@ class GeneralBorderCalculator
 
 public:
 
-  static std::pair<std::pair<int, int>, std::pair<int, int>> defineGeneralBorders(const Contour& first, const Contour& second);
+  static std::pair<LineBorder, LineBorder> defineNearBorders(Contour& first, Contour& second);
+
+  static std::vector<Point> averageTwoLine(LineBorder first, LineBorder second);
 
 };
 

@@ -23,6 +23,8 @@ class ContourDrawing : public CVDirectDrawing
   
   void drawBorders(HDC& hDC, double scaleX, double scaleY);
   
+  void drawAverageBorders(HDC& hDC, double scaleX, double scaleY);
+  
   void drawContoursWithState(HDC& hDC, double scaleX, double scaleY, ContourState state = VISIBLE);
 
 public:

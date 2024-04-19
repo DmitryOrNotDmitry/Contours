@@ -4,17 +4,22 @@
 class LineBorder
 {
 
-  std::vector<Contour>::iterator owner;
+  Contour& owner;
   int fromIndex;
   int toIndex;
 
 public:
 
-  LineBorder(std::vector<Contour>::iterator& owner, int fromIndex, int toIndex);
+  LineBorder(Contour& owner, int fromIndex, int toIndex);
 
-  std::vector<Contour>::iterator& getOwner();
+  LineBorder& operator=(const LineBorder& other);
+
+  Contour& getOwner();
   int getFromIndex();
   int getToIndex();
+
+  int getNextIdx(int curIndex, int step) const;
+  Point getPoint(int index);
 
 };
 

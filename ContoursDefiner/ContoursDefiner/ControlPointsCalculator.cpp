@@ -2,6 +2,21 @@
 #include <vector>
 
 
+struct ContourBorderAttrs {
+
+  ContourBorderAttrs(const Contour& contour, int index, int step)
+    : contour(contour)
+    , index(index)
+    , step(step)
+  {
+  }
+
+  const Contour& contour;
+  int index;
+  int step;
+};
+
+
 void provideValideCycleIndex(const Contour& contour, int& index)
 {
   int size = contour.size() - 1;
@@ -11,6 +26,18 @@ void provideValideCycleIndex(const Contour& contour, int& index)
   if (index > size - 1)
   {
     index %= size;
+  }
+}
+
+
+void calcBordersEnds(ContourBorderAttrs& contAttr1, ContourBorderAttrs& contAttr2, double maxDist)
+{
+  while (contAttr1.contour[contAttr1.index].DistanceTo(contAttr2.contour[contAttr2.index]) < maxDist)
+  {
+    contAttr1.index += contAttr1.step;
+    contAttr2.index += contAttr2.step;
+    provideValideCycleIndex(contAttr1.contour, contAttr1.index);
+    provideValideCycleIndex(contAttr2.contour, contAttr2.index);
   }
 }
 
@@ -139,15 +166,11 @@ bool GeneralBorderCalculator::haveContoursSameDirection(const Contour& first, co
 }
 
 
-std::pair<std::pair<int, int>, std::pair<int, int>> GeneralBorderCalculator::defineGeneralBorders(const Contour& first, const Contour& second)
+std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Contour& first, Contour& second)
 {
-  std::pair<std::pair<int, int>, std::pair<int, int>> result;
+  std::pair<LineBorder, LineBorder> result( LineBorder(first, 0, 0), LineBorder(second, 0, 0) );
   std::pair<int, int> firstBorder;
   std::pair<int, int> secondBorder;
-  firstBorder.first = first.size() - 10;
-  firstBorder.second = 10;
-  secondBorder.first = second.size() - 10;
-  secondBorder.second = 10;
 
 
   std::pair<int, int> controlPoints = GeneralBorderCalculator::calculateNearestPointsIdx(first, second);
@@ -157,41 +180,54 @@ std::pair<std::pair<int, int>, std::pair<int, int>> GeneralBorderCalculator::def
   if (haveContoursSameDirection(first, second, controlPoints))
     stepSecond = 1;
 
-  int firstIndex = controlPoints.first;
-  int secondIndex = controlPoints.second;
+  ContourBorderAttrs firstContAttrs(first, controlPoints.first, stepFirst);
+  ContourBorderAttrs secondContAttrs(second, controlPoints.second, stepSecond);
 
-  while (first[firstIndex].DistanceTo(second[secondIndex]) < 10)
-  {
-    firstIndex += stepFirst;
-    secondIndex += stepSecond;
-    provideValideCycleIndex(first, firstIndex);
-    provideValideCycleIndex(second, secondIndex);
-  }
+  calcBordersEnds(firstContAttrs, secondContAttrs, 7);
 
-  firstBorder.second = firstIndex;
-  secondBorder.first = secondIndex;
+  firstBorder.second = firstContAttrs.index;
+  secondBorder.first = secondContAttrs.index;
 
 
 
-  stepFirst = -stepFirst;
-  stepSecond = -stepSecond;
+  firstContAttrs.step = -stepFirst;
+  secondContAttrs.step = -stepSecond;
 
-  firstIndex = controlPoints.first;
-  secondIndex = controlPoints.second;
+  firstContAttrs.index = controlPoints.first;
+  secondContAttrs.index = controlPoints.second;
 
-  while (first[firstIndex].DistanceTo(second[secondIndex]) < 10)
-  {
-    firstIndex += stepFirst;
-    secondIndex += stepSecond;
-    provideValideCycleIndex(first, firstIndex);
-    provideValideCycleIndex(second, secondIndex);
-  }
+  calcBordersEnds(firstContAttrs, secondContAttrs, 7);
 
-  firstBorder.first = firstIndex;
-  secondBorder.second = secondIndex;
+  firstBorder.first = firstContAttrs.index;
+  secondBorder.second = secondContAttrs.index;
 
-
-  result.first = firstBorder;
-  result.second = secondBorder;
+  result.first = LineBorder(first, firstBorder.first, firstBorder.second);
+  result.second = LineBorder(second, secondBorder.first, secondBorder.second);
   return result;
 }
+
+std::vector<Point> GeneralBorderCalculator::averageTwoLine(LineBorder first, LineBorder second)
+{
+  std::vector<Point> result;
+  result.reserve(first.getOwner().size());
+
+  int step = 1;
+  int firstIndex = first.getFromIndex();
+  int secondIndex = second.getToIndex();
+
+  while (firstIndex != first.getToIndex())
+  {
+    Point& point1 = first.getPoint(firstIndex);
+    Point& point2 = second.getPoint(secondIndex);
+    
+    result.push_back(Point( (point1.x + point2.x) / 2, (point1.y + point2.y) / 2 ));
+
+    firstIndex = first.getNextIdx(firstIndex, step);
+    secondIndex = second.getNextIdx(secondIndex, -step);
+  }
+
+  return result;
+}
+
+
+

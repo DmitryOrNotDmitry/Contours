@@ -44,9 +44,11 @@ void DialogListContours::OnBnClickedCalcControlPoints()
   
   auto firstCont = conts.begin() + selectedRows[0];
   auto secondCont = conts.begin() + selectedRows[1];
-  std::pair<std::pair<int, int>, std::pair<int, int>> bordersIndexes = GeneralBorderCalculator::defineGeneralBorders(*firstCont, *secondCont);
-  dataManager.addBorder(LineBorder(firstCont, bordersIndexes.first.first, bordersIndexes.first.second));
-  dataManager.addBorder(LineBorder(secondCont, bordersIndexes.second.first, bordersIndexes.second.second));
+  std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont);
+  dataManager.addBorder(borders.first);
+  dataManager.addBorder(borders.second);
+
+  dataManager.addAverageBorder(std::move(GeneralBorderCalculator::averageTwoLine(borders.first, borders.second)));
   
   RecalcImageViews(hImage);
 }

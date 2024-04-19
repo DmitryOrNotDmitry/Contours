@@ -49,3 +49,14 @@ std::vector<LineBorder>& DataStorageManager::getBorders()
 {
   return borders;
 }
+
+
+void DataStorageManager::addAverageBorder(std::vector<Point>&& averageBorder)
+{
+  averageBorders.push_back(averageBorder);
+}
+
+std::vector<std::vector<Point>>& DataStorageManager::getAverageBorders()
+{
+  return averageBorders;
+}
