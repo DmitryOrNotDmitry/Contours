@@ -10,6 +10,8 @@
 #include "../ContoursDefiner/ImageDataManager.cpp"
 #include "../ContoursDefiner/TestImageData.h"
 #include "../ContoursDefiner/TestImageData.cpp"
+#include "../ContoursDefiner/BresenhamLine.h"
+#include "../ContoursDefiner/BresenhamLine.cpp"
 
 
 TEST(ConvertToPathTest, TestConvertToPath1) {
@@ -523,6 +525,99 @@ TEST(GetNextPointTest, VertToDown) {
   Point actual = cd.getNextPoint(basePoint, predPoint);
 
   Point expected(1, 2);
+
+  ASSERT_EQ(actual, expected);
+}
+
+
+TEST(Bresenham, HorizontalLine) {
+  Point pointFrom(0, 0);
+  Point pointTo(3, 0);
+
+  std::vector<Point> actual = BresenhamLine::build(pointFrom, pointTo);
+
+  std::vector<Point> expected = {
+    Point(0, 0),
+    Point(1, 0),
+    Point(2, 0),
+    Point(3, 0),
+  };
+
+  ASSERT_EQ(actual, expected);
+}
+
+
+TEST(Bresenham, VerticalLine) {
+  Point pointFrom(0, 0);
+  Point pointTo(0, 4);
+
+  std::vector<Point> actual = BresenhamLine::build(pointFrom, pointTo);
+
+  std::vector<Point> expected = {
+    Point(0, 0),
+    Point(0, 1),
+    Point(0, 2),
+    Point(0, 3),
+    Point(0, 4),
+  };
+
+  ASSERT_EQ(actual, expected);
+}
+
+
+TEST(Bresenham, DiagonalLineUseX) {
+  Point pointFrom(1, 0);
+  Point pointTo(6, 2);
+
+  std::vector<Point> actual = BresenhamLine::build(pointFrom, pointTo);
+
+  std::vector<Point> expected = {
+    Point(1, 0),
+    Point(2, 0),
+    Point(2, 1),
+    Point(3, 1),
+    Point(4, 1),
+    Point(5, 1),
+    Point(5, 2),
+    Point(6, 2),
+  };
+
+  ASSERT_EQ(actual, expected);
+}
+
+
+TEST(Bresenham, DiagonalLineUseY) {
+  Point pointFrom(1, 0);
+  Point pointTo(3, 5);
+
+  std::vector<Point> actual = BresenhamLine::build(pointFrom, pointTo);
+
+  std::vector<Point> expected = {
+    Point(1, 0),
+    Point(1, 1),
+    Point(2, 1),
+    Point(2, 2),
+    Point(2, 3),
+    Point(2, 4),
+    Point(3, 4),
+    Point(3, 5),
+  };
+
+  ASSERT_EQ(actual, expected);
+}
+
+TEST(Bresenham, NegativeDelta) {
+  Point pointFrom(3, 0);
+  Point pointTo(0, 0);
+
+  std::vector<Point> actual = BresenhamLine::build(pointFrom, pointTo);
+
+  std::vector<Point> expected = {
+    Point(3, 0),
+    Point(2, 0),
+    Point(1, 0),
+    Point(0, 0),
+  };
 
   ASSERT_EQ(actual, expected);
 }

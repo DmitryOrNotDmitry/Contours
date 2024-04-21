@@ -147,7 +147,7 @@ void ContourDrawing::OnFLoatDraw(HDC hDC, double scaleX, double scaleY)
   
   drawBorders(hDC, scaleX, scaleY);
 
-  drawAverageBorders(hDC, scaleX, scaleY);
+  //drawAverageBorders(hDC, scaleX, scaleY);
  
   SelectObject(hDC, oldPen);
 }

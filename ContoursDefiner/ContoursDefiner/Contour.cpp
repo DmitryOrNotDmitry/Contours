@@ -15,7 +15,18 @@ Contour::~Contour()
 
 void Contour::addPoint(Point point)
 {
+  if (points.size() > 0 && (*points.rbegin() == point))
+    return;
+  
   points.push_back(point);
+}
+
+void Contour::insertPoint(Point point, int index)
+{
+  if (index > 0 && (*(points.begin() + index - 1) == point))
+    return;
+
+  points.insert(points.begin() + index, point);
 }
 
 
@@ -216,14 +227,14 @@ void Contour::memoryLastAddedPoints(std::vector<Point>&& points)
   if (points.size() == 0)
     points.push_back(Point(-1, -1));
 
-  for (size_t i = 0; i < points.size(); i++)
+  for (size_t j = 0; j < points.size(); j++)
   {
     for (size_t i = K - 1; i > 0; i--)
     {
       lastKAddedPoints[i] = std::move(lastKAddedPoints[i - 1]);
     }
     if (K > 0)
-      lastKAddedPoints[0] = std::move(points[i]);
+      lastKAddedPoints[0] = std::move(points[j]);
   }
 }
 

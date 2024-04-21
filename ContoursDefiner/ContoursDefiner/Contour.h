@@ -21,6 +21,7 @@ public:
 
   void addPoint(int x, int y);
   void addPoint(Point point);
+  void insertPoint(Point point, int index);
   std::vector<Point> addPoints(std::vector<Point>& newPoints);
   std::vector<Point>& getPoints();
 

@@ -1,5 +1,8 @@
 #pragma once
 #include "Contour.h"
+#include "BresenhamLine.h"
+
+#include <vector>
 
 class LineBorder
 {
@@ -20,6 +23,12 @@ public:
 
   int getNextIdx(int curIndex, int step) const;
   Point getPoint(int index);
+
+  void replaceLine(const std::vector<Point>& averagePoints);
+
+private:
+
+  void deleteContourLine();
 
 };
 

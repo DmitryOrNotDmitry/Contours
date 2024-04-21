@@ -175,15 +175,17 @@ std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Con
 
   std::pair<int, int> controlPoints = GeneralBorderCalculator::calculateNearestPointsIdx(first, second);
   
+  const int limitDistance = 3;
+
   int stepFirst = 1;
   int stepSecond = -1;
-  if (haveContoursSameDirection(first, second, controlPoints))
-    stepSecond = 1;
-
+  //if (haveContoursSameDirection(first, second, controlPoints))
+  //  stepSecond = 1;
+  // TODO
   ContourBorderAttrs firstContAttrs(first, controlPoints.first, stepFirst);
   ContourBorderAttrs secondContAttrs(second, controlPoints.second, stepSecond);
 
-  calcBordersEnds(firstContAttrs, secondContAttrs, 7);
+  calcBordersEnds(firstContAttrs, secondContAttrs, limitDistance);
 
   firstBorder.second = firstContAttrs.index;
   secondBorder.first = secondContAttrs.index;
@@ -196,7 +198,7 @@ std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Con
   firstContAttrs.index = controlPoints.first;
   secondContAttrs.index = controlPoints.second;
 
-  calcBordersEnds(firstContAttrs, secondContAttrs, 7);
+  calcBordersEnds(firstContAttrs, secondContAttrs, limitDistance);
 
   firstBorder.first = firstContAttrs.index;
   secondBorder.second = secondContAttrs.index;
