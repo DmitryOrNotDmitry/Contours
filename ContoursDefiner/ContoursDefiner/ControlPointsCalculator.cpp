@@ -32,12 +32,34 @@ void provideValideCycleIndex(const Contour& contour, int& index)
 
 void calcBordersEnds(ContourBorderAttrs& contAttr1, ContourBorderAttrs& contAttr2, double maxDist)
 {
+
   while (contAttr1.contour[contAttr1.index].DistanceTo(contAttr2.contour[contAttr2.index]) < maxDist)
   {
-    contAttr1.index += contAttr1.step;
-    contAttr2.index += contAttr2.step;
-    provideValideCycleIndex(contAttr1.contour, contAttr1.index);
-    provideValideCycleIndex(contAttr2.contour, contAttr2.index);
+    int possibleIndex1 = contAttr1.index + contAttr1.step;
+    int possibleIndex2 = contAttr1.index + contAttr1.step * 2;
+    provideValideCycleIndex(contAttr1.contour, possibleIndex1);
+    provideValideCycleIndex(contAttr1.contour, possibleIndex2);
+
+    double dist1 = contAttr1.contour[possibleIndex1].DistanceTo(contAttr2.contour[contAttr2.index]);
+    double dist2 = contAttr1.contour[possibleIndex2].DistanceTo(contAttr2.contour[contAttr2.index]);
+
+    contAttr1.index = possibleIndex1;
+    if (dist1 > dist2)
+      contAttr1.index = possibleIndex2;
+
+
+
+    possibleIndex1 = contAttr2.index + contAttr2.step;
+    possibleIndex2 = contAttr2.index + contAttr2.step * 2;
+    provideValideCycleIndex(contAttr2.contour, possibleIndex1);
+    provideValideCycleIndex(contAttr2.contour, possibleIndex2);
+
+    dist1 = contAttr2.contour[possibleIndex1].DistanceTo(contAttr1.contour[contAttr1.index]);
+    dist2 = contAttr2.contour[possibleIndex2].DistanceTo(contAttr1.contour[contAttr1.index]);
+
+    contAttr2.index = possibleIndex1;
+    if (dist1 > dist2)
+      contAttr2.index = possibleIndex2;
   }
 }
 
@@ -175,7 +197,7 @@ std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Con
 
   std::pair<int, int> controlPoints = GeneralBorderCalculator::calculateNearestPointsIdx(first, second);
   
-  const int limitDistance = 3;
+  const int limitDistance = 6;
 
   int stepFirst = 1;
   int stepSecond = -1;
@@ -204,14 +226,23 @@ std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Con
   secondBorder.second = secondContAttrs.index;
 
   result.first = LineBorder(first, firstBorder.first, firstBorder.second);
+  //result.first.reduceEnds(limitDistance / 2);
+
   result.second = LineBorder(second, secondBorder.first, secondBorder.second);
+  //result.second.reduceEnds(limitDistance / 2);
+
+  LineBorder::reduceEndsWhileApproxTo(result.first, result.second);
+  
   return result;
 }
 
 std::vector<Point> GeneralBorderCalculator::averageTwoLine(LineBorder first, LineBorder second)
 {
   std::vector<Point> result;
-  result.reserve(first.getOwner().size());
+  result.reserve(first.size());
+
+  int tt = first.size();
+  int tt43 = second.size();
 
   int step = 1;
   int firstIndex = first.getFromIndex();

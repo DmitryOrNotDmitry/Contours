@@ -26,6 +26,12 @@ void Contour::insertPoint(Point point, int index)
   if (index > 0 && (*(points.begin() + index - 1) == point))
     return;
 
+  if (index < points.size() && (*(points.begin() + index) == point))
+    return;
+
+  if (index == points.size() && points.size() > 1 && (points[0] == point))
+    return;
+
   points.insert(points.begin() + index, point);
 }
 
@@ -247,6 +253,22 @@ void Contour::deleteYetAddedPoints(std::vector<Point>& deletedPoints)
     if (foundedPoint != deletedPoints.end())
       deletedPoints.erase(foundedPoint);
   }
+}
+
+bool Contour::haveRepeatPoints()
+{
+  bool haveRepeat = false;
+  for (size_t i = 1; i < size(); i++)
+  {
+    if (points[i] == points[i - 1])
+    {
+      haveRepeat = true;
+    }
+  }
+  if (points.size() > 1 && (*points.rbegin() == points[0]))
+    haveRepeat = true;
+
+  return haveRepeat;
 }
 
 

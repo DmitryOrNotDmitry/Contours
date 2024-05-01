@@ -44,6 +44,8 @@ public:
 
   void removeSamePointsAtEnds();
 
+  bool haveRepeatPoints();
+
 private:
 
   void memoryLastAddedPoints(std::vector<Point>&& points);

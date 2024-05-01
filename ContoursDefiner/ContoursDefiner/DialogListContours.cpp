@@ -44,15 +44,19 @@ void DialogListContours::OnBnClickedCalcControlPoints()
   
   auto firstCont = conts.begin() + selectedRows[0];
   auto secondCont = conts.begin() + selectedRows[1];
+
   std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont);
-  
+
   dataManager.addAverageBorder(std::move(GeneralBorderCalculator::averageTwoLine(borders.first, borders.second)));
-  
+
   std::vector<Point> avPoints = *dataManager.getAverageBorders().rbegin();
 
   borders.first.replaceLine(avPoints);
   borders.second.replaceLine(avPoints);
-  
+
+  firstCont->haveRepeatPoints();
+  secondCont->haveRepeatPoints();
+
   dataManager.addBorder(borders.first);
   dataManager.addBorder(borders.second);
 

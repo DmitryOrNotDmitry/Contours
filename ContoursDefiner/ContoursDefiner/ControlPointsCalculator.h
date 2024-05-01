@@ -15,5 +15,7 @@ public:
 
   static std::vector<Point> averageTwoLine(LineBorder first, LineBorder second);
 
+  
+
 };
 
