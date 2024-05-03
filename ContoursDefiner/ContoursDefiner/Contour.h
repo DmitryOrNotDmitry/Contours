@@ -22,20 +22,21 @@ public:
   void addPoint(int x, int y);
   void addPoint(Point point);
   void insertPoint(Point point, int index);
+
   std::vector<Point> addPoints(std::vector<Point>& newPoints);
   std::vector<Point>& getPoints();
-
-  Point getLastPoint();
 
   ContourState getState() const;
   void setState(ContourState state);
 
   size_t size() const;
   Point* getData();
+  
   bool operator==(const Contour& other) const;
   bool operator!=(const Contour& other) const;
+
   Point& operator [](int i);
-  Point operator [](int i) const;
+  const Point& operator [](int i) const;
 
   bool isEmpty() const;
 
@@ -46,14 +47,14 @@ public:
 
   bool haveRepeatPoints();
 
+  Point getPoint(int index) const;
+  int getNextIdx(int fromIndex, int step = 1) const;
+
 private:
 
   void memoryLastAddedPoints(std::vector<Point>&& points);
 
   void deleteYetAddedPoints(std::vector<Point>& deletedPoints);
-
-
-  int findRight(const Point& value, int start = 0, int count=20);
 
 };
 

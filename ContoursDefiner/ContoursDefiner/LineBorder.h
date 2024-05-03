@@ -24,11 +24,11 @@ public:
   int getNextIdx(int curIndex, int step) const;
   Point getPoint(int index) const;
 
-  void replaceLine(const std::vector<Point>& averagePoints);
+  void replaceBorderWith(const LineBorder& line);
 
   void reduceEnds(int countPoints);
 
-  int size();
+  int size() const;
 
   static void reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right);
 

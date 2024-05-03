@@ -73,81 +73,21 @@ std::pair<int, int> GeneralBorderCalculator::calculateNearestPointsIdx(const Con
   if (first.isEmpty() || second.isEmpty())
     return result;
   
-  const int FIRST_STEP = 10;
+  int firstIndex = 0;
+  int secondNearPointIdx = second.findNearestPointTo(first[firstIndex]);
 
-  int firstCurIndex = 0;
-  int secondCurIndex = 0;
-  
-  firstCurIndex = first.findNearestPointTo(second[secondCurIndex], FIRST_STEP);
-  secondCurIndex = second.findNearestPointTo(first[firstCurIndex], FIRST_STEP);
+  double dist = first[firstIndex].DistanceTo(second[secondNearPointIdx]);
 
-
-  int firstPrevIndex = firstCurIndex - 1;
-  int firstNextIndex = firstCurIndex + 1;
-  
-  int secondPrevIndex = secondCurIndex - 1;
-  int secondNextIndex = secondCurIndex + 1;
-
-  double currentDist = 0;
-  double nextDist = 0;
-  double prevDist = 0;
-
-  int step = 3;
-
-  size_t maxSize = first.size();
-  if (second.size() > maxSize)
-    maxSize = second.size();
-
-  const int max_iters = maxSize / step + 1;
-  int count = 0;
-  while (count < max_iters)
+  while (dist > 5)
   {
-    provideValideCycleIndex(first, firstPrevIndex);
-    provideValideCycleIndex(first, firstNextIndex);
-    provideValideCycleIndex(second, secondPrevIndex);
-    provideValideCycleIndex(second, secondNextIndex);
+    firstIndex += (int)floor(dist) % first.size();
+    secondNearPointIdx = second.findNearestPointTo(first[firstIndex]);
 
-
-    nextDist = first[firstCurIndex].DistanceTo(second[secondNextIndex]);
-    prevDist = first[firstCurIndex].DistanceTo(second[secondPrevIndex]);
-
-    if (nextDist < prevDist)
-      secondCurIndex = secondNextIndex;
-    else
-      secondCurIndex = secondPrevIndex;
-
-
-    nextDist = second[secondCurIndex].DistanceTo(first[firstNextIndex]);
-    prevDist = second[secondCurIndex].DistanceTo(first[firstPrevIndex]);
-
-    if (nextDist < prevDist)
-      firstCurIndex = firstNextIndex;
-    else
-      firstCurIndex = firstPrevIndex;
-
-
-    currentDist = first[firstCurIndex].DistanceTo(second[secondCurIndex]);
-    if (currentDist < 5)
-    {
-      break;
-    }
-
-
-    firstPrevIndex = firstCurIndex - step;
-    firstNextIndex = firstCurIndex + step;
-
-    secondPrevIndex = secondCurIndex - step;
-    secondNextIndex = secondCurIndex + step;
-
-   
-    count++;
+    dist = first[firstIndex].DistanceTo(second[secondNearPointIdx]);
   }
 
-  firstCurIndex = first.findNearestPointTo(second[secondCurIndex], firstCurIndex - 5, firstCurIndex + 5, 1);
-  secondCurIndex = second.findNearestPointTo(first[firstCurIndex], secondCurIndex - 5, secondCurIndex + 5, 1);
-
-  result.first = firstCurIndex;
-  result.second = secondCurIndex;
+  result.first = firstIndex;
+  result.second = secondNearPointIdx;
 
   return result;
 }

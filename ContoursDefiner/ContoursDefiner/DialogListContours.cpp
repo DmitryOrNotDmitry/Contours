@@ -47,22 +47,18 @@ void DialogListContours::OnBnClickedCalcControlPoints()
 
   std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont);
 
-  dataManager.addAverageBorder(std::move(GeneralBorderCalculator::averageTwoLine(borders.first, borders.second)));
+  //dataManager.addAverageBorder(std::move(GeneralBorderCalculator::averageTwoLine(borders.first, borders.second)));
 
-  std::vector<Point> avPoints = *dataManager.getAverageBorders().rbegin();
+  //std::vector<Point> avPoints = *dataManager.getAverageBorders().rbegin();
 
-  borders.first.replaceLine(avPoints);
-  borders.second.replaceLine(avPoints);
+  borders.second.replaceBorderWith(borders.first);
+  //borders.second.replaceLine(avPoints);
 
   firstCont->haveRepeatPoints();
   secondCont->haveRepeatPoints();
 
   dataManager.addBorder(borders.first);
   dataManager.addBorder(borders.second);
-
-  //auto line1 = BresenhamLine::build(avPoints[0], borders.first.getPoint(borders.first.getFromIndex()));
-  //auto line2 = BresenhamLine::build(*avPoints.rbegin(), borders.first.getPoint(borders.first.getToIndex()));
-  //dataManager.addAverageBorder(std::move(BresenhamLine::build(avPoints[0], borders.second.getPoint(borders.second.getToIndex()))));
 
 
   RecalcImageViews(hImage);

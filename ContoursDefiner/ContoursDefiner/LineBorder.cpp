@@ -34,75 +34,58 @@ int LineBorder::getToIndex()
 
 int LineBorder::getNextIdx(int curIndex, int step) const
 {
-  int size = owner.size();
-  curIndex += step;
-
-  if (curIndex < 0)
-    curIndex += size;
-
-  if (curIndex > size - 1)
-  {
-    curIndex %= size;
-  }
-
-  return curIndex;
+  return owner.getNextIdx(curIndex, step);
 }
 
 Point LineBorder::getPoint(int index) const
 {
-  std::vector<Point>& points = owner.getPoints();
-  if (index < 0)
-    index = points.size() + index;
-
-  if (index < 0 || index > points.size())
-    return Point(-1, -1);
-
-  return points[index];
+  return owner.getPoint(index);
 }
 
-
-void LineBorder::replaceLine(const std::vector<Point>& averagePoints)
+void LineBorder::replaceBorderWith(const LineBorder& line)
 {
-  if (averagePoints.size() == 0)
-    return;
-
   Point contourPoint = getPoint(fromIndex);
 
-  Point averagePoint = *averagePoints.begin();
+  Point initPoint = line.getPoint(line.fromIndex);
   bool useBeginPoint = true;
-  if (contourPoint.DistanceTo(averagePoint) > contourPoint.DistanceTo(*averagePoints.rbegin()))
+  if (contourPoint.DistanceTo(initPoint) > contourPoint.DistanceTo(line.getPoint(line.toIndex)))
   {
-    averagePoint = *averagePoints.rbegin();
+    initPoint = line.getPoint(line.toIndex);
     useBeginPoint = false;
   }
-
-  std::vector<Point> connectLine = BresenhamLine::build(contourPoint, averagePoint);
 
   deleteContourLine();
 
   int countAddedPoints = 0;
   int prevSize = owner.size();
-  for (size_t i = 0; i < connectLine.size(); i++)
+
+  if (contourPoint != initPoint)
   {
-    owner.insertPoint(connectLine[i], fromIndex + 1 + countAddedPoints);
-    countAddedPoints += owner.size() - prevSize;
-    prevSize = owner.size();
+    std::vector<Point> connectLine = BresenhamLine::build(contourPoint, initPoint);
+
+    for (size_t i = 0; i < connectLine.size(); i++)
+    {
+      owner.insertPoint(connectLine[i], fromIndex + 1 + countAddedPoints);
+      countAddedPoints += owner.size() - prevSize;
+      prevSize = owner.size();
+    }
   }
+  
 
   if (useBeginPoint)
   {
-    for (size_t i = 0; i < averagePoints.size(); i++)
+    for (size_t i = line.fromIndex; i != line.toIndex; i = line.getNextIdx(i, 1))
     {
-      owner.insertPoint(averagePoints[i], fromIndex + 1 + countAddedPoints);
+      owner.insertPoint(line.getPoint(i), fromIndex + 1 + countAddedPoints);
       countAddedPoints += owner.size() - prevSize;
       prevSize = owner.size();
     }
   }
   else
   {
-    for (size_t i = 0; i < averagePoints.size(); i++)
+    for (size_t i = line.toIndex; i != line.fromIndex; i = line.getNextIdx(i, -1))
     {
-      owner.insertPoint(averagePoints[averagePoints.size() - i - 1], fromIndex + 1 + countAddedPoints);
+      owner.insertPoint(line.getPoint(i), fromIndex + 1 + countAddedPoints);
       countAddedPoints += owner.size() - prevSize;
       prevSize = owner.size();
     }
@@ -113,22 +96,24 @@ void LineBorder::replaceLine(const std::vector<Point>& averagePoints)
   else
     contourPoint = getPoint(toIndex);
 
-  averagePoint = *averagePoints.rbegin();
+  initPoint = line.getPoint(line.toIndex);
   if (!useBeginPoint)
-    averagePoint = *averagePoints.begin();
+    initPoint = line.getPoint(line.fromIndex);
 
-  connectLine = BresenhamLine::build(averagePoint, contourPoint);
-
-  for (size_t i = 0; i < connectLine.size(); i++)
+  if (contourPoint != initPoint)
   {
-    owner.insertPoint(connectLine[i], fromIndex + 1 + countAddedPoints);
-    countAddedPoints += owner.size() - prevSize;
-    prevSize = owner.size();
+    std::vector<Point> connectLine = BresenhamLine::build(initPoint, contourPoint);
+
+    for (size_t i = 0; i < connectLine.size(); i++)
+    {
+      owner.insertPoint(connectLine[i], fromIndex + 1 + countAddedPoints);
+      countAddedPoints += owner.size() - prevSize;
+      prevSize = owner.size();
+    }
   }
 
   if (fromIndex <= toIndex)
     toIndex += countAddedPoints;
-
 }
 
 void LineBorder::reduceEnds(int countPoints)
@@ -140,7 +125,7 @@ void LineBorder::reduceEnds(int countPoints)
   }
 }
 
-int LineBorder::size()
+int LineBorder::size() const
 {
   if (fromIndex < toIndex)
   {

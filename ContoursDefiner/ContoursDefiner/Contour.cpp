@@ -90,11 +90,6 @@ std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
 
   points.insert(points.cend(), fitPoints.begin(), fitPoints.end());
 
-  /*if (points.size() > 1)
-    while (*points.begin() == *points.rbegin())
-      points.erase(--points.end());*/
-
-  
   std::vector<Point> qwe(fitPoints);
 
   memoryLastAddedPoints(std::move(qwe));
@@ -102,20 +97,18 @@ std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
   return fitPoints;
 }
 
+
 std::vector<Point>& Contour::getPoints()
 {
   return points;
 }
 
-Point Contour::getLastPoint()
-{
-  return *points.rbegin();
-}
 
 ContourState Contour::getState() const
 {
   return state;
 }
+
 
 void Contour::setState(ContourState state)
 {
@@ -149,7 +142,7 @@ Point& Contour::operator[](int i)
   return points[i];
 }
 
-Point Contour::operator[](int i) const
+const Point& Contour::operator[](int i) const
 {
   return points[i];
 }
@@ -161,21 +154,21 @@ bool Contour::isEmpty() const
 
 int Contour::findNearestPointTo(const Point& destination, int from, int to, int step) const
 {
-  double minDist = 1e20;
+  double minDist = 10e100;
   int minItemIndex = 0;
 
-  int realindex;
+  int realIndex;
   for (int i = from; i < to; i += step)
   {
     if (i >= (int)size() || i < 0)
-      realindex = i + size();
-    realindex = i % size();
+      realIndex = i + size();
+    realIndex = i % size();
 
-    double curDist = points[realindex].DistanceTo(destination);
+    double curDist = points[realIndex].DistanceTo(destination);
     if (curDist < minDist)
     {
       minDist = curDist;
-      minItemIndex = realindex;
+      minItemIndex = realIndex;
     }
   }
 
@@ -271,23 +264,23 @@ bool Contour::haveRepeatPoints()
   return haveRepeat;
 }
 
-
-int Contour::findRight(const Point& value, int start, int count)
+Point Contour::getPoint(int index) const
 {
-  int result = -1;
+  return points[index];
+}
 
-  count += start;
-  if (points.size() < count)
-    count = points.size();
+int Contour::getNextIdx(int fromIndex, int step) const
+{
+  int size = this->size();
+  int nextIndex = fromIndex + step;
 
-  for (int i = start; i < count; i++)
+  if (nextIndex < 0)
+    nextIndex += size;
+
+  if (nextIndex > size - 1)
   {
-    if (value == points[points.size() - i])
-    {
-      result = points.size() - i;
-      break;
-    }
+    nextIndex %= size;
   }
 
-  return result;
+  return nextIndex;
 }
