@@ -164,7 +164,6 @@ void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right)
   double leftToRightFrom = leftPointTo.DistanceTo(right.getPoint(right.fromIndex));
 
 
-
   int* idxLeft = &left.fromIndex;
   int stepLeft = 1;
 

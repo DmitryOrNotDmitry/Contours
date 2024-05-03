@@ -16,29 +16,12 @@ struct ContourBorderAttrs {
   int step;
 };
 
-
-void provideValideCycleIndex(const Contour& contour, int& index)
-{
-  int size = contour.size() - 1;
-  if (index < 0)
-    index += size;
-
-  if (index > size - 1)
-  {
-    index %= size;
-  }
-}
-
-
 void calcBordersEnds(ContourBorderAttrs& contAttr1, ContourBorderAttrs& contAttr2, double maxDist)
 {
-
   while (contAttr1.contour[contAttr1.index].DistanceTo(contAttr2.contour[contAttr2.index]) < maxDist)
   {
-    int possibleIndex1 = contAttr1.index + contAttr1.step;
-    int possibleIndex2 = contAttr1.index + contAttr1.step * 2;
-    provideValideCycleIndex(contAttr1.contour, possibleIndex1);
-    provideValideCycleIndex(contAttr1.contour, possibleIndex2);
+    int possibleIndex1 = contAttr1.contour.getNextIdx(contAttr1.index, contAttr1.step);
+    int possibleIndex2 = contAttr1.contour.getNextIdx(contAttr1.index, contAttr1.step * 2);
 
     double dist1 = contAttr1.contour[possibleIndex1].DistanceTo(contAttr2.contour[contAttr2.index]);
     double dist2 = contAttr1.contour[possibleIndex2].DistanceTo(contAttr2.contour[contAttr2.index]);
@@ -48,11 +31,8 @@ void calcBordersEnds(ContourBorderAttrs& contAttr1, ContourBorderAttrs& contAttr
       contAttr1.index = possibleIndex2;
 
 
-
-    possibleIndex1 = contAttr2.index + contAttr2.step;
-    possibleIndex2 = contAttr2.index + contAttr2.step * 2;
-    provideValideCycleIndex(contAttr2.contour, possibleIndex1);
-    provideValideCycleIndex(contAttr2.contour, possibleIndex2);
+    possibleIndex1 = contAttr2.contour.getNextIdx(contAttr2.index, contAttr2.step);
+    possibleIndex2 = contAttr2.contour.getNextIdx(contAttr2.index, contAttr2.step * 2);
 
     dist1 = contAttr2.contour[possibleIndex1].DistanceTo(contAttr1.contour[contAttr1.index]);
     dist2 = contAttr2.contour[possibleIndex2].DistanceTo(contAttr1.contour[contAttr1.index]);
@@ -104,14 +84,11 @@ double calcDistDeltaByIterations(const Contour& first, const Contour& second, co
   double delta = 0;
   for (int i = 0; i < countCheckedPoints; i++)
   {
-    firstIndex += step;
+    firstIndex = first.getNextIdx(firstIndex, step);
     if (isDiffSteps)
-      secondIndex -= step;
+      secondIndex = second.getNextIdx(secondIndex, -step);
     else
-      secondIndex += step;
-
-    provideValideCycleIndex(first, firstIndex);
-    provideValideCycleIndex(second, secondIndex);
+      secondIndex = second.getNextIdx(secondIndex, step);
 
     delta += first[firstIndex].DistanceTo(second[secondIndex]);
   }
@@ -180,9 +157,6 @@ std::vector<Point> GeneralBorderCalculator::averageTwoLine(LineBorder first, Lin
 {
   std::vector<Point> result;
   result.reserve(first.size());
-
-  int tt = first.size();
-  int tt43 = second.size();
 
   int step = 1;
   int firstIndex = first.getFromIndex();

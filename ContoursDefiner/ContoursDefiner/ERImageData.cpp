@@ -45,7 +45,7 @@ ERImageData::~ERImageData()
 {
   if (kolLines > 0)
   {
-    for (DWORD i = 0; i < kolPix; i++)
+    for (DWORD i = 0; i < kolLines; i++)
     {
       if (imageLines[i])
         delete[] imageLines[i];

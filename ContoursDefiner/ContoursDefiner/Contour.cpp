@@ -38,7 +38,7 @@ void Contour::insertPoint(Point point, int index)
 
 void Contour::addPoint(int x, int y)
 {
-  points.push_back(Point(x, y));
+  addPoint(Point(x, y));
 }
 
 
@@ -157,19 +157,19 @@ int Contour::findNearestPointTo(const Point& destination, int from, int to, int 
   double minDist = 10e100;
   int minItemIndex = 0;
 
-  int realIndex;
+  int realIndex = from;
+  if (from > to)
+    to += size();
+
   for (int i = from; i < to; i += step)
   {
-    if (i >= (int)size() || i < 0)
-      realIndex = i + size();
-    realIndex = i % size();
-
     double curDist = points[realIndex].DistanceTo(destination);
     if (curDist < minDist)
     {
       minDist = curDist;
       minItemIndex = realIndex;
     }
+    realIndex = getNextIdx(realIndex, step);
   }
 
   return minItemIndex;
@@ -214,7 +214,6 @@ void Contour::removeSamePointsAtEnds()
 
   if (isEqualsPointChain)
   {
-    int size = points.size();
     points.erase(points.end() - (sameIdx + 1), points.end());
   }
 
