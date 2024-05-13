@@ -127,7 +127,7 @@ void LineBorder::reduceEnds(int countPoints)
 
 int LineBorder::size() const
 {
-  if (fromIndex < toIndex)
+  if (fromIndex <= toIndex)
   {
     return toIndex - fromIndex + 1;
   }
@@ -147,7 +147,7 @@ void LineBorder::deleteContourLine()
     fromIndex = points.size() - 1;
     toIndex = 0;
   }
-  else 
+  else if (fromIndex != toIndex)
   {
     points.erase(points.begin() + fromIndex + 1, points.begin() + toIndex);
     toIndex -= (toIndex - fromIndex - 1);
@@ -157,6 +157,9 @@ void LineBorder::deleteContourLine()
 
 void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, int maxDeleted)
 {
+  if (left.size() < maxDeleted || right.size() < maxDeleted)
+    return;
+
   Point leftPointFrom = left.getPoint(left.fromIndex);
   double leftFromRightFrom = leftPointFrom.DistanceTo(right.getPoint(right.fromIndex));
 
@@ -190,11 +193,12 @@ void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, in
 
     for (int i = 1; i < maxDeleted; i++)
     {
-      double curDist = right.owner.distanceTo(left.getPoint(left.getNextIdx(startIndex, i * stepLeft)));
+      int nextIdx = left.getNextIdx(startIndex, i * stepLeft);
+      double curDist = right.owner.distanceTo(left.getPoint(nextIdx));
       if (curDist < minDist)
       {
         minDist = curDist;
-        *idxLeft = startIndex + i * stepLeft;
+        *idxLeft = nextIdx;
       }
     }
     
@@ -203,11 +207,12 @@ void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, in
 
     for (int i = 1; i < maxDeleted; i++)
     {
-      double curDist = left.owner.distanceTo(right.getPoint(right.getNextIdx(startIndex, i * stepRight)));
+      int nextIdx = right.getNextIdx(startIndex, i * stepRight);
+      double curDist = left.owner.distanceTo(right.getPoint(nextIdx));
       if (curDist < minDist)
       {
         minDist = curDist;
-        *idxRight = startIndex + i * stepRight;
+        *idxRight = nextIdx;
       }
     }
   

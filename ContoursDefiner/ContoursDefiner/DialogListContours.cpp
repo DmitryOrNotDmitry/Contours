@@ -47,19 +47,20 @@ void DialogListContours::OnBnClickedCalcControlPoints()
 
   std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont);
 
-  //dataManager.addAverageBorder(std::move(GeneralBorderCalculator::averageTwoLine(borders.first, borders.second)));
+  if (borders.first.size() > 5)
+  {
+    borders.second.replaceBorderWith(borders.first);
 
-  //std::vector<Point> avPoints = *dataManager.getAverageBorders().rbegin();
+    firstCont->haveRepeatPoints();
+    secondCont->haveRepeatPoints();
 
-  borders.second.replaceBorderWith(borders.first);
-  //borders.second.replaceLine(avPoints);
-
-  firstCont->haveRepeatPoints();
-  secondCont->haveRepeatPoints();
-
-  dataManager.addBorder(borders.first);
-  dataManager.addBorder(borders.second);
-
+    dataManager.addBorder(borders.first);
+    dataManager.addBorder(borders.second);
+  }
+  else
+  {
+    MessageBox("Слишком маленькая общая граница между контурами. Объединение отменено!", "Построение контуров");
+  }
 
   RecalcImageViews(hImage);
 }

@@ -57,17 +57,28 @@ std::pair<int, int> GeneralBorderCalculator::calculateNearestPointsIdx(const Con
   int secondNearPointIdx = second.findNearestPointTo(first[firstIndex]);
 
   double dist = first[firstIndex].DistanceTo(second[secondNearPointIdx]);
-
-  while (dist > 5)
-  {
-    firstIndex += (int)floor(dist) % first.size();
-    secondNearPointIdx = second.findNearestPointTo(first[firstIndex]);
-
-    dist = first[firstIndex].DistanceTo(second[secondNearPointIdx]);
-  }
+  double minDist = dist;
 
   result.first = firstIndex;
   result.second = secondNearPointIdx;
+
+  int countPassedPoints = 0;
+  while (dist > 5 && countPassedPoints < first.size())
+  {
+    int step = static_cast<int>(floor(dist));
+    firstIndex = first.getNextIdx(firstIndex, step);
+    secondNearPointIdx = second.findNearestPointTo(first[firstIndex]);
+
+    dist = first[firstIndex].DistanceTo(second[secondNearPointIdx]);
+    if (dist < minDist)
+    {
+      minDist = dist;
+      result.first = firstIndex;
+      result.second = secondNearPointIdx;
+    }
+
+    countPassedPoints += step;
+  }
 
   return result;
 }
@@ -113,7 +124,7 @@ std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Con
 
 
   std::pair<int, int> controlPoints = GeneralBorderCalculator::calculateNearestPointsIdx(first, second);
-  
+
   const int limitDistance = 6;
 
   int stepFirst = 1;
