@@ -152,16 +152,14 @@ bool Contour::isEmpty() const
   return points.empty();
 }
 
-int Contour::findNearestPointTo(const Point& destination, int from, int to, int step) const
+int Contour::findNearestPointTo(const Point& destination, int from, int count, int step) const
 {
   double minDist = 10e100;
   int minItemIndex = 0;
 
   int realIndex = from;
-  if (from > to)
-    to += size();
 
-  for (int i = from; i < to; i += step)
+  for (int i = 0; i < count; i++)
   {
     double curDist = points[realIndex].DistanceTo(destination);
     if (curDist < minDist)
@@ -282,4 +280,11 @@ int Contour::getNextIdx(int fromIndex, int step) const
   }
 
   return nextIndex;
+}
+
+
+double Contour::distanceTo(const Point& destination) const
+{
+  int nearestPointIdx = findNearestPointTo(destination);
+  return destination.DistanceTo(getPoint(nearestPointIdx));
 }

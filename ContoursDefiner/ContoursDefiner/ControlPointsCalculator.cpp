@@ -148,7 +148,7 @@ std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Con
   result.second = LineBorder(second, secondBorder.first, secondBorder.second);
   //result.second.reduceEnds(limitDistance / 2);
 
-  LineBorder::reduceEndsWhileApproxTo(result.first, result.second);
+  LineBorder::reduceEndsWhileApproxTo(result.first, result.second, 10);
   
   return result;
 }

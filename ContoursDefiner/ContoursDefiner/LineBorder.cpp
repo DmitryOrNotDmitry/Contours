@@ -155,7 +155,7 @@ void LineBorder::deleteContourLine()
 }
 
 
-void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right)
+void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, int maxDeleted)
 {
   Point leftPointFrom = left.getPoint(left.fromIndex);
   double leftFromRightFrom = leftPointFrom.DistanceTo(right.getPoint(right.fromIndex));
@@ -179,35 +179,37 @@ void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right)
 
   for (int _ = 0; _ < 2; _++)
   {
-    int newLeftIdx = left.getNextIdx(*idxLeft, stepLeft);
-    int newRightIdx = right.getNextIdx(*idxRight, stepRight);
-  
-    double oldLeftDist = left.getPoint(*idxLeft).DistanceTo(right.getPoint(*idxRight));
-    double newLeftDist = left.getPoint(newLeftIdx).DistanceTo(right.getPoint(*idxRight));
+    if (maxDeleted > left.size())
+      maxDeleted = left.size();
 
-    double oldRightDist = right.getPoint(*idxRight).DistanceTo(left.getPoint(*idxLeft));
-    double newRightDist = right.getPoint(newRightIdx).DistanceTo(left.getPoint(*idxLeft));
+    if (maxDeleted > right.size())
+      maxDeleted = right.size();
 
-    while ((newLeftDist < oldLeftDist) || (newRightDist < oldRightDist))
+    int startIndex = *idxLeft;
+    int minDist = right.owner.distanceTo(left.getPoint(startIndex));
+
+    for (int i = 1; i < maxDeleted; i++)
     {
-      if (newLeftDist < oldLeftDist)
+      double curDist = right.owner.distanceTo(left.getPoint(left.getNextIdx(startIndex, i * stepLeft)));
+      if (curDist < minDist)
       {
-        *idxLeft = newLeftIdx;
-        newLeftIdx = left.getNextIdx(*idxLeft, stepLeft);
-        oldLeftDist = left.getPoint(*idxLeft).DistanceTo(right.getPoint(*idxRight));
-        newLeftDist = left.getPoint(newLeftIdx).DistanceTo(right.getPoint(*idxRight));
-      }
-
-      if (newRightDist < oldRightDist)
-      {
-        *idxRight = newRightIdx;
-        newRightIdx = left.getNextIdx(*idxRight, stepRight);
-        oldRightDist = right.getPoint(*idxRight).DistanceTo(left.getPoint(*idxLeft));
-        newRightDist = right.getPoint(newRightIdx).DistanceTo(left.getPoint(*idxLeft));
+        minDist = curDist;
+        *idxLeft = startIndex + i * stepLeft;
       }
     }
+    
+    startIndex = *idxRight;
+    minDist = left.owner.distanceTo(right.getPoint(startIndex));
 
-  
+    for (int i = 1; i < maxDeleted; i++)
+    {
+      double curDist = left.owner.distanceTo(right.getPoint(right.getNextIdx(startIndex, i * stepRight)));
+      if (curDist < minDist)
+      {
+        minDist = curDist;
+        *idxRight = startIndex + i * stepRight;
+      }
+    }
   
     idxLeft = &left.toIndex;
     idxRight = &right.toIndex;

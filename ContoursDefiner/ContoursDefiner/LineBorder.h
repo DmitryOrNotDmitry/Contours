@@ -30,7 +30,7 @@ public:
 
   int size() const;
 
-  static void reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right);
+  static void reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, int maxDeleted);
 
 private:
 
