@@ -7,6 +7,7 @@
 #include "ControlPointsCalculator.h"
 #include "DataStorageManager.h"
 #include "BresenhamLine.h"
+#include "GPCAdapter.h"
 
 class DialogListContours : public CDialog
 {
@@ -36,6 +37,7 @@ public:
   afx_msg void OnBnClickedOk();
   afx_msg void OnBnClickedCancel();
   afx_msg void OnBnClickedCalcControlPoints();
+  afx_msg void OnBnClickedSearhHoles();
   void OnLvnItemchangedChanlist(NMHDR* pNMHDR, LRESULT* pResult);
 
   CListCtrl contoursTable;

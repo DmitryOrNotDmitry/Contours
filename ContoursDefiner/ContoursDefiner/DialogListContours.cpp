@@ -6,6 +6,7 @@ BEGIN_MESSAGE_MAP(DialogListContours, CDialog)
   ON_BN_CLICKED(IDOK, &DialogListContours::OnBnClickedOk)
   ON_BN_CLICKED(IDCANCEL, &DialogListContours::OnBnClickedCancel)
   ON_BN_CLICKED(IDC_BUTTONcalc_control_points, &DialogListContours::OnBnClickedCalcControlPoints)
+  ON_BN_CLICKED(IDC_BUTTONsearch_holes, &DialogListContours::OnBnClickedSearhHoles)
   ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTcontours_table, &DialogListContours::OnLvnItemchangedChanlist)
 END_MESSAGE_MAP()
 
@@ -60,6 +61,23 @@ void DialogListContours::OnBnClickedCalcControlPoints()
   else
   {
     MessageBox("Слишком маленькая общая граница между контурами. Объединение отменено!", "Построение контуров");
+  }
+
+  RecalcImageViews(hImage);
+}
+
+void DialogListContours::OnBnClickedSearhHoles()
+{
+  if (dataManager.getContours().size() == 0)
+  {
+    MessageBox("Необходимо создать хотя бы 1 контур!", "Построение контуров");
+    return;
+  }
+
+  std::vector<Contour> holes = GPCAdapter::searchHoles(dataManager.getContours());
+  for (size_t i = 0; i < holes.size(); i++)
+  {
+    dataManager.addHole(std::move(holes[i]));
   }
 
   RecalcImageViews(hImage);

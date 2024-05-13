@@ -14,6 +14,8 @@ class DataStorageManager
   std::vector<LineBorder> borders;
   std::vector<std::vector<Point>> averageBorders;
 
+  std::vector<Contour> holes;
+
   DataStorageManager();
   static DataStorageManager instance;
 
@@ -45,5 +47,11 @@ public:
   void addAverageBorder(std::vector<Point>&& averageBorder);
 
   std::vector<std::vector<Point>>& getAverageBorders();
+
+
+
+  void addHole(Contour&& holes);
+
+  std::vector<Contour>& getHoles();
 };
 

@@ -125,6 +125,30 @@ void ContourDrawing::drawContoursWithState(HDC& hDC, double scaleX, double scale
   }
 }
 
+void ContourDrawing::drawHoles(HDC& hDC, double scaleX, double scaleY)
+{
+  HPEN holePen = CreatePen(PS_SOLID, 5, RGB(0, 0, 255));
+  HGDIOBJ oldPen = SelectObject(hDC, holePen);
+
+  int count_holes = dataManager.getHoles().size();
+  for (size_t i = 0; i < count_holes; i++)
+  {
+    const std::vector<Point>& points = dataManager.getHoles()[i].getPoints();
+    int numPoints = (int)points.size();
+
+    MoveToEx(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY), NULL);
+    for (int j = 0; j < numPoints; j++)
+    {
+      LineTo(hDC, toFloatDraw(points[j].x, scaleX), toFloatDraw(points[j].y, scaleY));
+    }
+    LineTo(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY));
+  }
+
+  DeleteObject(holePen);
+
+  SelectObject(hDC, oldPen);
+}
+
 
 void ContourDrawing::OnFLoatDraw(HDC hDC, double scaleX, double scaleY)
 {
@@ -148,6 +172,8 @@ void ContourDrawing::OnFLoatDraw(HDC hDC, double scaleX, double scaleY)
   drawControlPoints(hDC, scaleX, scaleY);
   
   drawBorders(hDC, scaleX, scaleY);
+  
+  drawHoles(hDC, scaleX, scaleY);
 
   //drawAverageBorders(hDC, scaleX, scaleY);
  

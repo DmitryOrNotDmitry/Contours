@@ -60,3 +60,13 @@ std::vector<std::vector<Point>>& DataStorageManager::getAverageBorders()
 {
   return averageBorders;
 }
+
+void DataStorageManager::addHole(Contour&& hole)
+{
+  holes.push_back(hole);
+}
+
+std::vector<Contour>& DataStorageManager::getHoles()
+{
+  return holes;
+}
