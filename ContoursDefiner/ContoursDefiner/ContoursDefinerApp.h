@@ -9,7 +9,7 @@
 
 #include "resource.h"		// основные символы
 #include "ERInterface.h"
-#include "ContourDrawing.h"
+#include "ObjectsDrawing.h"
 #include "Contour.h"
 #include "ContourDefiner.h"
 #include "ImageDataManager.h"
@@ -27,7 +27,7 @@ public:
 	virtual BOOL InitApplication();
   virtual BOOL InitInstance();
 
-  ContourDrawing* contoursDrawer;
+  ObjectsDrawing* contoursDrawer;
   Contour contour;
   HIMAGE hImage;
   ImageDataManager* imageManager;

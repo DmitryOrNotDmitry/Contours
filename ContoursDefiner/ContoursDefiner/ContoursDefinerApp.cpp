@@ -110,7 +110,7 @@ void CContoursDefinerApp::__main__()
 
   CWnd* pMainWnd = CWnd::FromHandle(NS_MAIN_WND);
   pCC->dlg = new DialogListContours();
-  contoursDrawer = new ContourDrawing(hImage, *pCC->dlg);
+  contoursDrawer = new ObjectsDrawing(hImage, *pCC->dlg);
 
   if (pCC->dlg->Create(IDD_DIALOG_first_point_setting, pMainWnd))
   {
