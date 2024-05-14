@@ -41,10 +41,10 @@ void DialogListContours::OnBnClickedCalcControlPoints()
     return;
   }
  
-  std::vector<Contour>& conts = dataManager.getContours();
+  std::list<Contour>& conts = dataManager.getContours();
   
-  auto firstCont = conts.begin() + selectedRows[0];
-  auto secondCont = conts.begin() + selectedRows[1];
+  auto firstCont = std::next(conts.begin(), selectedRows[0]);
+  auto secondCont = std::next(conts.begin(), selectedRows[1]);
 
   std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont);
 
@@ -131,23 +131,27 @@ void DialogListContours::addRow(int rowNum, CString name)
 
 void DialogListContours::setContoursStates() const
 {
-  std::vector<Contour>& contours = dataManager.getContours();
+  std::list<Contour>& contours = dataManager.getContours();
+  auto contoursIter = contours.begin();
 
   for (int i = 0; i < (int)contours.size(); i++)
   {
     if (!contoursTable.GetCheck(i))
     {
-      contours[i].setState(HIDDEN);
-      continue;
+      contoursIter->setState(HIDDEN);
     }
 
-    if (isRowSelected(i))
+    else if (isRowSelected(i))
     {
-      contours[i].setState(SELECTED);
-      continue;
+      contoursIter->setState(SELECTED);
     }
     
-    contours[i].setState(VISIBLE);
+    else 
+    {
+      contoursIter->setState(VISIBLE);
+    }
+
+    ++contoursIter;
   }
 }
 

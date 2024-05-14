@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <map>
+#include <list>
 
 #include "Contour.h"
 #include "ContourState.h"
@@ -9,10 +9,9 @@
 class DataStorageManager
 {
 
-  std::vector<Contour> contours;
-  std::vector<Point> controlPoints;
+  std::list<Contour> contours;
+
   std::vector<LineBorder> borders;
-  std::vector<std::vector<Point>> averageBorders;
 
   std::vector<Contour> holes;
 
@@ -28,26 +27,12 @@ public:
 
   int getCountContours();
 
-  std::vector<Contour>& getContours();
-
-
-
-  void addControlPoint(const Point& point);
-
-  std::vector<Point>& getControlPoints();
-
+  std::list<Contour>& getContours();
 
 
   void addBorder(const LineBorder& border);
 
   std::vector<LineBorder>& getBorders();
-
-
-
-  void addAverageBorder(std::vector<Point>&& averageBorder);
-
-  std::vector<std::vector<Point>>& getAverageBorders();
-
 
 
   void addHole(Contour&& holes);

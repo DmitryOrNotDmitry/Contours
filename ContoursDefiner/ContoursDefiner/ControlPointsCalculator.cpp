@@ -62,7 +62,7 @@ std::pair<int, int> GeneralBorderCalculator::calculateNearestPointsIdx(const Con
   result.first = firstIndex;
   result.second = secondNearPointIdx;
 
-  int countPassedPoints = 0;
+  size_t countPassedPoints = 0;
   while (dist > 5 && countPassedPoints < first.size())
   {
     int step = static_cast<int>(floor(dist));

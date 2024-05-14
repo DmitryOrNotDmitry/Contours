@@ -245,7 +245,7 @@ void Contour::deleteYetAddedPoints(std::vector<Point>& deletedPoints)
   }
 }
 
-bool Contour::haveRepeatPoints()
+bool Contour::haveRepeatPoints() const
 {
   bool haveRepeat = false;
   for (size_t i = 1; i < size(); i++)

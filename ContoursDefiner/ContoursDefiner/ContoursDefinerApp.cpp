@@ -75,13 +75,15 @@ void MouseProc(void* pContext,            // Контекст
     Context* pcc = (Context*)pContext;
     Point startPoint = Point(MouseFileX, MouseFileY);
 
-    pcc->app->contour = pcc->app->conDefiner.defineContour(startPoint);
+    CContoursDefinerApp* app = pcc->app;
 
-    pcc->app->dataManager.addContour(pcc->app->contour);
+    app->contour = app->conDefiner.defineContour(startPoint);
+
+    app->dataManager.addContour(app->contour);
 
     CString name;
     name.Format("Контур (%d, %d)", startPoint.x, startPoint.y);
-    pcc->dlg->addRow(pcc->app->dataManager.getCountContours() - 1, name);
+    pcc->dlg->addRow(app->dataManager.getCountContours() - 1, name);
   }
 }
 

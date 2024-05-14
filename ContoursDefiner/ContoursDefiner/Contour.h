@@ -45,7 +45,7 @@ public:
 
   void removeSamePointsAtEnds();
 
-  bool haveRepeatPoints();
+  bool haveRepeatPoints() const;
 
   Point getPoint(int index) const;
   int getNextIdx(int fromIndex, int step = 1) const;

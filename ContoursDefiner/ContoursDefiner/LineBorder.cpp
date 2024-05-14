@@ -22,12 +22,12 @@ Contour& LineBorder::getOwner()
   return owner;
 }
 
-int LineBorder::getFromIndex()
+int LineBorder::getFromIndex() const
 {
   return fromIndex;
 }
 
-int LineBorder::getToIndex()
+int LineBorder::getToIndex() const
 {
   return toIndex;
 }
@@ -189,7 +189,7 @@ void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, in
       maxDeleted = right.size();
 
     int startIndex = *idxLeft;
-    int minDist = right.owner.distanceTo(left.getPoint(startIndex));
+    double minDist = right.owner.distanceTo(left.getPoint(startIndex));
 
     for (int i = 1; i < maxDeleted; i++)
     {

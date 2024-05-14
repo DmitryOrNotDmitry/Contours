@@ -18,8 +18,8 @@ public:
   LineBorder& operator=(const LineBorder& other);
 
   Contour& getOwner();
-  int getFromIndex();
-  int getToIndex();
+  int getFromIndex() const;
+  int getToIndex() const;
 
   int getNextIdx(int curIndex, int step) const;
   Point getPoint(int index) const;

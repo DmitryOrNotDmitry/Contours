@@ -1,13 +1,15 @@
 #pragma once
 #include "stdafx.h"
 #include "Point.h"
-#include <vector>
 #include "ERInterface.h"
 #include "ContourState.h"
 #include "ControlPointsCalculator.h"
 #include "DataStorageManager.h"
 #include "BresenhamLine.h"
 #include "GPCAdapter.h"
+
+#include <iterator>
+#include <vector>
 
 class DialogListContours : public CDialog
 {

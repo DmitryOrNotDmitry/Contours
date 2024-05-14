@@ -13,7 +13,7 @@ void freePolygon(gpc_polygon* p)
 }
 
 
-std::vector<Contour> GPCAdapter::searchHoles(const std::vector<Contour>& contours)
+std::vector<Contour> GPCAdapter::searchHoles(const std::list<Contour>& contours)
 {
 
   gpc_polygon* polygon1 = new gpc_polygon;
@@ -21,18 +21,19 @@ std::vector<Contour> GPCAdapter::searchHoles(const std::vector<Contour>& contour
   polygon1->contour = new gpc_vertex_list[countContours];
   polygon1->num_contours = countContours;
 
+  auto contoursIter = contours.begin();
   for (size_t i = 0; i < countContours; i++)
   {
     gpc_vertex_list& cur_vertex_list = polygon1->contour[i];
-    cur_vertex_list.num_vertices = contours[i].size();
-    cur_vertex_list.vertex = new gpc_vertex[contours[i].size()];
+    cur_vertex_list.num_vertices = contoursIter->size();
+    cur_vertex_list.vertex = new gpc_vertex[contoursIter->size()];
 
-    for (size_t j = 0; j < contours[i].size(); j++)
+    for (size_t j = 0; j < contoursIter->size(); j++)
     {
-      cur_vertex_list.vertex[j].x = contours[i][j].x;
-      cur_vertex_list.vertex[j].y = contours[i][j].y;
+      cur_vertex_list.vertex[j].x = (*contoursIter)[j].x;
+      cur_vertex_list.vertex[j].y = (*contoursIter)[j].y;
     }
-
+    ++contoursIter;
   }
 
 

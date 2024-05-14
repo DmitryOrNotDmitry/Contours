@@ -2,18 +2,19 @@
 
 void ContourDrawer::drawWithState(HDC& hDC, double scaleX, double scaleY, ContourState state)
 {
-  std::vector<Contour>& contours = dataManager.getContours();
-  for (size_t i = 0; i < contours.size(); i++)
+  std::list<Contour>& contours = dataManager.getContours();
+
+  for (auto iter = contours.begin(); iter != contours.end(); ++iter)
   {
-    if (contours[i].getState() != state)
+    if (iter->getState() != state)
       continue;
 
-    size_t numPoints = contours[i].size();
+    size_t numPoints = iter->size();
 
     if (numPoints < 1)
       continue;
 
-    std::vector<Point>& points = contours[i].getPoints();
+    std::vector<Point>& points = iter->getPoints();
 
     MoveToEx(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY), NULL);
     for (size_t j = 1; j < numPoints; j++)

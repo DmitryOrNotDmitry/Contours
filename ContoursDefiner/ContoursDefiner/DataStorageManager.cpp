@@ -9,8 +9,6 @@ DataStorageManager& DataStorageManager::getInstance()
 
 DataStorageManager::DataStorageManager()
 {
-  // TODO: IT WILL NOT WORK IF NUMBER OF CONTOURS IS MORE THAN 100
-  contours.reserve(100);
 }
 
 void DataStorageManager::addContour(Contour& contour)
@@ -23,19 +21,9 @@ int DataStorageManager::getCountContours()
   return contours.size();
 }
 
-std::vector<Contour>& DataStorageManager::getContours()
+std::list<Contour>& DataStorageManager::getContours()
 {
   return contours;
-}
-
-void DataStorageManager::addControlPoint(const Point& point)
-{
-  controlPoints.push_back(point);
-}
-
-std::vector<Point>& DataStorageManager::getControlPoints() 
-{
-  return controlPoints;
 }
 
 
@@ -50,16 +38,6 @@ std::vector<LineBorder>& DataStorageManager::getBorders()
   return borders;
 }
 
-
-void DataStorageManager::addAverageBorder(std::vector<Point>&& averageBorder)
-{
-  averageBorders.push_back(averageBorder);
-}
-
-std::vector<std::vector<Point>>& DataStorageManager::getAverageBorders()
-{
-  return averageBorders;
-}
 
 void DataStorageManager::addHole(Contour&& hole)
 {
