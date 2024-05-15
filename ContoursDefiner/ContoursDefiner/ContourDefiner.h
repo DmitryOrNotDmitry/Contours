@@ -23,6 +23,8 @@ public:
 
   std::vector<Point> defineContourPointsAround(const Point& basePoint);
 
+  std::vector<Point> convertToPath(const std::vector<Point>& points);
+
   std::vector<Point> definePossiblePoints(const Point& basePoint);
 
   bool isInternalPoint(const Point& innerPoint, const Point& checkedPoint);

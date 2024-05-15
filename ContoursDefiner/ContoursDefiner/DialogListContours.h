@@ -1,15 +1,12 @@
 #pragma once
 #include "stdafx.h"
 #include "Point.h"
+#include <vector>
 #include "ERInterface.h"
 #include "ContourState.h"
 #include "ControlPointsCalculator.h"
 #include "DataStorageManager.h"
 #include "BresenhamLine.h"
-#include "GPCAdapter.h"
-
-#include <iterator>
-#include <vector>
 
 class DialogListContours : public CDialog
 {
@@ -39,7 +36,6 @@ public:
   afx_msg void OnBnClickedOk();
   afx_msg void OnBnClickedCancel();
   afx_msg void OnBnClickedCalcControlPoints();
-  afx_msg void OnBnClickedSearhHoles();
   void OnLvnItemchangedChanlist(NMHDR* pNMHDR, LRESULT* pResult);
 
   CListCtrl contoursTable;

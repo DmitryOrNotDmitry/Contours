@@ -40,17 +40,15 @@ public:
 
   bool isEmpty() const;
 
-  int findNearestPointTo(const Point& destination, int from, int count, int step) const;
+  int findNearestPointTo(const Point& destination, int from, int to, int step) const;
   int findNearestPointTo(const Point& destination, int step = 1) const;
 
   void removeSamePointsAtEnds();
 
-  bool haveRepeatPoints() const;
+  bool haveRepeatPoints();
 
   Point getPoint(int index) const;
   int getNextIdx(int fromIndex, int step = 1) const;
-
-  double distanceTo(const Point& destination) const;
 
 private:
 

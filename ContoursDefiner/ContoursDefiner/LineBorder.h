@@ -18,8 +18,8 @@ public:
   LineBorder& operator=(const LineBorder& other);
 
   Contour& getOwner();
-  int getFromIndex() const;
-  int getToIndex() const;
+  int getFromIndex();
+  int getToIndex();
 
   int getNextIdx(int curIndex, int step) const;
   Point getPoint(int index) const;
@@ -30,7 +30,7 @@ public:
 
   int size() const;
 
-  static void reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, int maxDeleted);
+  static void reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right);
 
 private:
 
