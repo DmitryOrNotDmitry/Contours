@@ -44,7 +44,7 @@ Contour ContourDefiner::defineContour(const Point& startPoint)
   
   std::vector<Point> contourPoints = defineContourPointsAround(startContourPoint);
 
-  contour.addPoints(convertToPath(contourPoints));
+  contour.addPoints(contourPoints);
 
   Point tmp;
   Point currentInsidePoint = getNextPoint(startContourPoint, startContourPoint.toRight());
@@ -52,12 +52,11 @@ Contour ContourDefiner::defineContour(const Point& startPoint)
 
   int countIterations = 0;
 
-  //for(int i = 0; i < 396; i++)
   while (currentInsidePoint != startContourPoint)
   {
     contourPoints = defineContourPointsAround(currentInsidePoint);
 
-    contour.addPoints(convertToPath(contourPoints));
+    contour.addPoints(contourPoints);
     
     tmp = currentInsidePoint;
     currentInsidePoint = getNextPoint(currentInsidePoint, predPoint);
@@ -117,40 +116,6 @@ std::vector<Point> ContourDefiner::defineContourPointsAround(const Point& basePo
   return contourPoints;
 }
 
-
-std::vector<Point> ContourDefiner::convertToPath(const std::vector<Point>& points)
-{
-  std::vector<Point> path(points);
-
-  std::vector<double> distances;
-  size_t path_size = path.size();
-  distances.resize(path_size);
-
-  for (size_t i = 0; i < path_size; i++)
-  {
-    distances[i] = path[i].DistanceTo(path[(i + 1) % path_size]);
-  }
-
-  double max_dist = -1;
-  double max_idx = 0;
-  for (size_t i = 0; i < path_size; i++)
-  {
-    if (distances[i] > max_dist)
-    {
-      max_dist = distances[i];
-      max_idx = i;
-    }
-  }
-
-  for (size_t i = 0; i <= max_idx; i++)
-  {
-    Point tmp = *path.begin();
-    path.erase(path.begin());
-    path.push_back(tmp);
-  }
-
-  return path;
-}
 
 template<class T>
 void ContourDefiner::removeIndexesFromVector(std::vector<T>& vector, std::vector<size_t>& indexes)

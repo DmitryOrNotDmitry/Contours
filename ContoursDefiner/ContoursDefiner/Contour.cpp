@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Contour.h"
+#include "Path.h"
 
 
 Contour::Contour()
@@ -49,23 +50,24 @@ std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
   if (newPoints.size() == 0)
     return fitPoints;
 
-
   deleteYetAddedPoints(newPoints);
 
-  if (points.size() > 0 && newPoints.size() > 1)
+  Path path(newPoints);
+
+  if (points.size() > 0 && path.size() > 1)
   {
-    if ((*points.rbegin()).DistanceTo(*newPoints.begin()) > (*points.rbegin()).DistanceTo(*newPoints.rbegin()))
-      std::reverse(newPoints.begin(), newPoints.end());
+    if ((*points.rbegin()).DistanceTo(path[0]) > (*points.rbegin()).DistanceTo(path[-1]))
+      path.reverse();
   }
 
-  if (points.size() > 1 && points.size() < 8 && newPoints.size() > 0)
+  if (points.size() > 1 && points.size() < 8 && path.size() > 0)
   {
-    if (newPoints.begin()->DistanceTo(*points.begin()) < newPoints.begin()->DistanceTo(*points.rbegin()))
+    if (path[0].DistanceTo(*points.begin()) < path[0].DistanceTo(*points.rbegin()))
       std::reverse(points.begin(), points.end());
   }
   
   
-  for (auto iter = newPoints.begin(); iter != newPoints.end(); iter++)
+  for (auto iter = path.begin(); iter != path.end(); iter++)
   {
     double distance = 0;
 
@@ -90,9 +92,9 @@ std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
 
   points.insert(points.cend(), fitPoints.begin(), fitPoints.end());
 
-  std::vector<Point> qwe(fitPoints);
+  std::vector<Point> tmp(fitPoints);
 
-  memoryLastAddedPoints(std::move(qwe));
+  memoryLastAddedPoints(std::move(tmp));
 
   return fitPoints;
 }
