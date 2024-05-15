@@ -15,7 +15,6 @@
 
 
 TEST(ConvertToPathTest, TestConvertToPath1) {
-  ContourDefiner cd;
   std::vector<Point> points;
   points.push_back(Point(12, 10));
   points.push_back(Point(10, 10));
@@ -23,7 +22,7 @@ TEST(ConvertToPathTest, TestConvertToPath1) {
   points.push_back(Point(11, 9));
   points.push_back(Point(12, 9));
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected;
   expected.push_back(Point(10, 10));
@@ -79,14 +78,13 @@ TEST(ContourDefinerTest, TestDefineContourPointsAround) {
 }
 
 TEST(ConvertToPathTest, TestConvertToPath2) {
-  ContourDefiner cd;
   std::vector<Point> points;
   points.push_back(Point(3, 4));
   points.push_back(Point(2, 4));
   points.push_back(Point(1, 3));
   points.push_back(Point(1, 2));
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected;
   expected.push_back(Point(3, 4));
@@ -101,13 +99,12 @@ TEST(ConvertToPathTest, TestConvertToPath2) {
 }
 
 TEST(ConvertToPathTest, TestConvertToPath3) {
-  ContourDefiner cd;
   std::vector<Point> points;
   points.push_back(Point(3, 4));
   points.push_back(Point(2, 5));
   points.push_back(Point(2, 3));
   
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(2, 3),
@@ -221,7 +218,6 @@ TEST(ContourDefinerTest, TestDefineContourWithStick) {
 
 
 TEST(ConvertToPathTest, TestConvertToPath4) {
-  ContourDefiner cd;
   std::vector<Point> points = {
     Point(8, 5),
     Point(8, 6),
@@ -231,7 +227,7 @@ TEST(ConvertToPathTest, TestConvertToPath4) {
   };
   
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(7, 4),
@@ -249,7 +245,6 @@ TEST(ConvertToPathTest, TestConvertToPath4) {
 
 
 TEST(ConvertToPathTest, DeepToUp) {
-  ContourDefiner cd;
   std::vector<Point> points = {
     Point(5, 2),
     Point(5, 3),
@@ -260,8 +255,7 @@ TEST(ConvertToPathTest, DeepToUp) {
     Point(5, 1),
   };
 
-
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(3, 3),
@@ -281,7 +275,6 @@ TEST(ConvertToPathTest, DeepToUp) {
 
 
 TEST(ConvertToPathTest, DeepToLeft) {
-  ContourDefiner cd;
   std::vector<Point> points = {
     Point(5, 3),
     Point(4, 3),
@@ -292,8 +285,7 @@ TEST(ConvertToPathTest, DeepToLeft) {
     Point(5, 1),
   };
 
-
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(5, 3),
@@ -313,7 +305,6 @@ TEST(ConvertToPathTest, DeepToLeft) {
 
 
 TEST(ConvertToPathTest, DeepToRight) {
-  ContourDefiner cd;
   std::vector<Point> points = {
     Point(5, 2),
     Point(5, 3),
@@ -324,8 +315,7 @@ TEST(ConvertToPathTest, DeepToRight) {
     Point(5, 1),
   };
 
-
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(3, 1),
@@ -345,15 +335,13 @@ TEST(ConvertToPathTest, DeepToRight) {
 
 
 TEST(ConvertToPathTest, Corner) {
-  ContourDefiner cd;
   std::vector<Point> points = {
     Point(2, 4),
     Point(2, 3),
     Point(3, 3),
   };
 
-
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(2, 4),
@@ -369,15 +357,13 @@ TEST(ConvertToPathTest, Corner) {
 
 
 TEST(ConvertToPathTest, HorizontalLine) {
-  ContourDefiner cd;
   std::vector<Point> points = {
     Point(4, 3),
     Point(3, 3),
     Point(2, 3),
   };
 
-
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(4, 3),
@@ -393,7 +379,6 @@ TEST(ConvertToPathTest, HorizontalLine) {
 
 
 TEST(ConvertToPathTest, ReserseL) {
-  ContourDefiner cd;
   std::vector<Point> points = {
     Point(2, 1),
     Point(2, 2),
@@ -401,8 +386,7 @@ TEST(ConvertToPathTest, ReserseL) {
     Point(2, 0),
   };
 
-
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(1, 0),
@@ -419,7 +403,6 @@ TEST(ConvertToPathTest, ReserseL) {
 
 
 TEST(ConvertToPathTest, Left5Points) {
-  ContourDefiner cd;
   std::vector<Point> points = {
     Point(3, 3),
     Point(2, 3),
@@ -428,8 +411,7 @@ TEST(ConvertToPathTest, Left5Points) {
     Point(3, 5),
   };
 
-
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(3, 3),
@@ -447,7 +429,6 @@ TEST(ConvertToPathTest, Left5Points) {
 
 
 TEST(ConvertToPathTest, DeepToDown) {
-  ContourDefiner cd;
   std::vector<Point> points = {
     Point(2, 1),
     Point(2, 2),
@@ -457,8 +438,7 @@ TEST(ConvertToPathTest, DeepToDown) {
     Point(2, 0),
   };
 
-
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(2, 0),

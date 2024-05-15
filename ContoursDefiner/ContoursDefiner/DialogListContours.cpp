@@ -6,6 +6,7 @@ BEGIN_MESSAGE_MAP(DialogListContours, CDialog)
   ON_BN_CLICKED(IDOK, &DialogListContours::OnBnClickedOk)
   ON_BN_CLICKED(IDCANCEL, &DialogListContours::OnBnClickedCancel)
   ON_BN_CLICKED(IDC_BUTTONcalc_control_points, &DialogListContours::OnBnClickedCalcControlPoints)
+  ON_BN_CLICKED(IDC_BUTTONsearch_holes, &DialogListContours::OnBnClickedSearhHoles)
   ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTcontours_table, &DialogListContours::OnLvnItemchangedChanlist)
 END_MESSAGE_MAP()
 
@@ -40,26 +41,44 @@ void DialogListContours::OnBnClickedCalcControlPoints()
     return;
   }
  
-  std::vector<Contour>& conts = dataManager.getContours();
+  std::list<Contour>& conts = dataManager.getContours();
   
-  auto firstCont = conts.begin() + selectedRows[0];
-  auto secondCont = conts.begin() + selectedRows[1];
+  auto firstCont = std::next(conts.begin(), selectedRows[0]);
+  auto secondCont = std::next(conts.begin(), selectedRows[1]);
 
   std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont);
 
-  //dataManager.addAverageBorder(std::move(GeneralBorderCalculator::averageTwoLine(borders.first, borders.second)));
+  if (borders.first.size() > 5)
+  {
+    borders.second.replaceBorderWith(borders.first);
 
-  //std::vector<Point> avPoints = *dataManager.getAverageBorders().rbegin();
+    firstCont->haveRepeatPoints();
+    secondCont->haveRepeatPoints();
 
-  borders.second.replaceBorderWith(borders.first);
-  //borders.second.replaceLine(avPoints);
+    dataManager.addBorder(borders.first);
+    dataManager.addBorder(borders.second);
+  }
+  else
+  {
+    MessageBox("Слишком маленькая общая граница между контурами. Объединение отменено!", "Построение контуров");
+  }
 
-  firstCont->haveRepeatPoints();
-  secondCont->haveRepeatPoints();
+  RecalcImageViews(hImage);
+}
 
-  dataManager.addBorder(borders.first);
-  dataManager.addBorder(borders.second);
+void DialogListContours::OnBnClickedSearhHoles()
+{
+  if (dataManager.getContours().size() == 0)
+  {
+    MessageBox("Необходимо создать хотя бы 1 контур!", "Построение контуров");
+    return;
+  }
 
+  std::vector<Contour> holes = GPCAdapter::searchHoles(dataManager.getContours());
+  for (size_t i = 0; i < holes.size(); i++)
+  {
+    dataManager.addHole(std::move(holes[i]));
+  }
 
   RecalcImageViews(hImage);
 }
@@ -112,23 +131,27 @@ void DialogListContours::addRow(int rowNum, CString name)
 
 void DialogListContours::setContoursStates() const
 {
-  std::vector<Contour>& contours = dataManager.getContours();
+  std::list<Contour>& contours = dataManager.getContours();
+  auto contoursIter = contours.begin();
 
   for (int i = 0; i < (int)contours.size(); i++)
   {
     if (!contoursTable.GetCheck(i))
     {
-      contours[i].setState(HIDDEN);
-      continue;
+      contoursIter->setState(HIDDEN);
     }
 
-    if (isRowSelected(i))
+    else if (isRowSelected(i))
     {
-      contours[i].setState(SELECTED);
-      continue;
+      contoursIter->setState(SELECTED);
     }
     
-    contours[i].setState(VISIBLE);
+    else 
+    {
+      contoursIter->setState(VISIBLE);
+    }
+
+    ++contoursIter;
   }
 }
 
