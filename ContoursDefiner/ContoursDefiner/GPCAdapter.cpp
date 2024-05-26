@@ -1,5 +1,6 @@
 #include "GPCAdapter.h"
 #include "GPC/gpc.cpp"
+#include "BresenhamLine.h"
 
 
 void freePolygon(gpc_polygon* p)
@@ -60,13 +61,31 @@ std::vector<Contour> GPCAdapter::searchHoles(const std::list<Contour>& contours)
       {
         int x = result->contour[i].vertex[j].x;
         int y = result->contour[i].vertex[j].y;
-        hole.addPoint(Point(x, y));
+        Point nextPoint(x, y);
+
+        if (hole.size() > 0)
+        {
+          Point lastPoint = hole[hole.size() - 1];
+          if (nextPoint.DistanceTo(lastPoint) > 1)
+          {
+            BresenhamLine connectLine(lastPoint, nextPoint);
+            //std::vector<Point> connectLine = BresenhamLine::build(lastPoint, nextPoint);
+            for (size_t k = 0; k < connectLine.size(); k++)
+            {
+              hole.addPoint(connectLine[k]);
+            }
+          }
+        }
+
+        hole.addPoint(nextPoint);
+
       }
       holes.push_back(hole);
     }
   }
 
   gpc_free_polygon(result);
+  delete result;
 
   return holes;
 }
