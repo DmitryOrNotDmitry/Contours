@@ -1,4 +1,4 @@
-#include "ControlPointsCalculator.h"
+#include "GeneralBorderCalculator.h"
 #include <vector>
 
 
@@ -18,28 +18,32 @@ struct ContourBorderAttrs {
 
 void calcBordersEnds(ContourBorderAttrs& contAttr1, ContourBorderAttrs& contAttr2, double maxDist)
 {
-  while (contAttr1.contour[contAttr1.index].DistanceTo(contAttr2.contour[contAttr2.index]) < maxDist)
+  double dist = 0;
+
+  while (dist < maxDist)
   {
     int possibleIndex1 = contAttr1.contour.getNextIdx(contAttr1.index, contAttr1.step);
-    int possibleIndex2 = contAttr1.contour.getNextIdx(contAttr1.index, contAttr1.step * 2);
+    int nearPointTo1 = contAttr2.contour.findNearestPointTo(contAttr1.contour[possibleIndex1]);
 
-    double dist1 = contAttr1.contour[possibleIndex1].DistanceTo(contAttr2.contour[contAttr2.index]);
-    double dist2 = contAttr1.contour[possibleIndex2].DistanceTo(contAttr2.contour[contAttr2.index]);
+    dist = contAttr1.contour[possibleIndex1].DistanceTo(contAttr2.contour[nearPointTo1]);
+    if (dist >= maxDist)
+      break;
 
     contAttr1.index = possibleIndex1;
-    if (dist1 > dist2)
-      contAttr1.index = possibleIndex2;
+  }
 
+  dist = 0;
 
-    possibleIndex1 = contAttr2.contour.getNextIdx(contAttr2.index, contAttr2.step);
-    possibleIndex2 = contAttr2.contour.getNextIdx(contAttr2.index, contAttr2.step * 2);
+  while (dist < maxDist)
+  {
+    int possibleIndex2 = contAttr2.contour.getNextIdx(contAttr2.index, contAttr2.step);
+    int nearPointTo2 = contAttr1.contour.findNearestPointTo(contAttr2.contour[possibleIndex2]);
 
-    dist1 = contAttr2.contour[possibleIndex1].DistanceTo(contAttr1.contour[contAttr1.index]);
-    dist2 = contAttr2.contour[possibleIndex2].DistanceTo(contAttr1.contour[contAttr1.index]);
+    dist = contAttr2.contour[possibleIndex2].DistanceTo(contAttr1.contour[nearPointTo2]);
+    if (dist >= maxDist)
+      break;
 
-    contAttr2.index = possibleIndex1;
-    if (dist1 > dist2)
-      contAttr2.index = possibleIndex2;
+    contAttr2.index = possibleIndex2;
   }
 }
 
@@ -63,7 +67,7 @@ std::pair<int, int> GeneralBorderCalculator::calculateNearestPointsIdx(const Con
   result.second = secondNearPointIdx;
 
   size_t countPassedPoints = 0;
-  while (dist > 5 && countPassedPoints < first.size())
+  while (dist > 0 && countPassedPoints < first.size())
   {
     int step = static_cast<int>(floor(dist));
     firstIndex = first.getNextIdx(firstIndex, step);
@@ -79,7 +83,20 @@ std::pair<int, int> GeneralBorderCalculator::calculateNearestPointsIdx(const Con
 
     countPassedPoints += step;
   }
+  
+  if (minDist > 0)
+  {
+    int count = (int)minDist * 2;
+    if (count > first.size())
+      count = first.size();
+    result.first = first.findNearestPointTo(second[result.second], first.getNextIdx(result.first, -count / 2), count, 1);
 
+    count = (int)minDist * 2;
+    if (count > second.size())
+      count = second.size();
+    result.second = second.findNearestPointTo(first[result.first], second.getNextIdx(result.second, -count / 2), count, 1); 
+  }
+  
   return result;
 }
 
@@ -116,7 +133,7 @@ bool GeneralBorderCalculator::haveContoursSameDirection(const Contour& first, co
 }
 
 
-std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Contour& first, Contour& second)
+std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Contour& first, Contour& second, double limitDist)
 {
   std::pair<LineBorder, LineBorder> result( LineBorder(first, 0, 0), LineBorder(second, 0, 0) );
   std::pair<int, int> firstBorder;
@@ -124,8 +141,6 @@ std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Con
 
 
   std::pair<int, int> controlPoints = GeneralBorderCalculator::calculateNearestPointsIdx(first, second);
-
-  const int limitDistance = 6;
 
   int stepFirst = 1;
   int stepSecond = -1;
@@ -135,31 +150,32 @@ std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Con
   ContourBorderAttrs firstContAttrs(first, controlPoints.first, stepFirst);
   ContourBorderAttrs secondContAttrs(second, controlPoints.second, stepSecond);
 
-  calcBordersEnds(firstContAttrs, secondContAttrs, limitDistance);
+  calcBordersEnds(firstContAttrs, secondContAttrs, limitDist);
 
   firstBorder.second = firstContAttrs.index;
   secondBorder.first = secondContAttrs.index;
 
 
-
+  
   firstContAttrs.step = -stepFirst;
   secondContAttrs.step = -stepSecond;
 
   firstContAttrs.index = controlPoints.first;
   secondContAttrs.index = controlPoints.second;
 
-  calcBordersEnds(firstContAttrs, secondContAttrs, limitDistance);
+  calcBordersEnds(firstContAttrs, secondContAttrs, limitDist);
+  
 
   firstBorder.first = firstContAttrs.index;
   secondBorder.second = secondContAttrs.index;
-
+  
   result.first = LineBorder(first, firstBorder.first, firstBorder.second);
   //result.first.reduceEnds(limitDistance / 2);
 
   result.second = LineBorder(second, secondBorder.first, secondBorder.second);
   //result.second.reduceEnds(limitDistance / 2);
 
-  LineBorder::reduceEndsWhileApproxTo(result.first, result.second, 10);
+  LineBorder::reduceEndsWhileApproxTo(result.first, result.second, limitDist * 2);
   
   return result;
 }

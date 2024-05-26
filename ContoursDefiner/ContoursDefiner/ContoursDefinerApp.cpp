@@ -7,7 +7,7 @@
 #include "ContourDefiner.h"
 #include "DialogListContours.h"
 #include "ERImageData.h"
-#include "ControlPointsCalculator.h"
+#include "GeneralBorderCalculator.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
