@@ -1,10 +1,9 @@
 #include "BresenhamLine.h"
+#include <cmath>
 
 
-
-std::vector<Point> BresenhamLine::build(const Point& pointFrom, const Point& pointTo)
+void BresenhamLine::build(const Point& pointFrom, const Point& pointTo)
 {
-  std::vector<Point> line;
   int posibleSize = abs(pointFrom.y - pointTo.y);
   if (posibleSize < abs(pointFrom.x - pointTo.x))
     posibleSize = abs(pointFrom.x - pointTo.x);
@@ -51,7 +50,20 @@ std::vector<Point> BresenhamLine::build(const Point& pointFrom, const Point& poi
 
     x += deltaX;
   }
-  
-  return line;
 
+}
+
+BresenhamLine::BresenhamLine(const Point& pointFrom, const Point& pointTo)
+{
+  build(pointFrom, pointTo);
+}
+
+Point BresenhamLine::operator[](int i) const
+{
+  return line[i];
+}
+
+size_t BresenhamLine::size() const
+{
+  return line.size();
 }

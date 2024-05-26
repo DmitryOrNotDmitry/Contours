@@ -1,18 +1,21 @@
 #pragma once
 #include "Point.h"
-
 #include <vector>
-#include <cmath>
 
 class BresenhamLine
 {
 
-private:
-  BresenhamLine() {};
+  std::vector<Point> line;
+
+  void build(const Point& pointFrom, const Point& pointTo);
 
 public:
+  
+  BresenhamLine(const Point& pointFrom, const Point& pointTo);
 
-  static std::vector<Point> build(const Point& pointFrom, const Point& pointTo);
+  Point operator[](int i) const;
+
+  size_t size() const;
 
 };
 
