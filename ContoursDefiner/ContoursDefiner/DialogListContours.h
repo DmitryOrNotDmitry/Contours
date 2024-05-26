@@ -3,7 +3,7 @@
 #include "Point.h"
 #include "ERInterface.h"
 #include "ContourState.h"
-#include "ControlPointsCalculator.h"
+#include "GeneralBorderCalculator.h"
 #include "DataStorageManager.h"
 #include "BresenhamLine.h"
 #include "GPCAdapter.h"

@@ -46,7 +46,7 @@ void DialogListContours::OnBnClickedCalcControlPoints()
   auto firstCont = std::next(conts.begin(), selectedRows[0]);
   auto secondCont = std::next(conts.begin(), selectedRows[1]);
 
-  std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont);
+  std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont, 6);
 
   if (borders.first.size() > 5)
   {
@@ -74,11 +74,57 @@ void DialogListContours::OnBnClickedSearhHoles()
     return;
   }
 
-  std::vector<Contour> holes = GPCAdapter::searchHoles(dataManager.getContours());
-  for (size_t i = 0; i < holes.size(); i++)
+  std::vector<Contour> dataHoles = GPCAdapter::searchHoles(dataManager.getContours());
+  int countNewHoles = dataHoles.size();
+  for (size_t i = 0; i < dataHoles.size(); i++)
   {
-    dataManager.addHole(std::move(holes[i]));
+    dataManager.addHole(std::move(dataHoles[i]));
   }
+  
+  
+  std::vector<Contour>& holes = dataManager.getHoles();
+
+  std::list<Contour>& contours = dataManager.getContours();
+  for (size_t i = holes.size() - countNewHoles; i < holes.size(); i++)
+  {
+    std::vector<Contour*> contsWithGeneralBoreder = holes[i].calcNeighbors(contours);
+
+    Contour* contWithMaxBorder = nullptr;
+    int maxBorderSize = 0;
+
+    double limitDistance = 1;
+
+    /*if (holes[i].area() <= 8)
+      continue;*/
+
+    for (size_t k = 0; k < contsWithGeneralBoreder.size(); k++)
+    {
+      auto borders = GeneralBorderCalculator::defineNearBorders(holes[i], *contsWithGeneralBoreder[k], limitDistance);
+      if (borders.second.size() > maxBorderSize)
+      {
+        contWithMaxBorder = contsWithGeneralBoreder[k];
+        maxBorderSize = borders.first.size();
+      }
+
+      //dataManager.addBorder(borders.second);
+
+    }
+
+    if (contWithMaxBorder)
+    {
+      auto borders = GeneralBorderCalculator::defineNearBorders(holes[i], *contWithMaxBorder, limitDistance);
+
+//      dataManager.addBorder(borders.first);
+      dataManager.addBorder(borders.second);
+    }
+
+    Point p = holes[i].getAvaragePoint();
+    CString s;
+    s.Format("Средняя точка : (%d, %d), имеет контуров в соседях: %d, максимальная граница: %d", p.x, p.y, contsWithGeneralBoreder.size(), maxBorderSize);
+    //MessageBox(s, "Построение контуров");
+  }
+
+  
 
   RecalcImageViews(hImage);
 }
