@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <list>
 #include <algorithm>
 #include "Point.h"
 #include "ContourState.h"
@@ -14,6 +15,10 @@ class Contour
   std::vector<Point> lastKAddedPoints;
 
   ContourState state;
+
+  void memoryLastAddedPoints(std::vector<Point>&& points);
+
+  void deleteYetAddedPoints(std::vector<Point>& deletedPoints);
 
 public:
   Contour();
@@ -52,11 +57,10 @@ public:
 
   double distanceTo(const Point& destination) const;
 
-private:
+  Point getAvaragePoint();
 
-  void memoryLastAddedPoints(std::vector<Point>&& points);
+  double area();
 
-  void deleteYetAddedPoints(std::vector<Point>& deletedPoints);
-
+  std::vector<Contour*> calcNeighbors(std::list<Contour>& contours);
 };
 

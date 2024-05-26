@@ -1,6 +1,9 @@
 #include "StdAfx.h"
+#include <unordered_set>
+
 #include "Contour.h"
 #include "Path.h"
+
 
 
 Contour::Contour()
@@ -290,3 +293,70 @@ double Contour::distanceTo(const Point& destination) const
   int nearestPointIdx = findNearestPointTo(destination);
   return destination.DistanceTo(getPoint(nearestPointIdx));
 }
+
+Point Contour::getAvaragePoint()
+{
+  long long x = 0;
+  long long y = 0;
+
+  for (size_t i = 0; i < size(); i++)
+  {
+    x += points[i].x;
+    y += points[i].y;
+  }
+
+  x /= size();
+  y /= size();
+
+  return Point(x, y);
+}
+
+double Contour::area()
+{
+
+  double area = 0;
+
+  for (size_t i = 0; i < size() - 1; i++)
+  {
+    area += points[i].x * points[i + 1].y - points[i].y * points[i + 1].x;
+  }
+  area += points[size() - 1].x * points[0].y - points[size() - 1].y * points[0].x;
+
+  area /= 2;
+
+  return abs(area);
+}
+
+
+namespace std {
+  template <>
+  struct std::hash<Point> {
+    size_t operator()(const Point& point) const {
+      return hash<int>()(point.x) ^ (hash<int>()(point.y) << 1);
+    }
+  };
+}
+
+
+std::vector<Contour*> Contour::calcNeighbors(std::list<Contour>& contours)
+{
+  std::vector<Contour*> neighbors;
+
+  std::unordered_set<Point> ourPoints(points.begin(), points.end());
+
+  for (auto iter = contours.begin(); iter != contours.end(); ++iter)
+  {
+    Contour& cont = *iter;
+    for (size_t i = 0; i < cont.size(); i++)
+    {
+      if (ourPoints.find(cont[i]) != ourPoints.end())
+      {
+        neighbors.push_back(&cont);
+        break;
+      }
+    }
+  }
+
+  return neighbors;
+}
+
