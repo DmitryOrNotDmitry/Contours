@@ -61,7 +61,8 @@ void LineBorder::replaceBorderWith(const LineBorder& line)
 
   if (contourPoint != initPoint)
   {
-    std::vector<Point> connectLine = BresenhamLine::build(contourPoint, initPoint);
+    BresenhamLine connectLine(contourPoint, initPoint);
+    //std::vector<Point> connectLine = BresenhamLine::build(contourPoint, initPoint);
 
     for (size_t i = 0; i < connectLine.size(); i++)
     {
@@ -102,7 +103,8 @@ void LineBorder::replaceBorderWith(const LineBorder& line)
 
   if (contourPoint != initPoint)
   {
-    std::vector<Point> connectLine = BresenhamLine::build(initPoint, contourPoint);
+    BresenhamLine connectLine(contourPoint, initPoint);
+    //std::vector<Point> connectLine = BresenhamLine::build(initPoint, contourPoint);
 
     for (size_t i = 0; i < connectLine.size(); i++)
     {
@@ -158,7 +160,10 @@ void LineBorder::deleteContourLine()
 void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, int maxDeleted)
 {
   if (left.size() < maxDeleted || right.size() < maxDeleted)
-    return;
+    maxDeleted = left.size();
+
+  if (right.size() < maxDeleted)
+    maxDeleted = right.size();
 
   Point leftPointFrom = left.getPoint(left.fromIndex);
   double leftFromRightFrom = leftPointFrom.DistanceTo(right.getPoint(right.fromIndex));

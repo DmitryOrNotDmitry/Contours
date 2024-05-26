@@ -11,8 +11,8 @@ ObjectsDrawing::ObjectsDrawing(HIMAGE hImage, const DialogListContours& contours
   , dataManager(DataStorageManager::getInstance())
 {
   drawers.push_back( std::unique_ptr<AbstractDrawer>(new ContourDrawer(dataManager)) );
-  drawers.push_back( std::unique_ptr<AbstractDrawer>(new BorderDrawer(dataManager)) );
   drawers.push_back( std::unique_ptr<AbstractDrawer>(new HoleDrawer(dataManager)) );
+  drawers.push_back( std::unique_ptr<AbstractDrawer>(new BorderDrawer(dataManager)) );
   
   Attach(this->hImage);
   Update();

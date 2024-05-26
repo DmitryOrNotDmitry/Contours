@@ -21,14 +21,14 @@ public:
   int getFromIndex() const;
   int getToIndex() const;
 
-  int getNextIdx(int curIndex, int step) const;
-  Point getPoint(int index) const;
+  virtual int getNextIdx(int curIndex, int step) const;
+  virtual Point getPoint(int index) const;
 
   void replaceBorderWith(const LineBorder& line);
 
   void reduceEnds(int countPoints);
 
-  int size() const;
+  virtual int size() const;
 
   static void reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, int maxDeleted);
 
