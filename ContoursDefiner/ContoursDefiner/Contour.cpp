@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include <unordered_set>
+#include <algorithm>
 
 #include "Contour.h"
 #include "Path.h"
@@ -325,6 +326,38 @@ double Contour::area()
   area /= 2;
 
   return abs(area);
+}
+
+bool Contour::contains(const Point& point) const
+{
+  return std::find(points.begin(), points.end(), point) != points.end();
+}
+
+bool isLeft(Point v1, Point v2, Point p) {
+  return ((v2.x - v1.x) * (p.y - v1.y) - (p.x - v1.x) * (v2.y - v1.y)) > 0;
+}
+
+bool Contour::isInner(const Point& point) const  {
+  int len = size();
+  int windingNumber = 0;
+
+  for (int i = 0; i < len; i++) {
+    Point v1 = getPoint(i % len);
+    Point v2 = getPoint((i + 1) % len);
+
+    if (v1.y <= point.y) {
+      if (v2.y > point.y && isLeft(v1, v2, point)) {
+        windingNumber++;
+      }
+    }
+    else {
+      if (v2.y <= point.y && !isLeft(v1, v2, point)) {
+        windingNumber--;
+      }
+    }
+  }
+
+  return windingNumber != 0;
 }
 
 

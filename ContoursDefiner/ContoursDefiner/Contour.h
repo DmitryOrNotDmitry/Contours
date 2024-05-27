@@ -62,5 +62,8 @@ public:
   double area();
 
   std::vector<Contour*> calcNeighbors(std::list<Contour>& contours);
+
+  bool contains(const Point& point) const;
+  bool isInner(const Point& point) const;
 };
 

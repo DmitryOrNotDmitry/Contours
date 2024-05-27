@@ -66,6 +66,22 @@ void DialogListContours::OnBnClickedCalcControlPoints()
   RecalcImageViews(hImage);
 }
 
+
+void addPointWithCondition(std::vector<Point>& newBorder,
+  const Contour& hole,
+  const Contour& contour,
+  Point p)
+{
+  if ((hole.isInner(p) || hole.contains(p)) && !contour.contains(p))
+  {
+    if (std::find(newBorder.begin(), newBorder.end(), p) == newBorder.end())
+    {
+      newBorder.push_back(p);
+    }
+  }
+}
+
+
 void DialogListContours::OnBnClickedSearhHoles()
 {
   if (dataManager.getContours().size() == 0)
@@ -113,6 +129,33 @@ void DialogListContours::OnBnClickedSearhHoles()
     if (contWithMaxBorder)
     {
       auto borders = GeneralBorderCalculator::defineNearBorders(holes[i], *contWithMaxBorder, limitDistance);
+
+      std::vector<Point> newBorder;
+
+      LineBorder& oldBorder = borders.second;
+
+      int countIters = oldBorder.size();
+      int index = oldBorder.getFromIndex();
+
+      for (int k = 0; k < countIters; k++)
+      {
+        Point p = oldBorder.getPoint(index);
+        index = oldBorder.getNextIdx(index, 1);
+
+        Point checkedP = p.toRight();
+        addPointWithCondition(newBorder, holes[i], *contWithMaxBorder, checkedP);
+
+        checkedP = p.toBottom();
+        addPointWithCondition(newBorder, holes[i], *contWithMaxBorder, checkedP);
+
+        checkedP = p.toLeft();
+        addPointWithCondition(newBorder, holes[i], *contWithMaxBorder, checkedP);
+
+        checkedP = p.toUp();
+        addPointWithCondition(newBorder, holes[i], *contWithMaxBorder, checkedP);
+
+      }
+
 
 //      dataManager.addBorder(borders.first);
       dataManager.addBorder(borders.second);
