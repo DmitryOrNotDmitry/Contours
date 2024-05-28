@@ -1,4 +1,6 @@
 #include "DialogListContours.h"
+#include "LineBorderVector.h"
+#include "HoleReducer.h"
 
 IMPLEMENT_DYNAMIC(DialogListContours, CDialog)
 
@@ -67,21 +69,6 @@ void DialogListContours::OnBnClickedCalcControlPoints()
 }
 
 
-void addPointWithCondition(std::vector<Point>& newBorder,
-  const Contour& hole,
-  const Contour& contour,
-  Point p)
-{
-  if ((hole.isInner(p) || hole.contains(p)) && !contour.contains(p))
-  {
-    if (std::find(newBorder.begin(), newBorder.end(), p) == newBorder.end())
-    {
-      newBorder.push_back(p);
-    }
-  }
-}
-
-
 void DialogListContours::OnBnClickedSearhHoles()
 {
   if (dataManager.getContours().size() == 0)
@@ -96,78 +83,18 @@ void DialogListContours::OnBnClickedSearhHoles()
   {
     dataManager.addHole(std::move(dataHoles[i]));
   }
-  
-  
+
   std::vector<Contour>& holes = dataManager.getHoles();
+  std::vector<Contour> copyHoles = holes;
 
   std::list<Contour>& contours = dataManager.getContours();
+
   for (size_t i = holes.size() - countNewHoles; i < holes.size(); i++)
   {
-    std::vector<Contour*> contsWithGeneralBoreder = holes[i].calcNeighbors(contours);
-
-    Contour* contWithMaxBorder = nullptr;
-    int maxBorderSize = 0;
-
-    double limitDistance = 1;
-
-    /*if (holes[i].area() <= 8)
-      continue;*/
-
-    for (size_t k = 0; k < contsWithGeneralBoreder.size(); k++)
-    {
-      auto borders = GeneralBorderCalculator::defineNearBorders(holes[i], *contsWithGeneralBoreder[k], limitDistance);
-      if (borders.second.size() > maxBorderSize)
-      {
-        contWithMaxBorder = contsWithGeneralBoreder[k];
-        maxBorderSize = borders.first.size();
-      }
-
-      //dataManager.addBorder(borders.second);
-
-    }
-
-    if (contWithMaxBorder)
-    {
-      auto borders = GeneralBorderCalculator::defineNearBorders(holes[i], *contWithMaxBorder, limitDistance);
-
-      std::vector<Point> newBorder;
-
-      LineBorder& oldBorder = borders.second;
-
-      int countIters = oldBorder.size();
-      int index = oldBorder.getFromIndex();
-
-      for (int k = 0; k < countIters; k++)
-      {
-        Point p = oldBorder.getPoint(index);
-        index = oldBorder.getNextIdx(index, 1);
-
-        Point checkedP = p.toRight();
-        addPointWithCondition(newBorder, holes[i], *contWithMaxBorder, checkedP);
-
-        checkedP = p.toBottom();
-        addPointWithCondition(newBorder, holes[i], *contWithMaxBorder, checkedP);
-
-        checkedP = p.toLeft();
-        addPointWithCondition(newBorder, holes[i], *contWithMaxBorder, checkedP);
-
-        checkedP = p.toUp();
-        addPointWithCondition(newBorder, holes[i], *contWithMaxBorder, checkedP);
-
-      }
-
-
-//      dataManager.addBorder(borders.first);
-      dataManager.addBorder(borders.second);
-    }
-
-    Point p = holes[i].getAvaragePoint();
-    CString s;
-    s.Format("Средняя точка : (%d, %d), имеет контуров в соседях: %d, максимальная граница: %d", p.x, p.y, contsWithGeneralBoreder.size(), maxBorderSize);
-    //MessageBox(s, "Построение контуров");
+    HoleReducer::process(holes[i], contours);
   }
 
-  
+  holes.clear();
 
   RecalcImageViews(hImage);
 }

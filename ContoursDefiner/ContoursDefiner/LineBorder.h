@@ -30,6 +30,10 @@ public:
 
   virtual int size() const;
 
+  bool isHidden() const;
+
+  double euclideanLength() const;
+
   static void reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, int maxDeleted);
 
 private:

@@ -314,18 +314,88 @@ Point Contour::getAvaragePoint()
 
 double Contour::area()
 {
+  return area(0, size() - 1);
+}
 
+double Contour::area(int from, int to)
+{
   double area = 0;
 
-  for (size_t i = 0; i < size() - 1; i++)
+  for (int i = from; i != to; i = getNextIdx(i, 1))
   {
-    area += points[i].x * points[i + 1].y - points[i].y * points[i + 1].x;
+    int nextI = getNextIdx(i, 1);
+    area += points[i].x * points[nextI].y - points[i].y * points[nextI].x;
   }
-  area += points[size() - 1].x * points[0].y - points[size() - 1].y * points[0].x;
+
+  area += points[to].x * points[from].y - points[to].y * points[from].x;
 
   area /= 2;
 
   return abs(area);
+}
+
+void Contour::deletePins()
+{
+  for (int i = 0; i < size(); i++)
+  {
+    int idxSamePoint = indexOf(getPoint(i), getNextIdx(i, 1), size() - 1);
+
+    if (idxSamePoint == -1)
+      continue;
+
+    double partArea = area(i, idxSamePoint);
+
+    if (partArea < 0.001)
+    {
+      int countDeleted = deletePoints(i + 1, idxSamePoint);
+    }
+  }
+}
+
+int Contour::indexOf(const Point& point, int from, int count) const
+{
+  int idx = from;
+
+  for (int i = 0; i < count; i++)
+  {
+    if (getPoint(idx) == point)
+      return idx;
+    
+    idx = getNextIdx(idx, 1);
+  }
+
+  return -1;
+}
+
+int Contour::deletePoints(int from, int to)
+{
+  if (from > size() || to > size())
+    return 0;
+
+  int dist = distance(from, to);
+
+  if (from <= to)
+  {
+    points.erase(points.begin() + from, points.begin() + to + 1);
+  }
+  else
+  {
+    points.erase(points.begin() + from, points.end());
+
+    points.erase(points.begin(), points.begin() + to + 1);
+  }
+
+  return dist;
+}
+
+int Contour::distance(int from, int to) const
+{
+  int result = to - from;
+
+  if (from > to)
+    result += size();
+  
+  return result;
 }
 
 bool Contour::contains(const Point& point) const
@@ -393,3 +463,58 @@ std::vector<Contour*> Contour::calcNeighbors(std::list<Contour>& contours)
   return neighbors;
 }
 
+
+std::vector<Contour> Contour::separate()
+{
+  std::vector<int> scores(size(), -1);
+
+  int curScore = 0;
+  int maxScore = 0;
+  for (int i = 0; i < size(); i++)
+  {
+    if (scores[i] != -1)
+    {
+      curScore--;
+      continue;
+    }
+
+    int samePointIdx = indexOf(getPoint(i), getNextIdx(i, 1), size() - 1);
+    if (samePointIdx != -1)
+    {
+      curScore++;
+      maxScore = max(maxScore, curScore);
+      scores[samePointIdx] = curScore;
+    }
+
+    scores[i] = curScore;
+  }
+
+ if (maxScore == 0)
+    return std::vector<Contour>(1, *this);
+
+  std::vector<Contour> possibleSubContours(maxScore + 1);
+  
+  int prevScore = 0;
+  for (int i = 0; i < size(); i++)
+  {
+    curScore = scores[i];
+
+    possibleSubContours[curScore].addPoint(getPoint(i));
+    
+    if (curScore > prevScore)
+      possibleSubContours[prevScore].addPoint(getPoint(i));
+
+    prevScore = curScore;
+  }
+
+  std::vector<Contour> subContours;
+
+  for (size_t i = 0; i < possibleSubContours.size(); i++)
+    if (possibleSubContours[i].area() > 0.001)
+      subContours.push_back(std::move(possibleSubContours[i]));
+
+  if (subContours.size() == 0)
+    subContours.push_back(*this);
+
+  return subContours;
+}

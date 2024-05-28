@@ -11,9 +11,12 @@ public:
 
   LineBorderVector(const std::vector<Point>& points);
 
+  LineBorderVector& operator=(const LineBorderVector& other);
+
   int getNextIdx(int curIndex, int step) const override;
   Point getPoint(int index) const override;
 
   int size() const override;
+  bool isHidden() const;
 };
 

@@ -60,10 +60,20 @@ public:
   Point getAvaragePoint();
 
   double area();
+  double area(int from, int to);
 
   std::vector<Contour*> calcNeighbors(std::list<Contour>& contours);
 
   bool contains(const Point& point) const;
   bool isInner(const Point& point) const;
+
+  void deletePins();
+
+  int indexOf(const Point& point, int from, int count) const;
+
+  int deletePoints(int from, int to);
+  int distance(int from, int to) const;
+
+  std::vector<Contour> separate();
 };
 
