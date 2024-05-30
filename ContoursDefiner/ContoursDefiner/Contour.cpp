@@ -91,7 +91,6 @@ std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
     {
       fitPoints.push_back(*iter);
     }
-
   }
 
   points.insert(points.cend(), fitPoints.begin(), fitPoints.end());

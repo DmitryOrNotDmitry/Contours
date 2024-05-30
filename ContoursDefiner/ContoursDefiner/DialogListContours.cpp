@@ -48,7 +48,7 @@ void DialogListContours::OnBnClickedCalcControlPoints()
   auto firstCont = std::next(conts.begin(), selectedRows[0]);
   auto secondCont = std::next(conts.begin(), selectedRows[1]);
 
-  std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont, 6);
+  std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont, 3);
 
   if (borders.first.size() > 5)
   {
@@ -83,7 +83,7 @@ void DialogListContours::OnBnClickedSearhHoles()
   {
     dataManager.addHole(std::move(dataHoles[i]));
   }
-
+  
   std::vector<Contour>& holes = dataManager.getHoles();
   std::vector<Contour> copyHoles = holes;
 
@@ -95,7 +95,7 @@ void DialogListContours::OnBnClickedSearhHoles()
   }
 
   holes.clear();
-
+  
   RecalcImageViews(hImage);
 }
 

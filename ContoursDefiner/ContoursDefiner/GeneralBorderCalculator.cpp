@@ -18,9 +18,10 @@ struct ContourBorderAttrs {
 
 void calcBordersEnds(ContourBorderAttrs& contAttr1, ContourBorderAttrs& contAttr2, double maxDist)
 {
+  int countIter = 0;
   double dist = 0;
 
-  while (dist < maxDist)
+  while (countIter < contAttr1.contour.size())
   {
     int possibleIndex1 = contAttr1.contour.getNextIdx(contAttr1.index, contAttr1.step);
     int nearPointTo1 = contAttr2.contour.findNearestPointTo(contAttr1.contour[possibleIndex1]);
@@ -30,11 +31,13 @@ void calcBordersEnds(ContourBorderAttrs& contAttr1, ContourBorderAttrs& contAttr
       break;
 
     contAttr1.index = possibleIndex1;
+    countIter++;
   }
 
+  countIter = 0;
   dist = 0;
 
-  while (dist < maxDist)
+  while (countIter < contAttr2.contour.size())
   {
     int possibleIndex2 = contAttr2.contour.getNextIdx(contAttr2.index, contAttr2.step);
     int nearPointTo2 = contAttr1.contour.findNearestPointTo(contAttr2.contour[possibleIndex2]);
@@ -44,6 +47,7 @@ void calcBordersEnds(ContourBorderAttrs& contAttr1, ContourBorderAttrs& contAttr
       break;
 
     contAttr2.index = possibleIndex2;
+    countIter++;
   }
 }
 

@@ -34,10 +34,13 @@ Contour* getContourWithMaxBorder(Contour& hole, std::list<Contour>& contours)
   for (size_t i = 0; i < contsWithGeneralBorder.size(); i++)
   {
     auto borders = GeneralBorderCalculator::defineNearBorders(hole, *contsWithGeneralBorder[i], limitDistance);
-    if (borders.first.euclideanLength() > maxBorderSize)
+    
+    double curSize = borders.first.euclideanLength();
+    
+    if (curSize > maxBorderSize)
     {
       contWithMaxBorder = contsWithGeneralBorder[i];
-      maxBorderSize = borders.first.euclideanLength();
+      maxBorderSize = curSize;
     }
   }
 
