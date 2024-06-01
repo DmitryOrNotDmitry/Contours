@@ -44,6 +44,7 @@ public:
 
   CListCtrl contoursTable;
   CButton buttonControlPoints;
+  CButton oneContourMode;
 
   bool isRowSelected(int row) const;
 

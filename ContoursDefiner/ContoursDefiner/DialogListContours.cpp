@@ -77,38 +77,48 @@ void DialogListContours::OnBnClickedSearhHoles()
     return;
   }
 
+  //dataManager.getHoles().clear();
+
   std::vector<Contour> dataHoles = GPCAdapter::searchHoles(dataManager.getContours());
   int countNewHoles = dataHoles.size();
   for (size_t i = 0; i < dataHoles.size(); i++)
   {
     dataManager.addHole(std::move(dataHoles[i]));
   }
-  
+ 
   std::vector<Contour>& holes = dataManager.getHoles();
   std::vector<Contour> copyHoles = holes;
 
   std::list<Contour>& contours = dataManager.getContours();
 
-  for (size_t i = holes.size() - countNewHoles; i < holes.size(); i++)
+  size_t countHoles = holes.size();
+
+  for (size_t i = countHoles - countNewHoles; i < countHoles; i++)
   {
-    HoleReducer::process(holes[i], contours);
+    if (oneContourMode.GetCheck() == TRUE)
+      HoleReducer::process(holes[i], contours);
+    else
+      HoleReducer::processMulti(holes[i], contours);
   }
 
   holes.clear();
-  
+
   RecalcImageViews(hImage);
 }
 
 void DialogListContours::DoDataExchange(CDataExchange* pDX)
 {
-  CDialog::DoDataExchange(pDX);
-  DDX_Control(pDX, IDC_LISTcontours_table, contoursTable);
-  DDX_Control(pDX, IDC_BUTTONcalc_control_points, buttonControlPoints);
+    CDialog::DoDataExchange(pDX);
+    DDX_Control(pDX, IDC_LISTcontours_table, contoursTable);
+    DDX_Control(pDX, IDC_BUTTONcalc_control_points, buttonControlPoints);
+    DDX_Control(pDX, IDC_RADIOfor_one_contour, oneContourMode);
 }
 
 BOOL DialogListContours::OnInitDialog()
 {
   CDialog::OnInitDialog();
+  
+  oneContourMode.SetCheck(TRUE);
 
   contoursTable.SetExtendedStyle(this->contoursTable.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 
