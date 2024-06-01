@@ -1,5 +1,6 @@
 #include "LineBorder.h"
 
+#define CONNECT_LINE_MIN_DISTANCE 1.999
 
 LineBorder::LineBorder(Contour& owner, int fromIndex, int toIndex)
   : owner(owner)
@@ -42,6 +43,24 @@ Point LineBorder::getPoint(int index) const
   return owner.getPoint(index);
 }
 
+void LineBorder::insertLine(const LineBorder& line, int startIdx, int step)
+{
+  int lineSize = line.size();
+  int idx = startIdx;
+
+  int countInserted = 0;
+  int prevSize = owner.size();
+
+  for (int i = 0; i < lineSize; i++)
+  {
+    owner.insertPoint(line.getPoint(idx), fromIndex + 1 + countInserted);
+    countInserted += owner.size() - prevSize;
+    prevSize = owner.size();
+
+    idx = line.getNextIdx(idx, step);
+  }
+}
+
 void LineBorder::replaceBorderWith(const LineBorder& line)
 {
   Point contourPoint = getPoint(fromIndex);
@@ -59,7 +78,7 @@ void LineBorder::replaceBorderWith(const LineBorder& line)
   int countAddedPoints = 0;
   int prevSize = owner.size();
 
-  if (contourPoint != initPoint)
+  if (contourPoint.DistanceTo(initPoint) >= CONNECT_LINE_MIN_DISTANCE)
   {
     BresenhamLine connectLine(contourPoint, initPoint);
 
@@ -71,25 +90,17 @@ void LineBorder::replaceBorderWith(const LineBorder& line)
     }
   }
   
-
   if (useBeginPoint)
   {
-    for (size_t i = line.fromIndex; i != line.toIndex; i = line.getNextIdx(i, 1))
-    {
-      owner.insertPoint(line.getPoint(i), fromIndex + 1 + countAddedPoints);
-      countAddedPoints += owner.size() - prevSize;
-      prevSize = owner.size();
-    }
+    insertLine(line, line.fromIndex, 1);
   }
   else
   {
-    for (size_t i = line.toIndex; i != line.fromIndex; i = line.getNextIdx(i, -1))
-    {
-      owner.insertPoint(line.getPoint(i), fromIndex + 1 + countAddedPoints);
-      countAddedPoints += owner.size() - prevSize;
-      prevSize = owner.size();
-    }
+    insertLine(line, line.toIndex, -1);
   }
+
+  countAddedPoints += owner.size() - prevSize;
+  prevSize = owner.size();
 
   if (fromIndex <= toIndex)
     contourPoint = getPoint(toIndex + countAddedPoints);
@@ -100,7 +111,7 @@ void LineBorder::replaceBorderWith(const LineBorder& line)
   if (!useBeginPoint)
     initPoint = line.getPoint(line.fromIndex);
 
-  if (contourPoint != initPoint)
+  if (contourPoint.DistanceTo(initPoint) >= CONNECT_LINE_MIN_DISTANCE)
   {
     BresenhamLine connectLine(contourPoint, initPoint);
 

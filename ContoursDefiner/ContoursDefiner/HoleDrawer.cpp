@@ -9,6 +9,9 @@ void HoleDrawer::draw(HDC& hDC, double scaleX, double scaleY)
   {
     const std::vector<Point>& points = dataManager.getHoles()[i].getPoints();
     int numPoints = (int)points.size();
+    
+    if (numPoints == 0)
+      continue;
 
     MoveToEx(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY), NULL);
     for (int j = 0; j < numPoints; j++)

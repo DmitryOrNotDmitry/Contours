@@ -40,5 +40,7 @@ private:
 
   void deleteContourLine();
 
+  void insertLine(const LineBorder& line, int startIdx, int step = 1);
+
 };
 
