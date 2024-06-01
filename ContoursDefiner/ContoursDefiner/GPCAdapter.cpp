@@ -66,7 +66,7 @@ std::vector<Contour> GPCAdapter::searchHoles(const std::list<Contour>& contours)
         if (hole.size() > 0)
         {
           Point lastPoint = hole[hole.size() - 1];
-          if (nextPoint.DistanceTo(lastPoint) > 1)
+          if (nextPoint.DistanceTo(lastPoint) >= 1.999)
           {
             BresenhamLine connectLine(lastPoint, nextPoint);
             for (size_t k = 0; k < connectLine.size(); k++)
