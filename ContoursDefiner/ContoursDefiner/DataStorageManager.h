@@ -36,6 +36,7 @@ public:
 
 
   void addHole(Contour&& holes);
+  void addHole(const Contour& holes);
 
   std::vector<Contour>& getHoles();
 };
