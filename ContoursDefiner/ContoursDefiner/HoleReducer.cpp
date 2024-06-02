@@ -116,7 +116,7 @@ std::vector<Point> defineNewBorder(Contour& hole, Contour& contour, LineBorder o
     if (newBorder.size() > 0)
       sortPointsByProximity(checkedPoints, *newBorder.rbegin());
     else
-      sortPointsByProximity(checkedPoints, oldBorder.getPoint(oldBorder.getFromIndex()));
+      sortPointsByProximity(checkedPoints, oldBorder.fromPoint());
 
 
     for (size_t j = 0; j < checkedPoints.size(); j++)

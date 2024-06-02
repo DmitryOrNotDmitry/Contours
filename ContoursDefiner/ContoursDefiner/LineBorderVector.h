@@ -17,6 +17,5 @@ public:
   Point getPoint(int index) const override;
 
   int size() const override;
-  bool isHidden() const;
 };
 

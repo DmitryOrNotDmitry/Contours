@@ -33,6 +33,16 @@ int LineBorder::getToIndex() const
   return toIndex;
 }
 
+Point LineBorder::fromPoint() const
+{
+  return getPoint(getFromIndex());
+}
+
+Point LineBorder::toPoint() const
+{
+  return getPoint(getToIndex());
+}
+
 int LineBorder::getNextIdx(int curIndex, int step) const
 {
   return owner.getNextIdx(curIndex, step);
@@ -146,11 +156,6 @@ int LineBorder::size() const
   {
     return (toIndex + 1) + (owner.size() - fromIndex);
   }
-}
-
-bool LineBorder::isHidden() const
-{
-  return owner.getState() == HIDDEN;
 }
 
 double LineBorder::euclideanLength() const

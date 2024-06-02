@@ -21,6 +21,9 @@ public:
   int getFromIndex() const;
   int getToIndex() const;
 
+  virtual Point fromPoint() const;
+  virtual Point toPoint() const;
+
   virtual int getNextIdx(int curIndex, int step) const;
   virtual Point getPoint(int index) const;
 
@@ -29,8 +32,6 @@ public:
   void reduceEnds(int countPoints);
 
   virtual int size() const;
-
-  bool isHidden() const;
 
   double euclideanLength() const;
 

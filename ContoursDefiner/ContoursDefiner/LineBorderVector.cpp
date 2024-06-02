@@ -41,7 +41,3 @@ int LineBorderVector::size() const
   return points.size();
 }
 
-bool LineBorderVector::isHidden() const
-{
-    return false;
-}
