@@ -264,3 +264,8 @@ void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, in
     stepRight = -stepRight;
   }
 }
+
+LineBorder LineBorder::inverse() const
+{
+  return LineBorder(owner, toIndex, fromIndex);
+}

@@ -36,6 +36,8 @@ public:
 
   static void reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, int maxDeleted);
 
+  LineBorder inverse() const;
+
 private:
 
   void deleteContourLine();

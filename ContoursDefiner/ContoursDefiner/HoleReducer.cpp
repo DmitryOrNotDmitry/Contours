@@ -3,6 +3,9 @@
 #include "GeneralBorderCalculator.h"
 #include "DataStorageManager.h"
 
+#include <map>
+#include <set>
+
 
 void addPointWithCondition(std::vector<Point>& newBorder,
   const Contour& hole,
@@ -48,6 +51,34 @@ Contour* getContourWithMaxBorder(Contour& hole, std::list<Contour>& contours)
 }
 
 
+std::vector<Contour*> getContourSortedByBorderSize(Contour& hole, std::list<Contour>& contours)
+{
+  std::vector<Contour*> contsWithGeneralBorder = hole.calcNeighbors(contours);
+  double limitDistance = 1;
+
+  std::map<double, Contour*> borderLenToCont;
+
+  for (size_t i = 0; i < contsWithGeneralBorder.size(); i++)
+  {
+    Contour* c = contsWithGeneralBorder[i];
+
+    auto borders = GeneralBorderCalculator::defineNearBorders(hole, *c, limitDistance);
+    double curLen = borders.second.euclideanLength();
+
+    borderLenToCont[curLen] = c;
+  }
+
+  contsWithGeneralBorder.clear();
+  
+  for (auto iter = borderLenToCont.rbegin(); iter != borderLenToCont.rend(); ++iter)
+  {
+    contsWithGeneralBorder.push_back(iter->second);
+  }
+
+  return contsWithGeneralBorder;
+}
+
+
 void sortPointsByProximity(std::vector<Point>& points, const Point& anchorPoint) {
 
   std::sort(points.begin(), points.end(),
@@ -77,9 +108,16 @@ std::vector<Point> defineNewBorder(Contour& hole, Contour& contour, LineBorder o
     checkedPoints[1] = p.toBottom();
     checkedPoints[2] = p.toLeft();
     checkedPoints[3] = p.toUp();
+    //checkedPoints[4] = p.toRight().toUp();
+    //checkedPoints[5] = p.toRight().toBottom();
+    //checkedPoints[6] = p.toLeft().toUp();
+    //checkedPoints[7] = p.toLeft().toBottom();
 
     if (newBorder.size() > 0)
       sortPointsByProximity(checkedPoints, *newBorder.rbegin());
+    else
+      sortPointsByProximity(checkedPoints, oldBorder.getPoint(oldBorder.getFromIndex()));
+
 
     for (size_t j = 0; j < checkedPoints.size(); j++)
       addPointWithCondition(newBorder, hole, contour, p, checkedPoints[j]);
@@ -89,26 +127,68 @@ std::vector<Point> defineNewBorder(Contour& hole, Contour& contour, LineBorder o
 }
 
 
+int givePartHoleToContour(Contour& hole, Contour& contour)
+{
+  double limitDistance = 1;
+  
+  auto borders = GeneralBorderCalculator::defineNearBorders(hole, contour, limitDistance);
+
+  std::vector<Point> newBorder = defineNewBorder(hole, contour, borders.second);
+
+  if (newBorder.size() == 0)
+    return 0;
+
+  LineBorderVector lineBorder(newBorder);
+
+  borders.second.replaceBorderWith(lineBorder);
+  borders.first.replaceBorderWith(lineBorder);
+
+  return newBorder.size();
+}
+
+
+void includeIntoDominant(Contour& hole, std::list<Contour>& contours)
+{
+  double limitDistance = 1;
+
+  if (hole.contains(Point(285, 116)))
+    int t = 0;
+
+  Contour* selectedCont = getContourWithMaxBorder(hole, contours);
+  if (selectedCont)
+  {
+    auto borders = GeneralBorderCalculator::defineNearBorders(hole, *selectedCont, limitDistance);
+
+    LineBorder newBorder = borders.first.inverse();
+
+    borders.second.replaceBorderWith(newBorder);
+    borders.first.replaceBorderWith(borders.second);
+  }
+
+}
+
+
 void reduceHole(Contour& hole, std::list<Contour>& contours)
 {
+  if (hole.area() < 1.001)
+  {
+    includeIntoDominant(hole, contours);
+    return;
+  }
+
   double limitDistance = 1;
 
   Contour* selectedCont = getContourWithMaxBorder(hole, contours);
 
   if (selectedCont)
   {
-    auto borders = GeneralBorderCalculator::defineNearBorders(hole, *selectedCont, limitDistance);
-
-    std::vector<Point> newBorder = defineNewBorder(hole, *selectedCont, borders.second);
-
-    LineBorderVector lineBorder(newBorder);
-
-    borders.second.replaceBorderWith(lineBorder);
-    borders.first.replaceBorderWith(lineBorder);
+    int countPointsGiven = givePartHoleToContour(hole, *selectedCont);
+    if (countPointsGiven == 0)
+      return;
 
     if (hole.area() > 0.001)
       hole.deletePins();
-   
+    
     std::vector<Contour> sepHoles = hole.separate();
 
     for (size_t i = 0; i < sepHoles.size(); i++)
@@ -118,7 +198,61 @@ void reduceHole(Contour& hole, std::list<Contour>& contours)
 }
 
 
+void reduceHoleMultiBorders(Contour& hole, std::list<Contour>& contours)
+{
+  double limitDistance = 1;
+  std::vector<Contour*> contourCandiates = getContourSortedByBorderSize(hole, contours);
+
+  for (size_t i = 0; i < contourCandiates.size(); i++)
+  {
+    if (hole.area() < 1.001)
+    {
+      includeIntoDominant(hole, contours);
+      return;
+    }
+
+    Contour* selectedCont = contourCandiates[i];
+
+    std::vector<Contour*> checkOnValideContour = hole.calcNeighbors(contours);
+    if (std::find(checkOnValideContour.begin(), checkOnValideContour.end(), selectedCont) == checkOnValideContour.end())
+      continue;
+    
+    auto borders = GeneralBorderCalculator::defineNearBorders(hole, *selectedCont, limitDistance);
+
+    if (borders.second.size() <= 1)
+      continue;
+
+    std::vector<Point> newBorder = defineNewBorder(hole, *selectedCont, borders.second);
+
+    if (newBorder.size() > 0)
+    {
+      LineBorderVector lineBorder(newBorder);
+
+      borders.second.replaceBorderWith(lineBorder);
+      borders.first.replaceBorderWith(lineBorder);
+    
+      if (hole.area() < 0.001)
+        return;
+
+      hole.deletePins();
+    }
+  }
+  
+  std::vector<Contour> sepHoles = hole.separate();
+
+  for (size_t i = 0; i < sepHoles.size(); i++)
+    if (sepHoles[i].area() > 0.001)
+      reduceHoleMultiBorders(sepHoles[i], contours);
+    
+}
+
+
 void HoleReducer::process(Contour& hole, std::list<Contour>& contours)
 {
   reduceHole(hole, contours);
+}
+
+void HoleReducer::processMulti(Contour& hole, std::list<Contour>& contours)
+{
+  reduceHoleMultiBorders(hole, contours);
 }
