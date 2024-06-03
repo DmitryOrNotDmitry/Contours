@@ -12,9 +12,25 @@ Contour::Contour()
   lastKAddedPoints.resize(K, Point(-1, -1));
 }
 
+Contour::Contour(const Contour& other)
+  : points(other.points)
+  , lastKAddedPoints(other.lastKAddedPoints)
+  , state(other.state)
+{
+}
+
 
 Contour::~Contour()
 {
+}
+
+Contour& Contour::operator=(const Contour& other)
+{
+  points = other.points;
+  lastKAddedPoints = other.lastKAddedPoints;
+  state = other.state;
+
+  return *this;
 }
 
 
@@ -38,6 +54,11 @@ void Contour::insertPoint(Point point, int index)
     return;
 
   points.insert(points.begin() + index, point);
+}
+
+void Contour::setPoint(int idx, Point point)
+{
+  points[idx] = point;
 }
 
 
@@ -349,6 +370,11 @@ void Contour::deletePins()
       int countDeleted = deletePoints(i + 1, idxSamePoint);
     }
   }
+}
+
+int Contour::indexOf(const Point& point) const
+{
+  return indexOf(point, 0, size());
 }
 
 int Contour::indexOf(const Point& point, int from, int count) const

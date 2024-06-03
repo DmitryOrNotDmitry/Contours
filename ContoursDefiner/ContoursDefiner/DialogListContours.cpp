@@ -102,7 +102,7 @@ void DialogListContours::OnBnClickedSearhHoles()
   }
 
   holes.clear();
-
+  
   RecalcImageViews(hImage);
 }
 

@@ -22,11 +22,16 @@ class Contour
 
 public:
   Contour();
+  Contour(const Contour& other);
   ~Contour();
+
+  Contour& operator=(const Contour& other);
 
   void addPoint(int x, int y);
   void addPoint(Point point);
   void insertPoint(Point point, int index);
+
+  void setPoint(int idx, Point point);
 
   std::vector<Point> addPoints(std::vector<Point>& newPoints);
   std::vector<Point>& getPoints();
@@ -69,6 +74,7 @@ public:
 
   void deletePins();
 
+  int indexOf(const Point& point) const;
   int indexOf(const Point& point, int from, int count) const;
 
   int deletePoints(int from, int to);
