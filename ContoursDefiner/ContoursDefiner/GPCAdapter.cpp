@@ -2,6 +2,8 @@
 #include "GPC/gpc.cpp"
 #include "BresenhamLine.h"
 #include <algorithm>
+#include "StarFixer.h"
+#include "CrossFixer.h"
 
 void freePolygon(gpc_polygon* p)
 {
@@ -14,16 +16,7 @@ void freePolygon(gpc_polygon* p)
 }
 
 
-struct Replacement
-{
-  Replacement(Point base, Point inserted) : base(base), inserted(inserted) { }
-
-  Point base;
-  Point inserted;
-};
-
-
-std::vector<Point> getBasePoints(const std::list<Contour>& contours)
+void defineReplaces(const std::list<Contour>& contours, std::vector<GPCFixer*> fixers)
 {
   Point XYmin(1000000000, 1000000000);
   Point XYmax(0, 0);
@@ -48,7 +41,7 @@ std::vector<Point> getBasePoints(const std::list<Contour>& contours)
   int rows = XYmax.y - XYmin.y + 2;
   int cols = XYmax.x - XYmin.x + 2;
   if (rows <= 0 || cols <= 0)
-    return basePoints;
+    return;
   
   std::vector<std::vector<char>> matrix;
   matrix.resize(rows);
@@ -66,75 +59,9 @@ std::vector<Point> getBasePoints(const std::list<Contour>& contours)
     }
   }
 
-  for (int i = 1; i < rows - 1; i++)
+  for (size_t i = 0; i < fixers.size(); i++)
   {
-    for (int j = 1; j < cols - 1; j++)
-    {
-      if (
-        matrix[i + 1][j - 1] != 0 && matrix[i + 1][j    ] == 0 && matrix[i + 1][j + 1] != 0 &&
-        matrix[i    ][j - 1] == 0 && matrix[i    ][j    ] != 0 && matrix[i    ][j + 1] == 0 &&
-        matrix[i - 1][j - 1] != 0 && matrix[i - 1][j    ] == 0 && matrix[i - 1][j + 1] != 0
-        )
-        basePoints.push_back(Point(j + XYmin.x - 1, i + XYmin.y - 1));
-    }
-  }
-
-  return basePoints;
-}
-
-
-std::vector<Replacement> modifyContours(const std::list<Contour>& contours, std::list<Contour>& newContours, const std::vector<Point>& basePoints)
-{
-  std::vector<Replacement> replaces;
-
-  double prevDist, nextDist;
-  for (size_t i = 0; i < basePoints.size(); i++)
-  {
-    Point insertedPoint = basePoints[i].toUp();
-    replaces.push_back(Replacement(basePoints[i], insertedPoint));
-
-    for (auto iter = newContours.begin(); iter != newContours.end(); ++iter)
-    {
-      int baseIdx = iter->indexOf(basePoints[i]);
-      if (baseIdx == -1)
-        continue;
-
-      int leftIdx = iter->indexOf(insertedPoint.toLeft());
-      int rightIdx = iter->indexOf(insertedPoint.toRight());
-      if (
-        (rightIdx == -1 && leftIdx == -1) ||
-        (rightIdx != -1 && leftIdx != -1)
-        )
-        continue;
-
-      prevDist = insertedPoint.DistanceTo(iter->getPoint(iter->getNextIdx(baseIdx, -1)));
-      nextDist = insertedPoint.DistanceTo(iter->getPoint(iter->getNextIdx(baseIdx)));
-
-      if (prevDist < nextDist)
-      {
-        iter->insertPoint(insertedPoint, baseIdx);
-      }
-      else
-      {
-        iter->insertPoint(insertedPoint, baseIdx + 1);
-      }
-    }
-  }
-
-  return replaces;
-}
-
-
-void rollbackReplacements(std::vector<Contour>& holes, const std::vector<Replacement>& replaces)
-{
-  for (size_t i = 0; i < replaces.size(); i++)
-  {
-    for (auto iter = holes.begin(); iter != holes.end(); ++iter)
-    {
-      int insertedIdx = iter->indexOf(replaces[i].inserted);
-      if (insertedIdx != -1)
-        iter->setPoint(insertedIdx, replaces[i].base);
-    }
+    fixers[i]->calcReplaces(matrix, XYmin);
   }
 }
 
@@ -204,16 +131,20 @@ std::vector<Contour> importToContours(gpc_polygon* polygon, int isHole = TRUE)
 
 std::vector<Contour> GPCAdapter::searchHoles(const std::list<Contour>& unprocessedContours)
 {
+  std::vector<GPCFixer*> fixers;
+  StarFixer star;
+  fixers.push_back(&star);
 
-  std::vector<Point> basePoints = getBasePoints(unprocessedContours);
+  CrossFixer cross;
+  fixers.push_back(&cross);
+
+  defineReplaces(unprocessedContours, fixers);
 
   std::list<Contour> contours(unprocessedContours);
-  std::vector<Replacement> replaces;
 
-  if (basePoints.size() > 0)
-  {
-    replaces = modifyContours(unprocessedContours, contours, basePoints);
-  }
+  for (auto iter = fixers.begin(); iter != fixers.end(); ++iter)
+    if (!(*iter)->isEmpty())
+      (*iter)->modifyContours(unprocessedContours, contours);
 
   gpc_polygon* polygon1 = new gpc_polygon;
   exportToPolygon(contours, polygon1);
@@ -236,7 +167,9 @@ std::vector<Contour> GPCAdapter::searchHoles(const std::list<Contour>& unprocess
   gpc_free_polygon(result);
   delete result;
 
-  rollbackReplacements(holes, replaces);
+  for (auto iter = fixers.rbegin(); iter != fixers.rend(); ++iter)
+    if (!(*iter)->isEmpty())
+      (*iter)->revertReplaces(holes);
 
   return holes;
 }
