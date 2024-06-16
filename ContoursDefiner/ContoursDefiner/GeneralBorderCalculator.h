@@ -6,7 +6,7 @@
 class GeneralBorderCalculator
 {
 
-  static bool haveContoursSameDirection(const Contour& first, const Contour& second, const std::pair<int, int>& controlPointsIndexes);
+  static bool haveContoursSameDirection(const Contour& first, const Contour& second);
 
   static std::pair<int, int> calculateNearestPointsIdx(const Contour& first, const Contour& second);
 

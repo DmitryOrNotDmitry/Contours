@@ -20,6 +20,7 @@ class Contour
 
   void deleteYetAddedPoints(std::vector<Point>& deletedPoints);
 
+
 public:
   Contour();
   Contour(const Contour& other);
@@ -64,8 +65,14 @@ public:
 
   Point getAvaragePoint();
 
-  double area();
-  double area(int from, int to);
+  double area() const;
+  double area(int from, int to) const;
+  double signArea(int from, int to) const;
+
+  bool isClockwise(int from, int to) const;
+  bool isClockwise() const;
+
+  void reverse();
 
   std::vector<Contour*> calcNeighbors(std::list<Contour>& contours);
 

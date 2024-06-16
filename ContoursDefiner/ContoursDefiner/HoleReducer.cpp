@@ -108,10 +108,6 @@ std::vector<Point> defineNewBorder(Contour& hole, Contour& contour, LineBorder o
     checkedPoints[1] = p.toBottom();
     checkedPoints[2] = p.toLeft();
     checkedPoints[3] = p.toUp();
-    //checkedPoints[4] = p.toRight().toUp();
-    //checkedPoints[5] = p.toRight().toBottom();
-    //checkedPoints[6] = p.toLeft().toUp();
-    //checkedPoints[7] = p.toLeft().toBottom();
 
     if (newBorder.size() > 0)
       sortPointsByProximity(checkedPoints, *newBorder.rbegin());
@@ -122,7 +118,7 @@ std::vector<Point> defineNewBorder(Contour& hole, Contour& contour, LineBorder o
     for (size_t j = 0; j < checkedPoints.size(); j++)
       addPointWithCondition(newBorder, hole, contour, p, checkedPoints[j]);
   }
-
+  
   return newBorder;
 }
 
@@ -151,9 +147,6 @@ void includeIntoDominant(Contour& hole, std::list<Contour>& contours)
 {
   double limitDistance = 1;
 
-  if (hole.contains(Point(285, 116)))
-    int t = 0;
-
   Contour* selectedCont = getContourWithMaxBorder(hole, contours);
   if (selectedCont)
   {
@@ -168,34 +161,36 @@ void includeIntoDominant(Contour& hole, std::list<Contour>& contours)
 }
 
 
-void reduceHole(Contour& hole, std::list<Contour>& contours)
-{
-  if (hole.area() < 1.001)
-  {
-    includeIntoDominant(hole, contours);
-    return;
-  }
+//void reduceHole(Contour& hole, std::list<Contour>& contours)
+//{
+  //if (hole.area() < 1.001)
+  //{
+  //  includeIntoDominant(hole, contours);
+  //  return;
+  //}
 
-  double limitDistance = 1;
+  //double limitDistance = 1;
 
-  Contour* selectedCont = getContourWithMaxBorder(hole, contours);
+  //Contour* selectedCont = getContourWithMaxBorder(hole, contours);
 
-  if (selectedCont)
-  {
-    int countPointsGiven = givePartHoleToContour(hole, *selectedCont);
-    if (countPointsGiven == 0)
-      return;
+  //if (selectedCont)
+  //{
+  //  int countPointsGiven = givePartHoleToContour(hole, *selectedCont);
+  //  if (countPointsGiven == 0)
+  //    return;
 
-    if (hole.area() > 0.001)
-      hole.deletePins();
-    
-    std::vector<Contour> sepHoles = hole.separate();
+  //  if (hole.area() > 0.001)
+  //    hole.deletePins();
 
-    for (size_t i = 0; i < sepHoles.size(); i++)
-      if (sepHoles[i].area() > 0.001)
-        reduceHole(sepHoles[i], contours);
-  }
-}
+  //  selectedCont->haveRepeatPoints();
+
+  //  std::vector<Contour> sepHoles = hole.separate();
+
+  //  for (size_t i = 0; i < sepHoles.size(); i++)
+  //    if (sepHoles[i].area() > 0.001)
+  //      reduceHole(sepHoles[i], contours);
+  //}
+//}
 
 
 void reduceHoleMultiBorders(Contour& hole, std::list<Contour>& contours)
@@ -247,10 +242,10 @@ void reduceHoleMultiBorders(Contour& hole, std::list<Contour>& contours)
 }
 
 
-void HoleReducer::process(Contour& hole, std::list<Contour>& contours)
-{
-  reduceHole(hole, contours);
-}
+//void HoleReducer::process(Contour& hole, std::list<Contour>& contours)
+//{
+//  reduceHole(hole, contours);
+//}
 
 void HoleReducer::processMulti(Contour& hole, std::list<Contour>& contours)
 {

@@ -75,11 +75,11 @@ void LineBorder::replaceBorderWith(const LineBorder& line)
 {
   Point contourPoint = getPoint(fromIndex);
 
-  Point initPoint = line.getPoint(line.fromIndex);
+  Point initPoint = line.fromPoint();
   bool useBeginPoint = true;
-  if (contourPoint.DistanceTo(initPoint) > contourPoint.DistanceTo(line.getPoint(line.toIndex)))
+  if (contourPoint.DistanceTo(initPoint) > contourPoint.DistanceTo(line.toPoint()))
   {
-    initPoint = line.getPoint(line.toIndex);
+    initPoint = line.toPoint();
     useBeginPoint = false;
   }
 
@@ -117,9 +117,9 @@ void LineBorder::replaceBorderWith(const LineBorder& line)
   else
     contourPoint = getPoint(toIndex);
 
-  initPoint = line.getPoint(line.toIndex);
+  initPoint = line.toPoint();
   if (!useBeginPoint)
-    initPoint = line.getPoint(line.fromIndex);
+    initPoint = line.fromPoint();
 
   if (contourPoint.DistanceTo(initPoint) >= CONNECT_LINE_MIN_DISTANCE)
   {
@@ -273,4 +273,30 @@ void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, in
 LineBorder LineBorder::inverse() const
 {
   return LineBorder(owner, toIndex, fromIndex);
+}
+
+void LineBorder::agreeWith(const LineBorder& line)
+{
+  int offset = 0;
+  int idx = fromIndex;
+  int idxOther = line.fromIndex;
+  for (int i = 0; i < size(); i++)
+  {
+    if (getPoint(idx) == line.getPoint(idxOther))
+      break;
+    
+    idxOther = line.getNextIdx(idxOther);
+    offset++;
+  }
+
+  if (offset > 0)
+  {
+    fromIndex = getNextIdx(fromIndex, -offset);
+    toIndex = getNextIdx(toIndex, -offset);
+  }
+}
+
+bool LineBorder::isClockwise() const
+{
+  return owner.isClockwise(fromIndex, toIndex);
 }

@@ -111,35 +111,9 @@ std::pair<int, int> GeneralBorderCalculator::calculateNearestPointsIdx(const Con
 }
 
 
-double calcDistDeltaByIterations(const Contour& first, const Contour& second, const std::pair<int, int>& controlPointsIndexes, bool isDiffSteps = true)
+bool GeneralBorderCalculator::haveContoursSameDirection(const Contour& first, const Contour& second)
 {
-  int countCheckedPoints = 5;
-  int step = 1;
-  
-  int firstIndex = controlPointsIndexes.first;
-  int secondIndex = controlPointsIndexes.second;
-
-  double delta = 0;
-  for (int i = 0; i < countCheckedPoints; i++)
-  {
-    firstIndex = first.getNextIdx(firstIndex, step);
-    if (isDiffSteps)
-      secondIndex = second.getNextIdx(secondIndex, -step);
-    else
-      secondIndex = second.getNextIdx(secondIndex, step);
-
-    delta += first[firstIndex].DistanceTo(second[secondIndex]);
-  }
-  return delta;
-}
-
-
-bool GeneralBorderCalculator::haveContoursSameDirection(const Contour& first, const Contour& second, const std::pair<int, int>& controlPointsIndexes)
-{
-  double deltaDistSameSteps = calcDistDeltaByIterations(first, second, controlPointsIndexes, false);
-  double deltaDistDiffSteps = calcDistDeltaByIterations(first, second, controlPointsIndexes);
-
-  return deltaDistSameSteps < deltaDistDiffSteps;
+  return first.isClockwise() == second.isClockwise();
 }
 
 
@@ -154,9 +128,9 @@ std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Con
 
   int stepFirst = 1;
   int stepSecond = -1;
-  //if (haveContoursSameDirection(first, second, controlPoints))
+  //if (haveContoursSameDirection(first, second))
   //  stepSecond = 1;
-  // TODO
+  
   ContourBorderAttrs firstContAttrs(first, controlPoints.first, controlPoints.first, stepFirst);
   ContourBorderAttrs secondContAttrs(second, controlPoints.second, controlPoints.second, stepSecond);
 
@@ -184,6 +158,14 @@ std::pair<LineBorder, LineBorder> GeneralBorderCalculator::defineNearBorders(Con
   
   result.first = LineBorder(first, firstBorder.first, firstBorder.second);
   result.second = LineBorder(second, secondBorder.first, secondBorder.second);
+
+  /*if (result.first.size() == result.first.getOwner().size())
+  {
+    if (result.first.isClockwise() != result.second.isClockwise())
+      result.first.getOwner().reverse();
+
+    result.first.agreeWith(result.second);
+  }*/
 
   LineBorder::reduceEndsWhileApproxTo(result.first, result.second, limitDist * 2);
   

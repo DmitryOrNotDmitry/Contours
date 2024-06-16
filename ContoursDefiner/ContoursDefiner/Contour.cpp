@@ -271,6 +271,23 @@ void Contour::deleteYetAddedPoints(std::vector<Point>& deletedPoints)
   }
 }
 
+double Contour::signArea(int from, int to) const
+{
+  double area = 0;
+
+  for (int i = from; i != to; i = getNextIdx(i, 1))
+  {
+    int nextI = getNextIdx(i, 1);
+    area += points[i].x * points[nextI].y - points[i].y * points[nextI].x;
+  }
+
+  area += points[to].x * points[from].y - points[to].y * points[from].x;
+
+  area /= 2;
+
+  return area;
+}
+
 bool Contour::haveRepeatPoints() const
 {
   bool haveRepeat = false;
@@ -332,26 +349,29 @@ Point Contour::getAvaragePoint()
   return Point(x, y);
 }
 
-double Contour::area()
+double Contour::area() const
 {
   return area(0, size() - 1);
 }
 
-double Contour::area(int from, int to)
+double Contour::area(int from, int to) const
 {
-  double area = 0;
+  return abs(signArea(from, to));
+}
 
-  for (int i = from; i != to; i = getNextIdx(i, 1))
-  {
-    int nextI = getNextIdx(i, 1);
-    area += points[i].x * points[nextI].y - points[i].y * points[nextI].x;
-  }
+bool Contour::isClockwise(int from, int to) const
+{
+  return signArea(from, to) < 0;
+}
 
-  area += points[to].x * points[from].y - points[to].y * points[from].x;
+bool Contour::isClockwise() const
+{
+  return isClockwise(0, size() - 1);
+}
 
-  area /= 2;
-
-  return abs(area);
+void Contour::reverse()
+{
+  std::reverse(points.begin(), points.end());
 }
 
 void Contour::deletePins()
@@ -410,7 +430,7 @@ int Contour::deletePoints(int from, int to)
     points.erase(points.begin(), points.begin() + to + 1);
   }
 
-  return dist;
+  return dist + 1;
 }
 
 int Contour::distance(int from, int to) const

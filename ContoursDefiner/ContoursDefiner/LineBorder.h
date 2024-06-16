@@ -24,7 +24,7 @@ public:
   virtual Point fromPoint() const;
   virtual Point toPoint() const;
 
-  virtual int getNextIdx(int curIndex, int step) const;
+  virtual int getNextIdx(int curIndex, int step = 1) const;
   virtual Point getPoint(int index) const;
 
   void replaceBorderWith(const LineBorder& line);
@@ -38,6 +38,10 @@ public:
   static void reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, int maxDeleted);
 
   LineBorder inverse() const;
+
+  void agreeWith(const LineBorder& line);
+
+  bool isClockwise() const;
 
 private:
 
