@@ -40,11 +40,13 @@ public:
   afx_msg void OnBnClickedCancel();
   afx_msg void OnBnClickedCalcControlPoints();
   afx_msg void OnBnClickedSearhHoles();
+  afx_msg void OnBnClickedShowInitHoles();
   void OnLvnItemchangedChanlist(NMHDR* pNMHDR, LRESULT* pResult);
 
   CListCtrl contoursTable;
-  CButton buttonControlPoints;
-  CButton oneContourMode;
+  CSpinButtonCtrl spinMaxSquare;
+  CSpinButtonCtrl spinMinSquare;
+  CButton checkBoxShowHoles;
 
   bool isRowSelected(int row) const;
 

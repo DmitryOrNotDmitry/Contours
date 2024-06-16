@@ -2,6 +2,9 @@
 
 void HoleDrawer::draw(HDC& hDC, double scaleX, double scaleY)
 {
+  if (!dataManager.isShowHoles())
+    return;
+
   HGDIOBJ oldPen = SelectObject(hDC, pen);
 
   int count_holes = dataManager.getHoles().size();

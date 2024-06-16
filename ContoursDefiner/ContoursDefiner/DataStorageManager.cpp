@@ -9,6 +9,7 @@ DataStorageManager& DataStorageManager::getInstance()
 
 DataStorageManager::DataStorageManager()
 {
+  showHoles = true;
 }
 
 void DataStorageManager::addContour(Contour& contour)
@@ -38,6 +39,16 @@ std::vector<LineBorder>& DataStorageManager::getBorders()
   return borders;
 }
 
+
+bool DataStorageManager::isShowHoles()
+{
+    return showHoles;
+}
+
+bool DataStorageManager::setShowHoles(bool showHoles)
+{
+  return this->showHoles = showHoles;
+}
 
 void DataStorageManager::addHole(Contour&& hole)
 {
