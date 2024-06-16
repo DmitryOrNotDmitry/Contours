@@ -13,7 +13,7 @@ void BorderDrawer::draw(HDC& hDC, double scaleX, double scaleY)
 
     int size = border.size();
 
-    MoveToEx(hDC, toFloatDraw(border.fromPoint().x, scaleX), toFloatDraw(border.toPoint().y, scaleY), NULL);
+    MoveToEx(hDC, toFloatDraw(border.fromPoint().x, scaleX), toFloatDraw(border.fromPoint().y, scaleY), NULL);
     for (int j = 0; j < size; j++)
     {
       int idx = border.getNextIdx(border.getFromIndex(), j);
