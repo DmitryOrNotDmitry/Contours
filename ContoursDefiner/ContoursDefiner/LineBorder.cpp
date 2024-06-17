@@ -175,6 +175,23 @@ double LineBorder::euclideanLength() const
   return len;
 }
 
+double LineBorder::squareLength() const
+{
+  double len = 0;
+  int idx = fromIndex;
+  int nextIdx = getNextIdx(idx, 1);
+
+  for (int i = 0; i < size() - 1; i++)
+  {
+    len += getPoint(idx).squareDistanceTo(getPoint(nextIdx));
+
+    idx = getNextIdx(idx, 1);
+    nextIdx = getNextIdx(nextIdx, 1);
+  }
+
+  return len;
+}
+
 void LineBorder::deleteContourLine()
 {
   std::vector<Point>& points = owner.getPoints();
@@ -289,6 +306,7 @@ void LineBorder::agreeWith(const LineBorder& line)
     offset++;
   }
 
+  offset = (size() - 1 - offset) % size();
   if (offset > 0)
   {
     fromIndex = getNextIdx(fromIndex, -offset);

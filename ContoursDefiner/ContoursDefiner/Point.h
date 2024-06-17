@@ -19,6 +19,7 @@ public:
   Point toUp(int offset = 1) const;
 
   double DistanceTo(const Point& to) const;
+  double squareDistanceTo(const Point& to) const;
 
   Point& operator=(const Point& other);
   Point& operator=(Point&& other);

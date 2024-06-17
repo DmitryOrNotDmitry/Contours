@@ -34,6 +34,7 @@ public:
   virtual int size() const;
 
   double euclideanLength() const;
+  double squareLength() const;
 
   static void reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, int maxDeleted);
 

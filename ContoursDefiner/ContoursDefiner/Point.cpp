@@ -66,6 +66,11 @@ double Point::DistanceTo(const Point& to) const
   return sqrt(pow((double)this->x - to.x, 2) + pow((double)this->y - to.y, 2));
 }
 
+double Point::squareDistanceTo(const Point& to) const
+{
+    return pow((double)this->x - to.x, 2) + pow((double)this->y - to.y, 2);
+}
+
 bool Point::operator==(const Point& other) const
 {
   return this->x == other.x && this->y == other.y;
