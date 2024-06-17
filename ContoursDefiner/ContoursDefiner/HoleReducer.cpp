@@ -2,9 +2,13 @@
 #include "LineBorderVector.h"
 #include "GeneralBorderCalculator.h"
 #include "DataStorageManager.h"
+#include "HoleSeparator.h"
 
 #include <map>
 #include <set>
+
+
+#define EPSILON 0.001
 
 
 void addPointWithCondition(std::vector<Point>& newBorder,
@@ -26,23 +30,21 @@ void addPointWithCondition(std::vector<Point>& newBorder,
 }
 
 
-Contour* getContourWithMaxBorder(Contour& hole, std::list<Contour>& contours)
+Contour* getContourWithMaxBorder(Contour& hole, std::vector<Contour*> contours)
 {
-  std::vector<Contour*> contsWithGeneralBorder = hole.calcNeighbors(contours);
-
   Contour* contWithMaxBorder = nullptr;
   double maxBorderSize = 0;
   double limitDistance = 1;
 
-  for (size_t i = 0; i < contsWithGeneralBorder.size(); i++)
+  for (size_t i = 0; i < contours.size(); i++)
   {
-    auto borders = GeneralBorderCalculator::defineNearBorders(hole, *contsWithGeneralBorder[i], limitDistance);
+    auto borders = GeneralBorderCalculator::defineNearBorders(hole, *contours[i], limitDistance);
     
     double curSize = borders.first.euclideanLength();
     
     if (curSize > maxBorderSize)
     {
-      contWithMaxBorder = contsWithGeneralBorder[i];
+      contWithMaxBorder = contours[i];
       maxBorderSize = curSize;
     }
   }
@@ -147,10 +149,20 @@ void includeIntoDominant(Contour& hole, std::list<Contour>& contours)
 {
   double limitDistance = 1;
 
-  Contour* selectedCont = getContourWithMaxBorder(hole, contours);
+  std::vector<Contour*> contsWithGeneralBorder = hole.calcNeighbors(contours);
+
+  Contour* selectedCont = getContourWithMaxBorder(hole, contsWithGeneralBorder);
   if (selectedCont)
   {
     auto borders = GeneralBorderCalculator::defineNearBorders(hole, *selectedCont, limitDistance);
+
+    if (borders.second.size() <= 1)
+      return;
+
+    if (hole.size() == borders.first.size())
+    {
+      borders.first.agreeWith(borders.second);
+    }
 
     LineBorder newBorder = borders.first.inverse();
 
@@ -193,52 +205,85 @@ void includeIntoDominant(Contour& hole, std::list<Contour>& contours)
 //}
 
 
+
+struct HoleDistribution
+{
+  HoleDistribution() : hole(nullptr), forContour(nullptr) {}
+
+  HoleDistribution(Contour* hole, Contour* forContour)
+    : hole(hole), forContour(forContour) { }
+     
+  Contour* hole;
+  Contour* forContour;
+};
+
+
 void reduceHoleMultiBorders(Contour& hole, std::list<Contour>& contours)
 {
-  double limitDistance = 1;
-  std::vector<Contour*> contourCandiates = getContourSortedByBorderSize(hole, contours);
+  const double limitDistance = 1;
 
-  for (size_t i = 0; i < contourCandiates.size(); i++)
-  {
-    if (hole.area() < 1.001)
-    {
-      includeIntoDominant(hole, contours);
-      return;
-    }
-
-    Contour* selectedCont = contourCandiates[i];
-
-    std::vector<Contour*> checkOnValideContour = hole.calcNeighbors(contours);
-    if (std::find(checkOnValideContour.begin(), checkOnValideContour.end(), selectedCont) == checkOnValideContour.end())
-      continue;
-    
-    auto borders = GeneralBorderCalculator::defineNearBorders(hole, *selectedCont, limitDistance);
-
-    if (borders.second.size() <= 1)
-      continue;
-
-    std::vector<Point> newBorder = defineNewBorder(hole, *selectedCont, borders.second);
-
-    if (newBorder.size() > 0)
-    {
-      LineBorderVector lineBorder(newBorder);
-
-      borders.second.replaceBorderWith(lineBorder);
-      borders.first.replaceBorderWith(lineBorder);
-    
-      if (hole.area() < 0.001)
-        return;
-
-      hole.deletePins();
-    }
-  }
+  std::vector<Contour*> contsWithGeneralBorder = hole.calcNeighbors(contours);
   
-  std::vector<Contour> sepHoles = hole.separate();
+  std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(hole);
+  std::multimap<int, HoleDistribution> holesDistribution;
 
-  for (size_t i = 0; i < sepHoles.size(); i++)
-    if (sepHoles[i].area() > 0.001)
-      reduceHoleMultiBorders(sepHoles[i], contours);
-    
+  while (atomicHoles.size() > 0)
+  {
+    holesDistribution.clear();
+
+    for (size_t i = 0; i < atomicHoles.size(); i++)
+    {
+      Contour* selectedCont = getContourWithMaxBorder(atomicHoles[i], contsWithGeneralBorder);
+
+      if (selectedCont == nullptr)
+        continue;
+
+      auto borders = GeneralBorderCalculator::defineNearBorders(atomicHoles[i], *selectedCont, limitDistance);
+
+      if (borders.second.size() <= 1)
+        continue;
+
+      int len = static_cast<int>(borders.first.squareLength());
+
+      holesDistribution.insert(std::make_pair(len, HoleDistribution(&atomicHoles[i], selectedCont)));
+    }
+
+
+    if (holesDistribution.size() == 0)
+      break;
+
+
+    for (auto iter = holesDistribution.rbegin(); iter != holesDistribution.rend(); ++iter)
+    {
+      Contour& hole = *iter->second.hole;
+      Contour& selectedCont = *iter->second.forContour;
+
+      auto borders = GeneralBorderCalculator::defineNearBorders(hole, selectedCont, limitDistance);
+      
+      if (hole.contains(Point(317, 23)) && hole.contains(Point(317, 24))) // TODO
+        int t = 0;
+      
+      if (hole.size() == borders.first.size())
+      {
+        borders.first.agreeWith(borders.second);
+      }
+
+      LineBorder newBorder = borders.first.inverse();
+
+      borders.second.replaceBorderWith(newBorder);
+      borders.first.replaceBorderWith(borders.second);
+    }
+    //break; // TODO
+
+    std::vector<Contour> restHoles;
+    restHoles.reserve(atomicHoles.size());
+    for (size_t i = 0; i < atomicHoles.size(); i++)
+      if (atomicHoles[i].area() > 0.001)
+        restHoles.push_back(std::move(atomicHoles[i]));
+
+    atomicHoles = std::move(restHoles);
+  }
+  //_sleep(1000);
 }
 
 
@@ -247,7 +292,20 @@ void reduceHoleMultiBorders(Contour& hole, std::list<Contour>& contours)
 //  reduceHole(hole, contours);
 //}
 
-void HoleReducer::processMulti(Contour& hole, std::list<Contour>& contours)
+void HoleReducer::processMulti(Contour& hole, std::list<Contour>& contours, double minSquare, double maxSquare)
 {
+  double holeArea = hole.area();
+
+  if (holeArea > (maxSquare - EPSILON))
+  {
+    return;
+  }
+
+  if (holeArea < (minSquare + EPSILON))
+  {
+    includeIntoDominant(hole, contours);
+    return;
+  }
+
   reduceHoleMultiBorders(hole, contours);
 }

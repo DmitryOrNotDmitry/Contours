@@ -62,7 +62,7 @@ BOOL DialogListContours::OnInitDialog()
   addColumn(LVCFMT_LEFT, 170, "Контур", 1);
 
   spinMaxSquare.SetRange(0, 1000);
-  spinMaxSquare.SetPos(100);
+  spinMaxSquare.SetPos(300);
   spinMinSquare.SetRange(0, 1000);
   spinMinSquare.SetPos(4);
 
@@ -154,33 +154,26 @@ void DialogListContours::OnBnClickedCalcControlPoints()
 
 void DialogListContours::OnBnClickedSearhHoles()
 {
-  std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(dataManager.getContours());
-  std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[0]);
+  //std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(dataManager.getContours());
+  //std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[0]);
 
-  for (size_t i = 0; i < atomicHoles.size(); i++)
-  {
-    dataManager.addHole(std::move(atomicHoles[i]));
-  }
-  RecalcImageViews(hImage);
-  return;
-  int maxSquare = getIntFromDlgItem(IDC_EDITmax_square_distribution);
-  int minSquare = getIntFromDlgItem(IDC_EDITmin_square_distribution);
-
+  //for (size_t i = 0; i < atomicHoles.size(); i++)
+  //{
+  //  dataManager.addHole(std::move(atomicHoles[i]));
+  //}
+  //RecalcImageViews(hImage);
+  //return;
+  
   if (dataManager.getContours().size() == 0)
   {
     MessageBox("Необходимо создать хотя бы 1 контур!", "Построение контуров");
     return;
   }
 
-  //dataManager.getHoles().clear();
-
   std::vector<Contour> dataHoles = GPCAdapter::searchHoles(dataManager.getContours());
   int countNewHoles = dataHoles.size();
   for (size_t i = 0; i < dataHoles.size(); i++)
   {
-    /*if (dataManager.getHoles().size() > 0)
-      break;
-    */
     dataManager.addHole(std::move(dataHoles[i]));
   }
 
@@ -191,10 +184,12 @@ void DialogListContours::OnBnClickedSearhHoles()
 
   size_t countHoles = holes.size();
 
+  int maxSquare = getIntFromDlgItem(IDC_EDITmax_square_distribution);
+  int minSquare = getIntFromDlgItem(IDC_EDITmin_square_distribution);
+  
   for (size_t i = countHoles - countNewHoles; i < countHoles; i++)
-    //for (size_t i = 0; i < copyHoles.size(); i++)
   {
-    HoleReducer::processMulti(holes[i], contours);
+    HoleReducer::processMulti(holes[i], contours, minSquare, maxSquare);
   }
 
   holes.clear();
