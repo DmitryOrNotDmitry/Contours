@@ -1,9 +1,11 @@
 #pragma once
+#include "Point.h"
+#include "ContourState.h"
+#include "Rect.h"
+
 #include <vector>
 #include <list>
 #include <algorithm>
-#include "Point.h"
-#include "ContourState.h"
 
 #define K 4
 
@@ -41,7 +43,6 @@ public:
   void setState(ContourState state);
 
   size_t size() const;
-  Point* getData();
   
   bool operator==(const Contour& other) const;
   bool operator!=(const Contour& other) const;
@@ -86,7 +87,11 @@ public:
 
   int deletePoints(int from, int to);
   int distance(int from, int to) const;
+  int minStep(int from, int to) const;
 
   std::vector<Contour> separate();
+
+  std::pair<int, int> getBorderInsideRect(const Rect& rect);
+  Rect defineRect() const;
 };
 

@@ -148,11 +148,6 @@ size_t Contour::size() const
 }
 
 
-Point* Contour::getData()
-{
-  return points.data();
-}
-
 bool Contour::operator==(const Contour& other) const
 {
     return this->points == other.points;
@@ -443,6 +438,17 @@ int Contour::distance(int from, int to) const
   return result;
 }
 
+int Contour::minStep(int from, int to) const
+{
+  int d1 = distance(from, to);
+  int d2 = -distance(to, from);
+  
+  if (std::abs(d2) < std::abs(d1))
+    d1 = d2;
+
+  return d1;
+}
+
 bool Contour::contains(const Point& point) const
 {
   return std::find(points.begin(), points.end(), point) != points.end();
@@ -562,4 +568,89 @@ std::vector<Contour> Contour::separate()
     subContours.push_back(*this);
 
   return subContours;
+}
+
+
+std::pair<int, int> Contour::getBorderInsideRect(const Rect& rect)
+{
+  int len = size();
+  std::vector<int> startIdxs;
+  std::vector<int> endIdxs;
+
+  bool isStartIdxFirst = false;
+
+  for (int i = 0; i < len; i++) 
+  {
+    
+    if (rect.isInner(getPoint(i)))
+    {
+      Point prevPoint = getPoint(getNextIdx(i, -1));
+      Point nextPoint = getPoint(getNextIdx(i));
+
+      if (!rect.isInner(prevPoint))
+      {
+        startIdxs.push_back(i);
+        if (endIdxs.size() == 0)
+          isStartIdxFirst = true;
+      }
+
+      if (!rect.isInner(nextPoint))
+        endIdxs.push_back(i);
+    }
+  }
+
+  if (isStartIdxFirst)
+  {
+    startIdxs.push_back(*startIdxs.begin());
+    startIdxs.erase(startIdxs.begin());
+  }
+
+  if (startIdxs.size() != endIdxs.size()) // TODO
+    int t = 0;
+
+  std::pair<int, int> result = std::make_pair(0, size() - 1);
+
+  if (startIdxs.size() == 1)
+    result = std::make_pair(startIdxs[0], endIdxs[0]);
+  else
+  {
+    int minDistance = INT_MAX;
+    int curDist = 0;
+    for (size_t i = 0; i < startIdxs.size(); i++)
+    {
+      curDist = distance(startIdxs[i], endIdxs[i]);
+      if (curDist < minDistance)
+      {
+        minDistance = curDist;
+        result = std::make_pair(startIdxs[i], endIdxs[i]);
+      }
+    }
+  }
+
+
+  return result;
+}
+
+
+Rect Contour::defineRect() const
+{
+  int xMax = -1;
+  int xMin = INT_MAX;
+  int yMax = -1;
+  int yMin = INT_MAX;
+
+  int len = size();
+  Point curPoint;
+  for (int i = 0; i < len; i++)
+  {
+    curPoint = getPoint(i);
+
+    xMax = max(xMax, curPoint.x);
+    xMin = min(xMin, curPoint.x);
+    
+    yMax = max(yMax, curPoint.y);
+    yMin = min(yMin, curPoint.y);
+  }
+
+  return Rect(Point(xMin, yMin), Point(xMax, yMax));
 }

@@ -67,3 +67,8 @@ size_t BresenhamLine::size() const
 {
   return line.size();
 }
+
+bool BresenhamLine::operator==(const std::vector<Point>& vector) const
+{
+  return vector == line;
+}

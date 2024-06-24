@@ -44,11 +44,21 @@ public:
 
   bool isClockwise() const;
 
+  int minStep(int from, int to) const;
+  int distance(int from, int to) const;
+
+
+  bool isInsideBorder(int idx) const;
+  bool canUnionWith(const LineBorder& other) const;
+
+  void unionWith(const LineBorder& other);
+
 private:
 
   void deleteContourLine();
 
   void insertLine(const LineBorder& line, int startIdx, int step = 1);
+
 
 };
 

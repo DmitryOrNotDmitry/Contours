@@ -118,6 +118,175 @@ void DialogListContours::setContoursStates() const
 
 void DialogListContours::OnBnClickedCalcControlPoints()
 {
+
+  Contour c1;
+  c1.addPoint(Point(0, 3));
+  c1.addPoint(Point(0, 2));
+  c1.addPoint(Point(1, 2));
+  c1.addPoint(Point(1, 1));
+  c1.addPoint(Point(2, 1));
+  c1.addPoint(Point(2, 0));
+  c1.addPoint(Point(3, 0));
+  c1.addPoint(Point(3, 1));
+  c1.addPoint(Point(3, 2));
+  c1.addPoint(Point(3, 3));
+
+  Contour c2;
+  c2.addPoint(Point(2, 1));
+  c2.addPoint(Point(3, 1));
+  c2.addPoint(Point(3, 2));
+  c2.addPoint(Point(2, 2));
+
+  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
+  //
+  //return;
+  
+
+  //Contour c1;
+  //c1.addPoint(Point(0, 4));
+  //c1.addPoint(Point(0, 3));
+  //c1.addPoint(Point(1, 2));
+  //c1.addPoint(Point(1, 1));
+  //c1.addPoint(Point(1, 0));
+
+  //Contour c2;
+  //c2.addPoint(Point(1, 2));
+  //c2.addPoint(Point(1, 3));
+  //c2.addPoint(Point(0, 3));
+
+  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
+  //std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
+
+
+  //return;
+
+
+  //Contour c1;
+  //c1.addPoint(Point(0, 0));
+  //c1.addPoint(Point(0, 1));
+  //c1.addPoint(Point(0, 2));
+  //c1.addPoint(Point(0, 3));
+  //c1.addPoint(Point(0, 4));
+
+  //Contour c2;
+  //c2.addPoint(Point(0, 2));
+  //c2.addPoint(Point(1, 3));
+  //c2.addPoint(Point(0, 3));
+
+  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
+  //std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
+
+  //return;
+
+  ////Contour c1;
+  ////c1.addPoint(Point(0, 0));
+  ////c1.addPoint(Point(0, 1));
+  ////c1.addPoint(Point(0, 2));
+  ////c1.addPoint(Point(0, 3));
+  ////c1.addPoint(Point(0, 4));
+
+  ////Contour c2;
+  ////c2.addPoint(Point(0, 2));
+  ////c2.addPoint(Point(1, 2));
+  ////c2.addPoint(Point(1, 3));
+  ////c2.addPoint(Point(0, 3));
+
+  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
+  //std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
+
+  //return;
+
+  //Contour c1;
+  //c1.addPoint(Point(0, 2));
+  //c1.addPoint(Point(1, 2));
+  //c1.addPoint(Point(1, 1));
+  //c1.addPoint(Point(2, 1));
+  //c1.addPoint(Point(2, 0));
+  //c1.addPoint(Point(3, 0));
+  //c1.addPoint(Point(3, 1));
+  //c1.addPoint(Point(2, 1));
+  //c1.addPoint(Point(2, 2));
+  //c1.addPoint(Point(3, 2));
+
+  //Contour c2;
+  //c2.addPoint(Point(2, 0));
+  //c2.addPoint(Point(3, 0));
+  //c2.addPoint(Point(3, 1));
+  //c2.addPoint(Point(2, 1));
+
+  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
+  //std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
+
+  //std::list<Contour> a;
+  //a.push_back(c1);
+  //HoleReducer::processMulti(c2, a, 0, 10000);
+
+  //return;
+
+  //Contour c1;
+  //c1.addPoint(Point(1, 3));
+  //c1.addPoint(Point(1, 2));
+  //c1.addPoint(Point(0, 2));
+  //c1.addPoint(Point(0, 1));
+  //c1.addPoint(Point(1, 1));
+  //c1.addPoint(Point(1, 0));
+  //c1.addPoint(Point(2, 0));
+  //c1.addPoint(Point(2, 1));
+  //c1.addPoint(Point(2, 2));
+  //c1.addPoint(Point(2, 3));
+
+  //Contour c2;
+  //c2.addPoint(Point(0, 2));
+  //c2.addPoint(Point(1, 2));
+  //c2.addPoint(Point(1, 1));
+  //c2.addPoint(Point(0, 1));
+
+  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
+  //std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
+
+  //std::list<Contour> a;
+  //a.push_back(c1);
+  //HoleReducer::processMulti(c2, a, 0, 10000);
+
+  //return;
+
+
+  //Contour c1;
+  //c1.addPoint(Point(0, 3));
+  //c1.addPoint(Point(0, 2));
+  //c1.addPoint(Point(1, 2));
+  //c1.addPoint(Point(1, 1));
+  //c1.addPoint(Point(2, 1));
+  //c1.addPoint(Point(2, 0));
+
+  //Contour c2;
+  //c2.addPoint(Point(1, 1));
+  //c2.addPoint(Point(2, 1));
+  //c2.addPoint(Point(2, 2));
+  //c2.addPoint(Point(1, 2));
+
+
+  //Contour c1;
+  //c1.addPoint(Point(2, 2));
+  //c1.addPoint(Point(2, 1));
+  //c1.addPoint(Point(1, 0));
+  //c1.addPoint(Point(0, 0));
+
+  //Contour c2;
+  //c2.addPoint(Point(1, 0));
+  //c2.addPoint(Point(2, 1));
+  //c2.addPoint(Point(1, 1));
+
+
+
+  std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
+  std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
+
+  std::list<Contour> a;
+  a.push_back(c1);
+  HoleReducer::processMulti(c2, a, 0, 10000);
+  c1 = *a.begin();
+
   std::vector<int> selectedRows = getSelectedRows();
 
   if (selectedRows.size() != 2)
@@ -131,22 +300,30 @@ void DialogListContours::OnBnClickedCalcControlPoints()
   auto firstCont = std::next(conts.begin(), selectedRows[0]);
   auto secondCont = std::next(conts.begin(), selectedRows[1]);
 
-  std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont, 3);
+  std::vector<std::pair<LineBorder, LineBorder>> borders = GeneralBorderCalculator::defineGeneralBorders(*firstCont, *secondCont, 0);
 
-  if (borders.first.size() > 3)
+  for (size_t i = 0; i < borders.size(); i++)
   {
-    borders.second.replaceBorderWith(borders.first);
-
-    firstCont->haveRepeatPoints();
-    secondCont->haveRepeatPoints();
-
-    dataManager.addBorder(borders.first);
-    dataManager.addBorder(borders.second);
+    dataManager.addBorder(borders[i].first);
+    dataManager.addBorder(borders[i].second);
   }
-  else
-  {
-    MessageBox("Слишком маленькая общая граница между контурами. Объединение отменено!", "Построение контуров");
-  }
+
+  //std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont, 3);
+
+  //if (borders.first.size() > 3)
+  //{
+  //  borders.second.replaceBorderWith(borders.first);
+
+  //  firstCont->haveRepeatPoints();
+  //  secondCont->haveRepeatPoints();
+
+  //  dataManager.addBorder(borders.first);
+  //  dataManager.addBorder(borders.second);
+  //}
+  //else
+  //{
+  //  MessageBox("Слишком маленькая общая граница между контурами. Объединение отменено!", "Построение контуров");
+  //}
 
   RecalcImageViews(hImage);
 }
@@ -154,15 +331,15 @@ void DialogListContours::OnBnClickedCalcControlPoints()
 
 void DialogListContours::OnBnClickedSearhHoles()
 {
-  //std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(dataManager.getContours());
-  //std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[0]);
+  /*std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(dataManager.getContours());
+  std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[0]);
 
-  //for (size_t i = 0; i < atomicHoles.size(); i++)
-  //{
-  //  dataManager.addHole(std::move(atomicHoles[i]));
-  //}
-  //RecalcImageViews(hImage);
-  //return;
+  for (size_t i = 0; i < atomicHoles.size(); i++)
+  {
+    dataManager.addHole(std::move(atomicHoles[i]));
+  }
+  RecalcImageViews(hImage);
+  return;*/
   
   if (dataManager.getContours().size() == 0)
   {

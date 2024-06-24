@@ -6,7 +6,7 @@
 
 #include <map>
 #include <set>
-
+#include <functional>
 
 #define EPSILON 0.001
 
@@ -159,11 +159,6 @@ void includeIntoDominant(Contour& hole, std::list<Contour>& contours)
     if (borders.second.size() <= 1)
       return;
 
-    if (hole.size() == borders.first.size())
-    {
-      borders.first.agreeWith(borders.second);
-    }
-
     LineBorder newBorder = borders.first.inverse();
 
     borders.second.replaceBorderWith(newBorder);
@@ -223,13 +218,32 @@ void reduceHoleMultiBorders(Contour& hole, std::list<Contour>& contours)
   const double limitDistance = 1;
 
   std::vector<Contour*> contsWithGeneralBorder = hole.calcNeighbors(contours);
+
+  std::sort(contsWithGeneralBorder.begin(), contsWithGeneralBorder.end(),
+    [&](Contour* a, Contour* b) -> bool {
+      std::pair<LineBorder, LineBorder> aBorders = GeneralBorderCalculator::defineNearBorders(hole, *a, limitDistance);
+      std::pair<LineBorder, LineBorder> bBorders = GeneralBorderCalculator::defineNearBorders(hole, *b, limitDistance);
+
+      return aBorders.first.size() > bBorders.second.size();
+    }
+  );
   
   std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(hole);
   std::multimap<int, HoleDistribution> holesDistribution;
 
+  //std::map<Contour*, int> holesForContour;
+  //for (size_t i = 0; i < contsWithGeneralBorder.size(); i++)
+  //{
+  //  holesForContour.insert(std::make_pair(contsWithGeneralBorder[i], 0));
+  //}
+
   while (atomicHoles.size() > 0)
   {
     holesDistribution.clear();
+    //for (auto iter = holesForContour.begin(); iter != holesForContour.end(); ++iter)
+    //{
+    //  iter->second = 0;
+    //}
 
     for (size_t i = 0; i < atomicHoles.size(); i++)
     {
@@ -238,13 +252,21 @@ void reduceHoleMultiBorders(Contour& hole, std::list<Contour>& contours)
       if (selectedCont == nullptr)
         continue;
 
-      auto borders = GeneralBorderCalculator::defineNearBorders(atomicHoles[i], *selectedCont, limitDistance);
+      if (atomicHoles[i].contains(Point(63, 28)) && atomicHoles[i].contains(Point(63, 29))) // TODO
+        int t = 0;
+      if (atomicHoles[i].contains(Point(65, 28)) && atomicHoles[i].contains(Point(65, 29))) // TODO
+        int t = 0;
+      if (atomicHoles[i].contains(Point(65, 29)) && atomicHoles[i].contains(Point(65, 30))) // TODO
+        int t = 0;
+
+      auto borders = GeneralBorderCalculator::defineNearBorders(atomicHoles[i], *selectedCont, limitDistance);   
 
       if (borders.second.size() <= 1)
         continue;
 
       int len = static_cast<int>(borders.first.squareLength());
 
+      //holesForContour[selectedCont]++;
       holesDistribution.insert(std::make_pair(len, HoleDistribution(&atomicHoles[i], selectedCont)));
     }
 
@@ -253,26 +275,48 @@ void reduceHoleMultiBorders(Contour& hole, std::list<Contour>& contours)
       break;
 
 
+    //for (auto iter = holesForContour.begin(); iter != holesForContour.end(); ++iter)
+    //{
+    //  if (iter->second == 1)
+    //    int t = 0;
+    //}
+
+
+
     for (auto iter = holesDistribution.rbegin(); iter != holesDistribution.rend(); ++iter)
     {
       Contour& hole = *iter->second.hole;
       Contour& selectedCont = *iter->second.forContour;
 
       auto borders = GeneralBorderCalculator::defineNearBorders(hole, selectedCont, limitDistance);
-      
-      if (hole.contains(Point(317, 23)) && hole.contains(Point(317, 24))) // TODO
+
+      double len = iter->first;
+
+      if (borders.first.size() != borders.second.size())
+        int y = 0;
+
+
+      if (hole.contains(Point(63, 28)) && hole.contains(Point(63, 29))) // TODO
         int t = 0;
-      
-      if (hole.size() == borders.first.size())
-      {
-        borders.first.agreeWith(borders.second);
-      }
+      if (hole.contains(Point(65, 28)) && hole.contains(Point(65, 29))) // TODO
+        int t = 0;
+      if (hole.contains(Point(65, 29)) && hole.contains(Point(65, 30))) // TODO
+        int t = 0;
+
+     /* if (borders.first.size() >= 5 || borders.second.size() >= 5)
+        continue;*/
 
       LineBorder newBorder = borders.first.inverse();
 
       borders.second.replaceBorderWith(newBorder);
       borders.first.replaceBorderWith(borders.second);
     }
+
+    for (size_t i = 0; i < contsWithGeneralBorder.size(); i++)
+    {
+      contsWithGeneralBorder[i]->deletePins();
+    }
+
     //break; // TODO
 
     std::vector<Contour> restHoles;
@@ -283,7 +327,6 @@ void reduceHoleMultiBorders(Contour& hole, std::list<Contour>& contours)
 
     atomicHoles = std::move(restHoles);
   }
-  //_sleep(1000);
 }
 
 

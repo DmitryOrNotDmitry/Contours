@@ -17,5 +17,6 @@ public:
 
   size_t size() const;
 
+  bool operator==(const std::vector<Point>& vector) const;
 };
 

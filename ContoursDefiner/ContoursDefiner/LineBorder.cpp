@@ -71,6 +71,94 @@ void LineBorder::insertLine(const LineBorder& line, int startIdx, int step)
   }
 }
 
+int LineBorder::distance(int from, int to) const
+{
+  if (fromIndex <= toIndex)
+  {
+    if (from <= to)
+      return to - from;
+    else
+      return toIndex - from + to - fromIndex + 1;
+  }
+  else
+  {
+    if (from <= to)
+    {
+      int dist = to - from;
+      if (from <= toIndex && to >= fromIndex)
+        dist = dist - (fromIndex - toIndex) + 1;
+
+      return dist;
+    }
+    else
+    {
+      int dist = owner.size() - from + to;
+
+      if (from <= toIndex && to <= toIndex)
+        dist -= fromIndex - toIndex + 1;
+
+      if (from >= fromIndex && to >= fromIndex)
+        dist -= fromIndex - toIndex + 1;
+
+      return dist;
+    }
+  }
+}
+
+bool LineBorder::isInsideBorder(int idx) const
+{
+  if (fromIndex <= toIndex)
+  {
+    return (idx >= fromIndex) && (idx <= toIndex);
+  }
+  else
+  {
+    return ((idx >= fromIndex) && (idx < owner.size())) || ((idx >= 0) && (idx <= toIndex));
+  }
+}
+
+bool LineBorder::canUnionWith(const LineBorder& other) const
+{
+  if (getNextIdx(toIndex) == other.fromIndex)
+    return true;
+
+  if (other.getNextIdx(other.toIndex) == fromIndex)
+    return true;
+
+  return false;
+}
+
+void LineBorder::unionWith(const LineBorder& other)
+{
+  if (getNextIdx(toIndex) == other.fromIndex)
+  {
+    toIndex = other.toIndex;
+  }
+  else if (other.getNextIdx(other.toIndex) == fromIndex)
+  {
+    fromIndex = other.fromIndex;
+  }
+}
+
+int LineBorder::minStep(int from, int to) const
+{
+  int d1 = distance(from, to);
+  int d2 = -distance(to, from);
+
+  if (std::abs(d2) < std::abs(d1))
+    d1 = d2;
+
+  if (std::abs(d2) == std::abs(d1))
+  {
+    int contD1 = owner.distance(from, to);
+    int contD2 = -owner.distance(to, from);
+    if (std::abs(contD2) < std::abs(contD1))
+      d1 = d2;
+  }
+
+  return d1;
+}
+
 void LineBorder::replaceBorderWith(const LineBorder& line)
 {
   Point contourPoint = getPoint(fromIndex);
