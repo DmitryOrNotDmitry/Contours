@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <vector>
+#include <algorithm>
 #include "../ContoursDefiner/ContourDefiner.h"
 #include "../ContoursDefiner/ContourDefiner.cpp"
 #include "../ContoursDefiner/Point.h"
@@ -12,6 +13,20 @@
 #include "../ContoursDefiner/TestImageData.cpp"
 #include "../ContoursDefiner/BresenhamLine.h"
 #include "../ContoursDefiner/BresenhamLine.cpp"
+#include "../ContoursDefiner/Rect.h"
+#include "../ContoursDefiner/Rect.cpp"
+#include "../ContoursDefiner/LineBorder.h"
+#include "../ContoursDefiner/LineBorder.cpp"
+#include "../ContoursDefiner/Path.h"
+#include "../ContoursDefiner/Path.cpp"
+
+#ifdef max
+  #undef max
+#endif
+
+#ifdef min
+  #undef min
+#endif
 
 
 TEST(ConvertToPathTest, TestConvertToPath1) {
@@ -23,7 +38,7 @@ TEST(ConvertToPathTest, TestConvertToPath1) {
   points.push_back(Point(11, 9));
   points.push_back(Point(12, 9));
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected;
   expected.push_back(Point(10, 10));
@@ -86,8 +101,8 @@ TEST(ConvertToPathTest, TestConvertToPath2) {
   points.push_back(Point(1, 3));
   points.push_back(Point(1, 2));
 
-  std::vector<Point> actual = cd.convertToPath(points);
-
+  Path actual(points);
+  
   std::vector<Point> expected;
   expected.push_back(Point(3, 4));
   expected.push_back(Point(2, 4));
@@ -107,7 +122,7 @@ TEST(ConvertToPathTest, TestConvertToPath3) {
   points.push_back(Point(2, 5));
   points.push_back(Point(2, 3));
   
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(2, 3),
@@ -175,7 +190,8 @@ TEST(ContourDefinerTest, TestDefineContour) {
     Point(1, 1),
     Point(2, 0),
   };
-  expected.addPoints(points);
+  for (auto& p : points)
+    expected.addPoint(p);
 
   ASSERT_EQ(actual, expected);
 }
@@ -214,7 +230,8 @@ TEST(ContourDefinerTest, TestDefineContourWithStick) {
     Point(3, 0),
     Point(4, 0),
   };
-  expected.addPoints(points);
+  for (auto& p : points)
+    expected.addPoint(p);
 
   ASSERT_EQ(actual, expected);
 }
@@ -231,7 +248,7 @@ TEST(ConvertToPathTest, TestConvertToPath4) {
   };
   
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(7, 4),
@@ -261,7 +278,7 @@ TEST(ConvertToPathTest, DeepToUp) {
   };
 
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(3, 3),
@@ -293,7 +310,7 @@ TEST(ConvertToPathTest, DeepToLeft) {
   };
 
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(5, 3),
@@ -325,7 +342,7 @@ TEST(ConvertToPathTest, DeepToRight) {
   };
 
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(3, 1),
@@ -353,7 +370,7 @@ TEST(ConvertToPathTest, Corner) {
   };
 
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(2, 4),
@@ -377,7 +394,7 @@ TEST(ConvertToPathTest, HorizontalLine) {
   };
 
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(4, 3),
@@ -402,7 +419,7 @@ TEST(ConvertToPathTest, ReserseL) {
   };
 
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(1, 0),
@@ -429,7 +446,7 @@ TEST(ConvertToPathTest, Left5Points) {
   };
 
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(3, 3),
@@ -458,7 +475,7 @@ TEST(ConvertToPathTest, DeepToDown) {
   };
 
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(2, 0),
@@ -486,7 +503,7 @@ TEST(ConvertToPathTest, Corner3AgainstCorner1) {
   };
 
 
-  std::vector<Point> actual = cd.convertToPath(points);
+  Path actual(points);
 
   std::vector<Point> expected = {
     Point(1, 0),
@@ -561,8 +578,8 @@ TEST(Bresenham, HorizontalLine) {
   Point pointFrom(0, 0);
   Point pointTo(3, 0);
 
-  std::vector<Point> actual = BresenhamLine::build(pointFrom, pointTo);
-
+  BresenhamLine actual(pointFrom, pointTo);
+  
   std::vector<Point> expected = {
     Point(0, 0),
     Point(1, 0),
@@ -578,7 +595,7 @@ TEST(Bresenham, VerticalLine) {
   Point pointFrom(0, 0);
   Point pointTo(0, 4);
 
-  std::vector<Point> actual = BresenhamLine::build(pointFrom, pointTo);
+  BresenhamLine actual(pointFrom, pointTo);
 
   std::vector<Point> expected = {
     Point(0, 0),
@@ -596,7 +613,7 @@ TEST(Bresenham, DiagonalLineUseX) {
   Point pointFrom(1, 0);
   Point pointTo(6, 2);
 
-  std::vector<Point> actual = BresenhamLine::build(pointFrom, pointTo);
+  BresenhamLine actual(pointFrom, pointTo);
 
   std::vector<Point> expected = {
     Point(1, 0),
@@ -617,7 +634,7 @@ TEST(Bresenham, DiagonalLineUseY) {
   Point pointFrom(1, 0);
   Point pointTo(3, 5);
 
-  std::vector<Point> actual = BresenhamLine::build(pointFrom, pointTo);
+  BresenhamLine actual(pointFrom, pointTo);
 
   std::vector<Point> expected = {
     Point(1, 0),
@@ -637,7 +654,7 @@ TEST(Bresenham, NegativeDelta) {
   Point pointFrom(3, 0);
   Point pointTo(0, 0);
 
-  std::vector<Point> actual = BresenhamLine::build(pointFrom, pointTo);
+  BresenhamLine actual(pointFrom, pointTo);
 
   std::vector<Point> expected = {
     Point(3, 0),
