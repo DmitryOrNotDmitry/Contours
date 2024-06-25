@@ -282,10 +282,10 @@ void DialogListContours::OnBnClickedCalcControlPoints()
   std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
   std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
 
-  std::list<Contour> a;
-  a.push_back(c1);
-  HoleReducer::processMulti(c2, a, 0, 10000);
-  c1 = *a.begin();
+  //std::list<Contour> a;
+  //a.push_back(c1);
+  //HoleReducer::processMulti(c2, a, 0, 10000);
+  //c1 = *a.begin();
 
   std::vector<int> selectedRows = getSelectedRows();
 
@@ -308,38 +308,21 @@ void DialogListContours::OnBnClickedCalcControlPoints()
     dataManager.addBorder(borders[i].second);
   }
 
-  //std::pair<LineBorder, LineBorder> borders = GeneralBorderCalculator::defineNearBorders(*firstCont, *secondCont, 3);
-
-  //if (borders.first.size() > 3)
-  //{
-  //  borders.second.replaceBorderWith(borders.first);
-
-  //  firstCont->haveRepeatPoints();
-  //  secondCont->haveRepeatPoints();
-
-  //  dataManager.addBorder(borders.first);
-  //  dataManager.addBorder(borders.second);
-  //}
-  //else
-  //{
-  //  MessageBox("Слишком маленькая общая граница между контурами. Объединение отменено!", "Построение контуров");
-  //}
-
   RecalcImageViews(hImage);
 }
 
 
 void DialogListContours::OnBnClickedSearhHoles()
 {
-  /*std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(dataManager.getContours());
-  std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[0]);
+  //std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(dataManager.getContours());
+  //std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[0]);
 
-  for (size_t i = 0; i < atomicHoles.size(); i++)
-  {
-    dataManager.addHole(std::move(atomicHoles[i]));
-  }
-  RecalcImageViews(hImage);
-  return;*/
+  //for (size_t i = 0; i < atomicHoles.size(); i++)
+  //{
+  //  dataManager.addHole(std::move(atomicHoles[i]));
+  //}
+  //RecalcImageViews(hImage);
+  //return;
   
   if (dataManager.getContours().size() == 0)
   {
@@ -364,9 +347,11 @@ void DialogListContours::OnBnClickedSearhHoles()
   int maxSquare = getIntFromDlgItem(IDC_EDITmax_square_distribution);
   int minSquare = getIntFromDlgItem(IDC_EDITmin_square_distribution);
   
+  HoleReducer holeReducer(minSquare, maxSquare);
+
   for (size_t i = countHoles - countNewHoles; i < countHoles; i++)
   {
-    HoleReducer::processMulti(holes[i], contours, minSquare, maxSquare);
+    holeReducer.processMulti(holes[i], contours);
   }
 
   holes.clear();
