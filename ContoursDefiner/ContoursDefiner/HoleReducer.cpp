@@ -4,23 +4,8 @@
 #include "DataStorageManager.h"
 #include "HoleSeparator.h"
 
-#include <map>
-#include <set>
-#include <functional>
 
 #define EPSILON 0.001
-
-
-struct HoleDistribution
-{
-  HoleDistribution() : hole(nullptr), forContour(nullptr) {}
-
-  HoleDistribution(Contour* hole, Contour* forContour)
-    : hole(hole), forContour(forContour) { }
-
-  Contour* hole;
-  Contour* forContour;
-};
 
 
 HoleReducer::HoleReducer(double minSquare, double maxSquare)
@@ -93,52 +78,35 @@ void HoleReducer::reduceHoleMultiBorders()
   Contour& hole = *reducedHole;
   
   std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(hole);
-  std::multimap<int, HoleDistribution> holesDistribution;
-
-  //std::map<Contour*, int> holesForContour;
-  //for (size_t i = 0; i < contsWithGeneralBorder.size(); i++)
-  //{
-  //  holesForContour.insert(std::make_pair(contsWithGeneralBorder[i], 0));
-  //}
+  
+  for (size_t i = 0; i < nearbyContours.size(); i++)
+  {
+    countHolesForContour.insert(std::make_pair(nearbyContours[i], 0));
+  }
 
   while (atomicHoles.size() > 0)
   {
-    holesDistribution.clear();
-    //for (auto iter = holesForContour.begin(); iter != holesForContour.end(); ++iter)
-    //{
-    //  iter->second = 0;
-    //}
-
-    for (size_t i = 0; i < atomicHoles.size(); i++)
+    for (auto iter = countHolesForContour.begin(); iter != countHolesForContour.end(); ++iter)
     {
-      Contour* selectedCont = getContourWithMaxBorder(atomicHoles[i], nearbyContours);
-
-      if (selectedCont == nullptr)
-        continue;
-
-      auto borders = GeneralBorderCalculator::defineNearBorders(atomicHoles[i], *selectedCont, limitDistance);   
-
-      if (borders.second.size() <= 1)
-        continue;
-
-      int len = static_cast<int>(borders.first.squareLength());
-
-      //holesForContour[selectedCont]++;
-      holesDistribution.insert(std::make_pair(len, HoleDistribution(&atomicHoles[i], selectedCont)));
+      iter->second = 0;
     }
+
+    distributeHolesToContours(atomicHoles);
 
     if (holesDistribution.size() == 0)
       break;
+
+    defineSkippedContours(atomicHoles);
 
     for (auto iter = holesDistribution.rbegin(); iter != holesDistribution.rend(); ++iter)
     {
       Contour& hole = *iter->second.hole;
       Contour& selectedCont = *iter->second.forContour;
+      
+      if (skippedContours.find(&selectedCont) != skippedContours.end())
+        continue;
 
       auto borders = GeneralBorderCalculator::defineNearBorders(hole, selectedCont, limitDistance);
-
-      int len = iter->first;
-      int borderSize = borders.first.size();
 
       LineBorder newBorder = borders.first.inverse();
 
@@ -160,6 +128,41 @@ void HoleReducer::reduceHoleMultiBorders()
         restHoles.push_back(std::move(atomicHoles[i]));
 
     atomicHoles = std::move(restHoles);
+  }
+}
+
+
+void HoleReducer::distributeHolesToContours(std::vector<Contour>& holes)
+{
+  holesDistribution.clear();
+  for (size_t i = 0; i < holes.size(); i++)
+  {
+    Contour* selectedCont = getContourWithMaxBorder(holes[i], nearbyContours);
+
+    if (selectedCont == nullptr)
+      continue;
+
+    auto borders = GeneralBorderCalculator::defineNearBorders(holes[i], *selectedCont, limitDistance);
+
+    if (borders.second.size() <= 1)
+      continue;
+
+    int len = static_cast<int>(borders.first.squareLength());
+
+    countHolesForContour[selectedCont]++;
+    holesDistribution.insert(std::make_pair(len, HoleDistribution(&holes[i], selectedCont)));
+  }
+}
+
+
+void HoleReducer::defineSkippedContours(std::vector<Contour>& holes)
+{
+  skippedContours.clear();
+  if (holesDistribution.size() < holes.size())
+  {
+    for (auto iter = countHolesForContour.begin(); iter != countHolesForContour.end(); ++iter)
+      if (iter->second <= 1)
+        skippedContours.insert(iter->first);
   }
 }
 

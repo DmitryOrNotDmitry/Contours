@@ -1,9 +1,24 @@
 #pragma once
 #include "Contour.h"
 
+#include <map>
+#include <set>
+
+struct HoleDistribution
+{
+  HoleDistribution() : hole(nullptr), forContour(nullptr) {}
+
+  HoleDistribution(Contour* hole, Contour* forContour)
+    : hole(hole), forContour(forContour) { }
+
+  Contour* hole;
+  Contour* forContour;
+};
+
+
+
 class HoleReducer
 {
-
   double minSquare;
   double maxSquare;
 
@@ -11,6 +26,10 @@ class HoleReducer
   std::vector<Contour*> nearbyContours;
 
   const double limitDistance;
+
+  std::multimap<int, HoleDistribution> holesDistribution;
+  std::map<Contour*, int> countHolesForContour;
+  std::set<Contour*> skippedContours;
 
 
   void reduceHoleMultiBorders();
@@ -20,6 +39,10 @@ class HoleReducer
   void includeIntoDominant(Contour& hole);
 
   Contour* getContourWithMaxBorder(Contour& hole, std::vector<Contour*> contours);
+
+  void distributeHolesToContours(std::vector<Contour>& holes);
+
+  void defineSkippedContours(std::vector<Contour>& holes);
 
 public:
 
