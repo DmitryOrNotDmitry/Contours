@@ -6,6 +6,15 @@
 #include "Path.h"
 
 
+namespace std {
+  template <>
+  struct std::hash<Point> {
+    size_t operator()(const Point& point) const {
+      return hash<int>()(point.x) ^ (hash<int>()(point.y) << 1);
+    }
+  };
+}
+
 
 Contour::Contour()
 {
@@ -36,8 +45,14 @@ Contour& Contour::operator=(const Contour& other)
 
 void Contour::addPoint(Point point)
 {
-  if (points.size() > 0 && (*points.rbegin() == point))
-    return;
+  if (points.size() > 0)
+  {
+    if (*points.rbegin() == point)
+      return;
+
+    if (*points.begin() == point)
+      return;
+  }
   
   points.push_back(point);
 }
@@ -150,7 +165,20 @@ size_t Contour::size() const
 
 bool Contour::operator==(const Contour& other) const
 {
-    return this->points == other.points;
+  bool result = true;
+
+  std::unordered_set<Point> ourPoints(points.begin(), points.end());
+
+  for (auto iter = other.points.begin(); iter != other.points.end(); ++iter)
+  {
+    if (ourPoints.find(*iter) == ourPoints.end())
+    {
+      result = false;
+      break;
+    }
+  }
+
+  return result;
 }
 
 bool Contour::operator!=(const Contour& other) const
@@ -479,16 +507,6 @@ bool Contour::isInner(const Point& point) const  {
   }
 
   return windingNumber != 0;
-}
-
-
-namespace std {
-  template <>
-  struct std::hash<Point> {
-    size_t operator()(const Point& point) const {
-      return hash<int>()(point.x) ^ (hash<int>()(point.y) << 1);
-    }
-  };
 }
 
 

@@ -315,12 +315,17 @@ void DialogListContours::OnBnClickedCalcControlPoints()
 void DialogListContours::OnBnClickedSearhHoles()
 {
   //std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(dataManager.getContours());
-  //std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[0]);
-
-  //for (size_t i = 0; i < atomicHoles.size(); i++)
+  //
+  //for (int i = 0; i < dataHoles1.size(); i++)
   //{
-  //  dataManager.addHole(std::move(atomicHoles[i]));
+  //  std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[i]);
+
+  //  for (size_t i = 0; i < atomicHoles.size(); i++)
+  //  {
+  //    dataManager.addHole(std::move(atomicHoles[i]));
+  //  }
   //}
+
   //RecalcImageViews(hImage);
   //return;
   
