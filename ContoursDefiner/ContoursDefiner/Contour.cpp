@@ -672,3 +672,88 @@ Rect Contour::defineRect() const
 
   return Rect(Point(xMin, yMin), Point(xMax, yMax));
 }
+
+
+double distanceToLine(const Point& point, const Point& startLine, const Point& endLine)
+{
+  int x1 = startLine.x;
+  int y1 = startLine.y;
+
+  int x2 = endLine.x;
+  int y2 = endLine.y;
+
+  double double_area = std::abs((y2 - y1) * point.x - (x2 - x1) * point.y + x2 * y1 - y2 * x1);
+  double len = std::sqrt(std::pow((double)(x2 - x1), 2) + std::pow((double)(y2 - y1), 2));
+  if (len != 0)
+    return double_area / len;
+
+  return 0;
+}
+
+
+std::vector<Point> DouglasPeucker(std::vector<Point>& points, double epsilon)
+{
+  if (points.size() < 3)
+    return points;
+
+  Point start = points.front();
+  Point end = points.back();
+  double maxDist = 0;
+  int index = 0;
+
+  size_t unReachedIdx = points.size() - 1;
+  for (size_t i = 1; i < unReachedIdx; i++)
+  {
+    double dist = distanceToLine(points[i], start, end);
+    if (dist > maxDist)
+    {
+      maxDist = dist;
+      index = i;
+    }
+  }
+
+  if (maxDist > epsilon)
+  {
+    std::vector<Point> ps1(points.begin(), points.begin() + index + 1);
+    std::vector<Point> result1 = DouglasPeucker(ps1, epsilon);
+
+    std::vector<Point> ps2(points.begin() + index, points.end());
+    std::vector<Point> result2 = DouglasPeucker(ps2, epsilon);
+
+    result1.pop_back();
+    result1.insert(result1.end(), result2.begin(), result2.end());
+
+    return result1;
+  }
+  else
+  {
+    std::vector<Point> result;
+    result.push_back(start);
+    result.push_back(end);
+
+    return result;
+  }
+
+}
+
+
+void Contour::smooth()
+{
+  double epsilon = 0.2;
+
+  points = DouglasPeucker(points, epsilon);
+
+  if (points.size() > 3)
+  {
+    double dist = distanceToLine(points.back(), *std::prev(points.end(), 2), points.front());
+    if (dist < epsilon)
+      points.pop_back();
+  }
+
+  if (points.size() > 3)
+  {
+    double dist = distanceToLine(points.front(), points.back(), *(points.begin() + 1));
+    if (dist < epsilon)
+      points.erase(points.begin());
+  }
+}

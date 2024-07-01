@@ -12,6 +12,8 @@ BEGIN_MESSAGE_MAP(DialogListContours, CDialog)
   ON_BN_CLICKED(IDC_BUTTONsearch_holes, &DialogListContours::OnBnClickedSearhHoles)
   ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTcontours_table, &DialogListContours::OnLvnItemchangedChanlist)
   ON_BN_CLICKED(IDC_CHECKshow_init_holes, &DialogListContours::OnBnClickedShowInitHoles)
+  ON_BN_CLICKED(IDC_BUTTONreset, &DialogListContours::OnBnClickedReset)
+  ON_BN_CLICKED(IDC_BUTTONsmooth_contours, &DialogListContours::OnBnClickedSmoothContours)
 END_MESSAGE_MAP()
 
 void DialogListContours::DoDataExchange(CDataExchange* pDX)
@@ -118,175 +120,6 @@ void DialogListContours::setContoursStates() const
 
 void DialogListContours::OnBnClickedCalcControlPoints()
 {
-
-  Contour c1;
-  c1.addPoint(Point(0, 3));
-  c1.addPoint(Point(0, 2));
-  c1.addPoint(Point(1, 2));
-  c1.addPoint(Point(1, 1));
-  c1.addPoint(Point(2, 1));
-  c1.addPoint(Point(2, 0));
-  c1.addPoint(Point(3, 0));
-  c1.addPoint(Point(3, 1));
-  c1.addPoint(Point(3, 2));
-  c1.addPoint(Point(3, 3));
-
-  Contour c2;
-  c2.addPoint(Point(2, 1));
-  c2.addPoint(Point(3, 1));
-  c2.addPoint(Point(3, 2));
-  c2.addPoint(Point(2, 2));
-
-  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
-  //
-  //return;
-  
-
-  //Contour c1;
-  //c1.addPoint(Point(0, 4));
-  //c1.addPoint(Point(0, 3));
-  //c1.addPoint(Point(1, 2));
-  //c1.addPoint(Point(1, 1));
-  //c1.addPoint(Point(1, 0));
-
-  //Contour c2;
-  //c2.addPoint(Point(1, 2));
-  //c2.addPoint(Point(1, 3));
-  //c2.addPoint(Point(0, 3));
-
-  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
-  //std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
-
-
-  //return;
-
-
-  //Contour c1;
-  //c1.addPoint(Point(0, 0));
-  //c1.addPoint(Point(0, 1));
-  //c1.addPoint(Point(0, 2));
-  //c1.addPoint(Point(0, 3));
-  //c1.addPoint(Point(0, 4));
-
-  //Contour c2;
-  //c2.addPoint(Point(0, 2));
-  //c2.addPoint(Point(1, 3));
-  //c2.addPoint(Point(0, 3));
-
-  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
-  //std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
-
-  //return;
-
-  ////Contour c1;
-  ////c1.addPoint(Point(0, 0));
-  ////c1.addPoint(Point(0, 1));
-  ////c1.addPoint(Point(0, 2));
-  ////c1.addPoint(Point(0, 3));
-  ////c1.addPoint(Point(0, 4));
-
-  ////Contour c2;
-  ////c2.addPoint(Point(0, 2));
-  ////c2.addPoint(Point(1, 2));
-  ////c2.addPoint(Point(1, 3));
-  ////c2.addPoint(Point(0, 3));
-
-  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
-  //std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
-
-  //return;
-
-  //Contour c1;
-  //c1.addPoint(Point(0, 2));
-  //c1.addPoint(Point(1, 2));
-  //c1.addPoint(Point(1, 1));
-  //c1.addPoint(Point(2, 1));
-  //c1.addPoint(Point(2, 0));
-  //c1.addPoint(Point(3, 0));
-  //c1.addPoint(Point(3, 1));
-  //c1.addPoint(Point(2, 1));
-  //c1.addPoint(Point(2, 2));
-  //c1.addPoint(Point(3, 2));
-
-  //Contour c2;
-  //c2.addPoint(Point(2, 0));
-  //c2.addPoint(Point(3, 0));
-  //c2.addPoint(Point(3, 1));
-  //c2.addPoint(Point(2, 1));
-
-  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
-  //std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
-
-  //std::list<Contour> a;
-  //a.push_back(c1);
-  //HoleReducer::processMulti(c2, a, 0, 10000);
-
-  //return;
-
-  //Contour c1;
-  //c1.addPoint(Point(1, 3));
-  //c1.addPoint(Point(1, 2));
-  //c1.addPoint(Point(0, 2));
-  //c1.addPoint(Point(0, 1));
-  //c1.addPoint(Point(1, 1));
-  //c1.addPoint(Point(1, 0));
-  //c1.addPoint(Point(2, 0));
-  //c1.addPoint(Point(2, 1));
-  //c1.addPoint(Point(2, 2));
-  //c1.addPoint(Point(2, 3));
-
-  //Contour c2;
-  //c2.addPoint(Point(0, 2));
-  //c2.addPoint(Point(1, 2));
-  //c2.addPoint(Point(1, 1));
-  //c2.addPoint(Point(0, 1));
-
-  //std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
-  //std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
-
-  //std::list<Contour> a;
-  //a.push_back(c1);
-  //HoleReducer::processMulti(c2, a, 0, 10000);
-
-  //return;
-
-
-  //Contour c1;
-  //c1.addPoint(Point(0, 3));
-  //c1.addPoint(Point(0, 2));
-  //c1.addPoint(Point(1, 2));
-  //c1.addPoint(Point(1, 1));
-  //c1.addPoint(Point(2, 1));
-  //c1.addPoint(Point(2, 0));
-
-  //Contour c2;
-  //c2.addPoint(Point(1, 1));
-  //c2.addPoint(Point(2, 1));
-  //c2.addPoint(Point(2, 2));
-  //c2.addPoint(Point(1, 2));
-
-
-  //Contour c1;
-  //c1.addPoint(Point(2, 2));
-  //c1.addPoint(Point(2, 1));
-  //c1.addPoint(Point(1, 0));
-  //c1.addPoint(Point(0, 0));
-
-  //Contour c2;
-  //c2.addPoint(Point(1, 0));
-  //c2.addPoint(Point(2, 1));
-  //c2.addPoint(Point(1, 1));
-
-
-
-  std::vector<std::pair<LineBorder, LineBorder>> borders1 = GeneralBorderCalculator::defineGeneralBorders(c1, c2, 0);
-  std::vector<std::pair<LineBorder, LineBorder>> borders2 = GeneralBorderCalculator::defineGeneralBorders(c2, c1, 0);
-
-  //std::list<Contour> a;
-  //a.push_back(c1);
-  //HoleReducer::processMulti(c2, a, 0, 10000);
-  //c1 = *a.begin();
-
   std::vector<int> selectedRows = getSelectedRows();
 
   if (selectedRows.size() != 2)
@@ -314,21 +147,6 @@ void DialogListContours::OnBnClickedCalcControlPoints()
 
 void DialogListContours::OnBnClickedSearhHoles()
 {
-  //std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(dataManager.getContours());
-  //
-  //for (int i = 0; i < dataHoles1.size(); i++)
-  //{
-  //  std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[i]);
-
-  //  for (size_t i = 0; i < atomicHoles.size(); i++)
-  //  {
-  //    dataManager.addHole(std::move(atomicHoles[i]));
-  //  }
-  //}
-
-  //RecalcImageViews(hImage);
-  //return;
-  
   if (dataManager.getContours().size() == 0)
   {
     MessageBox("Необходимо создать хотя бы 1 контур!", "Построение контуров");
@@ -372,6 +190,37 @@ void DialogListContours::OnBnClickedShowInitHoles()
     dataManager.setShowHoles(true);
   else
     dataManager.setShowHoles(false);
+
+  RecalcImageViews(hImage);
+}
+
+void DialogListContours::OnBnClickedReset()
+{
+  dataManager.getBorders().clear();
+  dataManager.getHoles().clear();
+  dataManager.getContours().clear();
+
+  contoursTable.DeleteAllItems();
+
+  RecalcImageViews(hImage);
+}
+
+void DialogListContours::OnBnClickedSmoothContours()
+{
+  std::vector<int> selectedRows = getSelectedRows();
+
+  std::list<Contour>& contours = dataManager.getContours();
+
+  int index = 0;
+  for (auto iter = contours.begin(); iter != contours.end(); ++iter)
+  {
+    if (std::find(selectedRows.begin(), selectedRows.end(), index) != selectedRows.end())
+    {
+      iter->smooth();
+    }
+
+    index++;
+  }
 
   RecalcImageViews(hImage);
 }

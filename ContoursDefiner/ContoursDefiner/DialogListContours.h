@@ -41,6 +41,8 @@ public:
   afx_msg void OnBnClickedCalcControlPoints();
   afx_msg void OnBnClickedSearhHoles();
   afx_msg void OnBnClickedShowInitHoles();
+  afx_msg void OnBnClickedReset();
+  afx_msg void OnBnClickedSmoothContours();
   void OnLvnItemchangedChanlist(NMHDR* pNMHDR, LRESULT* pResult);
 
   CListCtrl contoursTable;
