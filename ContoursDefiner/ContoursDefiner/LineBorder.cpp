@@ -1,4 +1,5 @@
 #include "LineBorder.h"
+#include "LineSmoother.h"
 
 #define CONNECT_LINE_MIN_DISTANCE 1.999
 
@@ -16,6 +17,11 @@ LineBorder& LineBorder::operator=(const LineBorder& other)
   this->toIndex = other.toIndex;
 
   return *this;
+}
+
+bool LineBorder::operator<(const LineBorder& other) const
+{
+  return fromIndex < other.fromIndex;
 }
 
 Contour& LineBorder::getOwner()
@@ -374,6 +380,7 @@ void LineBorder::reduceEndsWhileApproxTo(LineBorder& left, LineBorder& right, in
     stepRight = -stepRight;
   }
 }
+
 
 LineBorder LineBorder::inverse() const
 {

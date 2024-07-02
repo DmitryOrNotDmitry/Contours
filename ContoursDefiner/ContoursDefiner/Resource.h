@@ -13,8 +13,10 @@
 #define IDC_EDITmax_square_distribution 8018
 #define IDC_SPINmax_square_distribution 8019
 #define IDC_BUTTONreset                 8020
-#define IDC_BUTTON                      8021
 #define IDC_BUTTONsmooth_contours       8021
+#define IDC_EDITmax_square_distribution2 8022
+#define IDC_EDITsmooth_epsilon          8022
+#define IDC_SPINsmooth_epsilon          8023
 
 // Next default values for new objects
 // 

@@ -2,6 +2,7 @@
 #include "LineBorderVector.h"
 #include "HoleReducer.h"
 #include "HoleSeparator.h"
+#include "LineSmoother.h"
 
 IMPLEMENT_DYNAMIC(DialogListContours, CDialog)
 
@@ -207,19 +208,101 @@ void DialogListContours::OnBnClickedReset()
 
 void DialogListContours::OnBnClickedSmoothContours()
 {
-  std::vector<int> selectedRows = getSelectedRows();
+  const double epsilon = getDoubleFromDlgItem(IDC_EDITsmooth_epsilon);
 
   std::list<Contour>& contours = dataManager.getContours();
 
-  int index = 0;
-  for (auto iter = contours.begin(); iter != contours.end(); ++iter)
+  auto lastContur = std::prev(contours.end());
+  for (auto contour1 = contours.begin(); contour1 != lastContur; ++contour1)
   {
-    if (std::find(selectedRows.begin(), selectedRows.end(), index) != selectedRows.end())
+    for (auto contour2 = std::next(contour1); contour2 != contours.end(); ++contour2)
     {
-      iter->smooth();
+      auto allBorders = GeneralBorderCalculator::defineGeneralBorders(*contour1, *contour2, 0);
+
+      int countBorders = allBorders.size();
+      
+      if (countBorders == 0)
+        continue;
+
+      std::vector<std::pair<Point, Point>> savedPoints1;
+      std::vector<std::pair<Point, Point>> savedPoints2;
+      for (size_t i = 0; i < countBorders; i++)
+      {
+        savedPoints1.push_back(std::make_pair(allBorders[i].first.fromPoint(), allBorders[i].first.toPoint()));
+        savedPoints2.push_back(std::make_pair(allBorders[i].second.fromPoint(), allBorders[i].second.toPoint()));
+      }
+      
+      for (size_t i = 0; i < countBorders; i++)
+      {
+        int from = contour1->indexOf(savedPoints1[i].first);
+        int to = contour1->indexOf(savedPoints1[i].second);
+        LineBorder smoothedBorder1 = LineBorder(*contour1, from, to);
+        
+        std::vector<Point> line;
+        int lineSize = smoothedBorder1.size();
+        line.reserve(lineSize);
+        for (int i = 0; i < lineSize; i++)
+          line.push_back(smoothedBorder1.getPoint(smoothedBorder1.getNextIdx(smoothedBorder1.getFromIndex(), i)));
+
+        line = LineSmoother::DouglasPeucker(line, epsilon);
+        smoothedBorder1.replaceBorderWith(LineBorderVector(line));
+
+        from = contour2->indexOf(savedPoints2[i].first);
+        to = contour2->indexOf(savedPoints2[i].second);
+        LineBorder smoothedBorder2 = LineBorder(*contour2, from, to);
+        
+        smoothedBorder2.replaceBorderWith(LineBorderVector(line));
+      }
+
+    }
+  }
+
+  std::map<Contour*, std::set<LineBorder>> allContourBorders;
+
+  lastContur = std::prev(contours.end());
+  for (auto contour1 = contours.begin(); contour1 != lastContur; ++contour1)
+  {
+    for (auto contour2 = std::next(contour1); contour2 != contours.end(); ++contour2)
+    {
+      auto allBorders = GeneralBorderCalculator::defineGeneralBorders(*contour1, *contour2, 0);
+
+      for (size_t i = 0; i < allBorders.size(); i++)
+      {
+        allContourBorders[&(*contour1)].insert(allBorders[i].first);
+        allContourBorders[&(*contour2)].insert(allBorders[i].second);
+      }
+    }
+  }
+
+  for (auto iter = allContourBorders.begin(); iter != allContourBorders.end(); ++iter)
+  {
+    Contour* contour = iter->first;
+    std::set<LineBorder> linesSet = iter->second;
+    auto predLine = std::prev(linesSet.end());
+
+    std::vector<std::pair<Point, Point>> savedPoints;
+    for (auto lineIter = linesSet.begin(); lineIter != linesSet.end(); ++lineIter)
+    {
+      savedPoints.push_back(std::make_pair(predLine->toPoint(), lineIter->fromPoint()));
+      
+      predLine = lineIter;
     }
 
-    index++;
+    for (size_t i = 0; i < savedPoints.size(); i++)
+    {
+      int from = contour->indexOf(savedPoints[i].first);
+      int to = contour->indexOf(savedPoints[i].second);
+      LineBorder smoothedBorder = LineBorder(*contour, from, to);
+
+      std::vector<Point> line;
+      int lineSize = smoothedBorder.size();
+      line.reserve(lineSize);
+      for (int i = 0; i < lineSize; i++)
+        line.push_back(smoothedBorder.getPoint(smoothedBorder.getNextIdx(smoothedBorder.getFromIndex(), i)));
+
+      line = LineSmoother::DouglasPeucker(line, epsilon);
+      smoothedBorder.replaceBorderWith(LineBorderVector(line));
+    }
   }
 
   RecalcImageViews(hImage);
@@ -238,6 +321,14 @@ int DialogListContours::getIntFromDlgItem(int dlgItem)
   CString str;
   GetDlgItemText(dlgItem, str);
   return atoi(str);
+}
+
+double DialogListContours::getDoubleFromDlgItem(int dlgItem)
+{
+  CString str;
+  GetDlgItemText(dlgItem, str);
+  str.Replace(',', '.');
+  return atof(str);
 }
 
 

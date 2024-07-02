@@ -94,6 +94,6 @@ public:
   std::pair<int, int> getBorderInsideRect(const Rect& rect);
   Rect defineRect() const;
 
-  void smooth();
+  void smooth(int startIdx, int endIdx, double epsilon, bool reverse = false);
 };
 

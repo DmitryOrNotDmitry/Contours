@@ -1,9 +1,12 @@
 #include "StdAfx.h"
-#include <unordered_set>
-#include <algorithm>
 
 #include "Contour.h"
 #include "Path.h"
+
+#include <unordered_set>
+#include <algorithm>
+#include <stack>
+#include "LineSmoother.h"
 
 
 namespace std {
@@ -674,86 +677,47 @@ Rect Contour::defineRect() const
 }
 
 
-double distanceToLine(const Point& point, const Point& startLine, const Point& endLine)
+void Contour::smooth(int startIdx, int endIdx, double epsilon, bool reverse)
 {
-  int x1 = startLine.x;
-  int y1 = startLine.y;
+  std::vector<Point> smoothedRegion;
 
-  int x2 = endLine.x;
-  int y2 = endLine.y;
-
-  double double_area = std::abs((y2 - y1) * point.x - (x2 - x1) * point.y + x2 * y1 - y2 * x1);
-  double len = std::sqrt(std::pow((double)(x2 - x1), 2) + std::pow((double)(y2 - y1), 2));
-  if (len != 0)
-    return double_area / len;
-
-  return 0;
-}
-
-
-std::vector<Point> DouglasPeucker(std::vector<Point>& points, double epsilon)
-{
-  if (points.size() < 3)
-    return points;
-
-  Point start = points.front();
-  Point end = points.back();
-  double maxDist = 0;
-  int index = 0;
-
-  size_t unReachedIdx = points.size() - 1;
-  for (size_t i = 1; i < unReachedIdx; i++)
+  if (startIdx <= endIdx)
   {
-    double dist = distanceToLine(points[i], start, end);
-    if (dist > maxDist)
-    {
-      maxDist = dist;
-      index = i;
-    }
-  }
-
-  if (maxDist > epsilon)
-  {
-    std::vector<Point> ps1(points.begin(), points.begin() + index + 1);
-    std::vector<Point> result1 = DouglasPeucker(ps1, epsilon);
-
-    std::vector<Point> ps2(points.begin() + index, points.end());
-    std::vector<Point> result2 = DouglasPeucker(ps2, epsilon);
-
-    result1.pop_back();
-    result1.insert(result1.end(), result2.begin(), result2.end());
-
-    return result1;
+    smoothedRegion.insert(smoothedRegion.begin(), points.begin() + startIdx, points.begin() + endIdx + 1);
   }
   else
   {
-    std::vector<Point> result;
-    result.push_back(start);
-    result.push_back(end);
-
-    return result;
+    smoothedRegion.insert(smoothedRegion.begin(), points.begin() + startIdx, points.end());
+    smoothedRegion.insert(smoothedRegion.end(), points.begin(), points.begin() + endIdx + 1);
   }
+  
+  smoothedRegion.insert(smoothedRegion.begin(), points[getNextIdx(startIdx, -1)]);
+  smoothedRegion.push_back(points[getNextIdx(endIdx, 1)]);
 
-}
+  if (reverse)
+    std::reverse(smoothedRegion.begin(), smoothedRegion.end());
+
+  smoothedRegion = LineSmoother::DouglasPeucker(smoothedRegion, epsilon);
+
+  if (reverse)
+    std::reverse(smoothedRegion.begin(), smoothedRegion.end());
+
+  smoothedRegion.erase(smoothedRegion.begin());
+  smoothedRegion.pop_back();
 
 
-void Contour::smooth()
-{
-  double epsilon = 0.2;
-
-  points = DouglasPeucker(points, epsilon);
-
-  if (points.size() > 3)
+  int iterOffset = 0;
+  if (startIdx <= endIdx)
   {
-    double dist = distanceToLine(points.back(), *std::prev(points.end(), 2), points.front());
-    if (dist < epsilon)
-      points.pop_back();
+    points.erase(points.begin() + startIdx, points.begin() + endIdx + 1);
+    
+    iterOffset += startIdx;
+  }
+  else
+  {
+    points.erase(points.begin() + startIdx, points.end());
+    points.erase(points.begin(), points.begin() + endIdx + 1);
   }
 
-  if (points.size() > 3)
-  {
-    double dist = distanceToLine(points.front(), points.back(), *(points.begin() + 1));
-    if (dist < epsilon)
-      points.erase(points.begin());
-  }
+  points.insert(points.begin() + iterOffset, smoothedRegion.begin(), smoothedRegion.end());
 }

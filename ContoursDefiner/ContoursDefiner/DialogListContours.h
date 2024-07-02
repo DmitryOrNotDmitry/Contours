@@ -23,6 +23,7 @@ class DialogListContours : public CDialog
   void setValueToDlgItem(int dlgItem, int value);
 
   int getIntFromDlgItem(int dlgItem);
+  double getDoubleFromDlgItem(int dlgItem);
 
 protected:
   virtual void DoDataExchange(CDataExchange* pDX);

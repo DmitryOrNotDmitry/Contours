@@ -16,6 +16,7 @@ public:
   LineBorder(Contour& owner, int fromIndex, int toIndex);
 
   LineBorder& operator=(const LineBorder& other);
+  bool operator<(const LineBorder& other) const;
 
   Contour& getOwner();
   int getFromIndex() const;
