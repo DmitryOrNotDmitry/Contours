@@ -1,5 +1,4 @@
 #include "LineBorder.h"
-#include "LineSmoother.h"
 
 #define CONNECT_LINE_MIN_DISTANCE 1.999
 
@@ -57,6 +56,17 @@ int LineBorder::getNextIdx(int curIndex, int step) const
 Point LineBorder::getPoint(int index) const
 {
   return owner.getPoint(index);
+}
+
+std::vector<Point> LineBorder::getPoints() const
+{
+  std::vector<Point> line;
+  int lineSize = size();
+  line.reserve(lineSize);
+  for (int j = 0; j < lineSize; j++)
+    line.push_back(getPoint(getNextIdx(getFromIndex(), j)));
+
+  return line;
 }
 
 void LineBorder::insertLine(const LineBorder& line, int startIdx, int step)

@@ -27,6 +27,7 @@ public:
 
   virtual int getNextIdx(int curIndex, int step = 1) const;
   virtual Point getPoint(int index) const;
+  virtual std::vector<Point> getPoints() const;
 
   void replaceBorderWith(const LineBorder& line);
 

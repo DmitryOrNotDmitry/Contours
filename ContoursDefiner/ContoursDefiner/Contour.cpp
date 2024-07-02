@@ -2,11 +2,16 @@
 
 #include "Contour.h"
 #include "Path.h"
+#include "LineSmoother.h"
+#include "LineBorder.h"
+#include "GeneralBorderCalculator.h"
+#include "LineBorderVector.h"
 
 #include <unordered_set>
 #include <algorithm>
 #include <stack>
-#include "LineSmoother.h"
+#include <set>
+
 
 
 namespace std {
@@ -677,47 +682,94 @@ Rect Contour::defineRect() const
 }
 
 
-void Contour::smooth(int startIdx, int endIdx, double epsilon, bool reverse)
+void Contour::smooth(double epsilon, std::list<Contour>& allContours)
 {
-  std::vector<Point> smoothedRegion;
+  std::vector<std::pair<Point, Point>> savedPointsThis;
+  std::vector<std::pair<Point, Point>> savedPointsOthers;
+  std::vector<LineBorderVector> smoothedLines;
 
-  if (startIdx <= endIdx)
+  std::set<LineBorder> allContourBorders;
+  std::vector<std::pair<Point, Point>> savedPointsAlone;
+  std::vector<LineBorderVector> smoothedLinesAlone;
+
+  std::vector<std::pair<LineBorder, LineBorder>> allBorders;
+  for (auto iter = allContours.begin(); iter != allContours.end(); ++iter)
   {
-    smoothedRegion.insert(smoothedRegion.begin(), points.begin() + startIdx, points.begin() + endIdx + 1);
-  }
-  else
-  {
-    smoothedRegion.insert(smoothedRegion.begin(), points.begin() + startIdx, points.end());
-    smoothedRegion.insert(smoothedRegion.end(), points.begin(), points.begin() + endIdx + 1);
-  }
-  
-  smoothedRegion.insert(smoothedRegion.begin(), points[getNextIdx(startIdx, -1)]);
-  smoothedRegion.push_back(points[getNextIdx(endIdx, 1)]);
+    if (&(*iter) == this)
+      continue;
 
-  if (reverse)
-    std::reverse(smoothedRegion.begin(), smoothedRegion.end());
-
-  smoothedRegion = LineSmoother::DouglasPeucker(smoothedRegion, epsilon);
-
-  if (reverse)
-    std::reverse(smoothedRegion.begin(), smoothedRegion.end());
-
-  smoothedRegion.erase(smoothedRegion.begin());
-  smoothedRegion.pop_back();
-
-
-  int iterOffset = 0;
-  if (startIdx <= endIdx)
-  {
-    points.erase(points.begin() + startIdx, points.begin() + endIdx + 1);
-    
-    iterOffset += startIdx;
-  }
-  else
-  {
-    points.erase(points.begin() + startIdx, points.end());
-    points.erase(points.begin(), points.begin() + endIdx + 1);
+    auto bordersWithContour = GeneralBorderCalculator::defineGeneralBorders(*this, *iter, 0);
+    allBorders.insert(allBorders.end(), bordersWithContour.begin(), bordersWithContour.end());
   }
 
-  points.insert(points.begin() + iterOffset, smoothedRegion.begin(), smoothedRegion.end());
+  if (allBorders.size() == 0)
+  {
+    std::vector<Point> smoothedRegion;
+
+    smoothedRegion.insert(smoothedRegion.begin(), points.begin(), points.end());
+
+    smoothedRegion.insert(smoothedRegion.begin(), *points.rbegin());
+    smoothedRegion.push_back(*points.begin());
+
+    smoothedRegion = LineSmoother::DouglasPeucker(smoothedRegion, epsilon);
+
+    smoothedRegion.erase(smoothedRegion.begin());
+    smoothedRegion.pop_back();
+
+    points = smoothedRegion;
+
+    return;
+  }
+
+  for (size_t i = 0; i < allBorders.size(); i++)
+  {
+    savedPointsThis.push_back(std::make_pair(allBorders[i].first.fromPoint(), allBorders[i].first.toPoint()));
+    savedPointsOthers.push_back(std::make_pair(allBorders[i].second.fromPoint(), allBorders[i].second.toPoint()));
+
+    allContourBorders.insert(allBorders[i].first);
+
+    smoothedLines.push_back(LineBorderVector(LineSmoother::DouglasPeucker(allBorders[i].first.getPoints(), epsilon)));
+  }
+
+
+  auto predLine = std::prev(allContourBorders.end());
+  for (auto lineIter = allContourBorders.begin(); lineIter != allContourBorders.end(); ++lineIter)
+  {
+    savedPointsAlone.push_back(std::make_pair(predLine->toPoint(), lineIter->fromPoint()));
+
+    LineBorder border(*this, predLine->getToIndex(), lineIter->getFromIndex());
+
+    smoothedLinesAlone.push_back(LineBorderVector(LineSmoother::DouglasPeucker(border.getPoints(), epsilon)));
+
+    predLine = lineIter;
+  }
+
+
+  for (size_t i = 0; i < allBorders.size(); i++)
+  {
+    Contour* other = &allBorders[i].second.getOwner();
+
+    int from = indexOf(savedPointsThis[i].first);
+    int to = indexOf(savedPointsThis[i].second);
+    LineBorder smoothedBorder1 = LineBorder(*this, from, to);
+          
+    smoothedBorder1.replaceBorderWith(smoothedLines[i]);
+
+    from = other->indexOf(savedPointsOthers[i].first);
+    to = other->indexOf(savedPointsOthers[i].second);
+    LineBorder smoothedBorder2 = LineBorder(*other, from, to);
+          
+    smoothedBorder2.replaceBorderWith(smoothedLines[i]);
+  }
+
+  for (size_t i = 0; i < smoothedLinesAlone.size(); i++)
+  {
+    Contour* other = &allBorders[i].second.getOwner();
+
+    int from = indexOf(savedPointsAlone[i].first);
+    int to = indexOf(savedPointsAlone[i].second);
+    LineBorder smoothedAloneBorder = LineBorder(*this, from, to);
+
+    smoothedAloneBorder.replaceBorderWith(smoothedLinesAlone[i]);
+  }
 }
