@@ -7,21 +7,12 @@
 #include <list>
 #include <algorithm>
 
-#define K 4
-
 class Contour
 {
 
   std::vector<Point> points;
   
-  std::vector<Point> lastKAddedPoints;
-
   ContourState state;
-
-  void memoryLastAddedPoints(std::vector<Point>&& points);
-
-  void deleteYetAddedPoints(std::vector<Point>& deletedPoints);
-
 
 public:
   Contour();
@@ -36,7 +27,6 @@ public:
 
   void setPoint(int idx, Point point);
 
-  std::vector<Point> addPoints(std::vector<Point>& newPoints);
   std::vector<Point>& getPoints();
 
   ContourState getState() const;

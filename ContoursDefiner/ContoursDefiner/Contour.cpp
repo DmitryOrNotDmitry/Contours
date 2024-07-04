@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 
 #include "Contour.h"
-#include "Path.h"
 #include "LineSmoother.h"
 #include "LineBorder.h"
 #include "GeneralBorderCalculator.h"
@@ -26,12 +25,10 @@ namespace std {
 
 Contour::Contour()
 {
-  lastKAddedPoints.resize(K, Point(-1, -1));
 }
 
 Contour::Contour(const Contour& other)
   : points(other.points)
-  , lastKAddedPoints(other.lastKAddedPoints)
   , state(other.state)
 {
 }
@@ -44,7 +41,6 @@ Contour::~Contour()
 Contour& Contour::operator=(const Contour& other)
 {
   points = other.points;
-  lastKAddedPoints = other.lastKAddedPoints;
   state = other.state;
 
   return *this;
@@ -56,9 +52,6 @@ void Contour::addPoint(Point point)
   if (points.size() > 0)
   {
     if (*points.rbegin() == point)
-      return;
-
-    if (*points.begin() == point)
       return;
   }
   
@@ -88,62 +81,6 @@ void Contour::setPoint(int idx, Point point)
 void Contour::addPoint(int x, int y)
 {
   addPoint(Point(x, y));
-}
-
-
-std::vector<Point> Contour::addPoints(std::vector<Point>& newPoints)
-{
-  std::vector<Point> fitPoints;
-
-  if (newPoints.size() == 0)
-    return fitPoints;
-
-  deleteYetAddedPoints(newPoints);
-
-  Path path(newPoints);
-
-  if (points.size() > 0 && path.size() > 1)
-  {
-    if ((*points.rbegin()).DistanceTo(path[0]) > (*points.rbegin()).DistanceTo(path[-1]))
-      path.reverse();
-  }
-
-  if (points.size() > 1 && points.size() < 8 && path.size() > 0)
-  {
-    if (path[0].DistanceTo(*points.begin()) < path[0].DistanceTo(*points.rbegin()))
-      std::reverse(points.begin(), points.end());
-  }
-  
-  
-  for (auto iter = path.begin(); iter != path.end(); iter++)
-  {
-    double distance = 0;
-
-    if (fitPoints.size() > 0)
-    {
-      distance = fitPoints.rbegin()->DistanceTo(*iter);
-      if (distance < 2)
-        fitPoints.push_back(*iter);
-    }
-    else if (points.size() > 0)
-    {
-      distance = points.rbegin()->DistanceTo(*iter);
-      if (distance < 2)
-        fitPoints.push_back(*iter);
-    }
-    else
-    {
-      fitPoints.push_back(*iter);
-    }
-  }
-
-  points.insert(points.cend(), fitPoints.begin(), fitPoints.end());
-
-  std::vector<Point> tmp(fitPoints);
-
-  memoryLastAddedPoints(std::move(tmp));
-
-  return fitPoints;
 }
 
 
@@ -274,33 +211,6 @@ void Contour::removeSamePointsAtEnds()
 
 }
 
-
-void Contour::memoryLastAddedPoints(std::vector<Point>&& points)
-{
-  if (points.size() == 0)
-    points.push_back(Point(-1, -1));
-
-  for (size_t j = 0; j < points.size(); j++)
-  {
-    for (size_t i = K - 1; i > 0; i--)
-    {
-      lastKAddedPoints[i] = std::move(lastKAddedPoints[i - 1]);
-    }
-    if (K > 0)
-      lastKAddedPoints[0] = std::move(points[j]);
-  }
-}
-
-
-void Contour::deleteYetAddedPoints(std::vector<Point>& deletedPoints)
-{
-  for (size_t i = 0; i < K; i++)
-  {
-    auto foundedPoint = std::find(deletedPoints.begin(), deletedPoints.end(), lastKAddedPoints[i]);
-    if (foundedPoint != deletedPoints.end())
-      deletedPoints.erase(foundedPoint);
-  }
-}
 
 double Contour::signArea(int from, int to) const
 {

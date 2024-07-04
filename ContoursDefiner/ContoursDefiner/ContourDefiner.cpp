@@ -34,38 +34,31 @@ ContourDefiner& ContourDefiner::operator=(const ContourDefiner& other)
   return *this;
 }
 
-
 Contour ContourDefiner::defineContour(const Point& startPoint)
 {
   Contour contour;
 
-  
   Point startContourPoint = getPointNearContour(startPoint);
   
-  std::vector<Point> contourPoints = defineContourPointsAround(startContourPoint);
-
-  contour.addPoints(contourPoints);
-
-  Point tmp;
-  Point currentInsidePoint = getNextPoint(startContourPoint, startContourPoint.toRight());
-  Point predPoint = startContourPoint;
+  Point lastAddedPoint = addContourPointsAround(startContourPoint, contour);
+  Point currentInsidePoint = getNextPoint(startContourPoint, lastAddedPoint);
 
   int countIterations = 0;
 
   while (currentInsidePoint != startContourPoint)
   {
-    contourPoints = defineContourPointsAround(currentInsidePoint);
+    lastAddedPoint = addContourPointsAround(currentInsidePoint, contour);
+    if (lastAddedPoint == Point(-1, -1))
+      lastAddedPoint = contour[contour.size() - 1];
 
-    contour.addPoints(contourPoints);
-    
-    tmp = currentInsidePoint;
-    currentInsidePoint = getNextPoint(currentInsidePoint, predPoint);
-    predPoint = tmp;
+    currentInsidePoint = getNextPoint(currentInsidePoint, lastAddedPoint);
 
     countIterations++;
     if (countIterations > MAX_ITERATIONS)
       break;
   }
+
+  addContourPointsAround(currentInsidePoint, contour);
 
   contour.removeSamePointsAtEnds();
   
@@ -86,7 +79,7 @@ Point ContourDefiner::getPointNearContour(const Point& startPoint)
 }
 
 
-std::vector<Point> ContourDefiner::defineContourPointsAround(const Point& basePoint)
+Point ContourDefiner::addContourPointsAround(const Point& basePoint, Contour& contour)
 {
   std::vector<Point> contourPoints;
   contourPoints.reserve(8);
@@ -103,77 +96,43 @@ std::vector<Point> ContourDefiner::defineContourPointsAround(const Point& basePo
   };
   int numPoints = sizeof(pointsForCheck) / sizeof(pointsForCheck[0]);
 
+  if (contour.size() == 0)
+    contour.addPoint(pointsForCheck[0]);
+
+  int startIdx = 0;
+  Point lastContourPoint = contour[contour.size() - 1];
   for (int i = 0; i < numPoints; i++)
   {
-    Point& checkedPoint = pointsForCheck[i];
-
-    if (!isInternalPoint(basePoint, checkedPoint))
+    if (lastContourPoint == pointsForCheck[i])
     {
-      contourPoints.push_back(checkedPoint);
+      startIdx = (i + 1) % numPoints;
+      break;
     }
   }
-
-  return contourPoints;
-}
-
-
-template<class T>
-void ContourDefiner::removeIndexesFromVector(std::vector<T>& vector, std::vector<size_t>& indexes)
-{
-  std::sort(indexes.begin(), indexes.end());
-  auto last = std::unique(indexes.begin(), indexes.end());
-  indexes.erase(last, indexes.end());
-  for (auto iter = indexes.rbegin(); iter != indexes.rend(); ++iter)
+  
+  int idx = startIdx;
+  Point lastAddedPoint(-1, -1);
+  for (int i = 0; i < numPoints; i++)
   {
-    vector.erase(vector.begin() + *iter);
-  }
-}
-
-
-std::vector<Point> ContourDefiner::definePossiblePoints(const Point& basePoint)
-{
-  std::vector<Point> possibleNextPoints;
-  possibleNextPoints.reserve(8);
-  
-  Point pointsForCheck[] = {
-    basePoint.toRight(),
-    basePoint.toRight().toBottom(),
-    basePoint.toBottom(),
-    basePoint.toBottom().toLeft(),
-    basePoint.toLeft(),
-    basePoint.toLeft().toUp(),
-    basePoint.toUp(),
-    basePoint.toUp().toRight(),
-  };
-  int numPoints = sizeof(pointsForCheck) / sizeof(pointsForCheck[0]);
-  
-  std::map<Point, bool> canPointBeTake;
-  for (int i = 0; i < numPoints; i++)
-    canPointBeTake[pointsForCheck[i]] = false;
-  
-  for (int i = 0; i < numPoints; i += 2)
-    if (isInternalPoint(basePoint, pointsForCheck[i]))
+    Point& checkedPoint = pointsForCheck[idx];
+      
+    if (contour[contour.size() - 1].DistanceTo(checkedPoint) < 1.999)
     {
-      canPointBeTake[pointsForCheck[i + 0]] = true;
-      
-      Point predPoint;
-      if (i == 0)
-        predPoint = pointsForCheck[numPoints - 1];
-      else
-        predPoint = pointsForCheck[i - 1];
-
-      if (isInternalPoint(basePoint, predPoint))
-        canPointBeTake[predPoint] = true;
-      
-      if (isInternalPoint(basePoint, pointsForCheck[i + 1]))
-        canPointBeTake[pointsForCheck[i + 1]] = true;
+      if (!isInternalPoint(basePoint, checkedPoint))
+      {
+        lastAddedPoint = checkedPoint;
+        contour.addPoint(checkedPoint);
+      }
+    }
+    else
+    {
+      break;
     }
 
-  for (int i = 0; i < numPoints; i++)
-    if (canPointBeTake[pointsForCheck[i]])
-      possibleNextPoints.push_back(pointsForCheck[i]);
-  
-  return possibleNextPoints;
+    idx = (idx + 1) % numPoints;
+  }
+
+  return lastAddedPoint;
 }
 
 
@@ -182,7 +141,7 @@ bool ContourDefiner::isInternalPoint(const Point& innerPoint, const Point& check
   return imageManager->getPointValue(innerPoint) == imageManager->getPointValue(checkedPoint);
 }
 
-Point ContourDefiner::getNextPoint(const Point& basePoint, const Point& predPoint)
+Point ContourDefiner::getNextPoint(const Point& basePoint, const Point& lastContourPoint)
 {
   Point pointsForCheck[] = {
     basePoint.toRight(),
@@ -196,19 +155,24 @@ Point ContourDefiner::getNextPoint(const Point& basePoint, const Point& predPoin
   };
   int numPoints = sizeof(pointsForCheck) / sizeof(pointsForCheck[0]);
 
-  std::vector<Point> possibleNextPoints = definePossiblePoints(basePoint);
-
-  int i = 0;
-  while (pointsForCheck[i % numPoints] != predPoint)
-    i++;
-  i += 1;
-
-  for (int j = 0; j < numPoints; j++)
+  int startIdx = 0;
+  for (int i = 0; i < numPoints; i++)
   {
-    auto found_point = std::find(possibleNextPoints.begin(), possibleNextPoints.end(), pointsForCheck[(i + j) % numPoints]);
-    if (found_point != possibleNextPoints.end())
+    if (lastContourPoint == pointsForCheck[i])
     {
-      return *found_point;
+      startIdx = (i + 1) % numPoints;
+      break;
     }
   }
+
+  int idx = startIdx;
+  for (int i = 0; i < numPoints; i++)
+  {
+    if (isInternalPoint(basePoint, pointsForCheck[idx]))
+      break;
+
+    idx = (idx + 1) % numPoints;
+  }
+
+  return pointsForCheck[idx];
 }
