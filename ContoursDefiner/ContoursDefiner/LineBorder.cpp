@@ -18,9 +18,20 @@ LineBorder& LineBorder::operator=(const LineBorder& other)
   return *this;
 }
 
+bool LineBorder::operator==(const LineBorder& other) const
+{
+  return (&(owner) == &(other.owner)) && (fromIndex == other.fromIndex) && (fromIndex == other.fromIndex);
+}
+
 bool LineBorder::operator<(const LineBorder& other) const
 {
-  return fromIndex < other.fromIndex;
+  if (&(owner) != &(other.owner))
+    return &(owner) < &(other.owner);
+
+  if (fromIndex != other.fromIndex)
+    return fromIndex < other.fromIndex;
+
+  return toIndex < other.toIndex;
 }
 
 Contour& LineBorder::getOwner()
