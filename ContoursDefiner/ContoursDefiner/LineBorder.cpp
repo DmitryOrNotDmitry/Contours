@@ -20,7 +20,7 @@ LineBorder& LineBorder::operator=(const LineBorder& other)
 
 bool LineBorder::operator==(const LineBorder& other) const
 {
-  return (&(owner) == &(other.owner)) && (fromIndex == other.fromIndex) && (fromIndex == other.fromIndex);
+  return (&(owner) == &(other.owner)) && (fromIndex == other.fromIndex) && (toIndex == other.toIndex);
 }
 
 bool LineBorder::operator<(const LineBorder& other) const
@@ -28,10 +28,7 @@ bool LineBorder::operator<(const LineBorder& other) const
   if (&(owner) != &(other.owner))
     return &(owner) < &(other.owner);
 
-  if (fromIndex != other.fromIndex)
-    return fromIndex < other.fromIndex;
-
-  return toIndex < other.toIndex;
+  return fromIndex < other.fromIndex;
 }
 
 Contour& LineBorder::getOwner()

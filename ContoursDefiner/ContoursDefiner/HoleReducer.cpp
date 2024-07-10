@@ -231,12 +231,12 @@ void HoleReducer::reduceHole(Contour& hole, std::list<Contour>& contours)
     int countPointsGiven = givePartHoleToContour(hole, *selectedCont);
     if (countPointsGiven == 0)
       return;
-
+    
     if (hole.area() > EPSILON)
       hole.deletePins();
 
     std::vector<Contour> sepHoles = hole.separate();
-
+    
     for (size_t i = 0; i < sepHoles.size(); i++)
       if (sepHoles[i].area() > EPSILON)
         reduceHole(sepHoles[i], contours);

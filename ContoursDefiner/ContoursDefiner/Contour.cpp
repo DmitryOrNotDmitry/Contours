@@ -678,6 +678,7 @@ void Contour::smooth(double epsilon, std::list<Contour>& allContours)
 
     int from = indexOf(savedPointsAlone[i].first);
     int to = indexOf(savedPointsAlone[i].second);
+
     LineBorder smoothedAloneBorder = LineBorder(*this, from, to);
 
     smoothedAloneBorder.replaceBorderWith(smoothedLinesAlone[i]);
