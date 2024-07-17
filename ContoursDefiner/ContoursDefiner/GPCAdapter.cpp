@@ -1,8 +1,6 @@
 #include "GPCAdapter.h"
 #include "GPC/gpc.cpp"
 #include "BresenhamLine.h"
-#include "StarFixer.h"
-#include "CrossFixer.h"
 #include "GeneralBorderCalculator.h"
 
 #include <algorithm>
@@ -20,56 +18,6 @@ void freePolygon(gpc_polygon* p)
 
 }
 
-
-void defineReplaces(const std::list<Contour>& contours, std::vector<GPCFixer*> fixers)
-{
-  Point XYmin(1000000000, 1000000000);
-  Point XYmax(0, 0);
-  int x, y;
-  for (auto iter = contours.begin(); iter != contours.end(); ++iter)
-  {
-    for (size_t i = 0; i < iter->size(); i++)
-    {
-      x = iter->getPoint(i).x;
-      y = iter->getPoint(i).y;
-
-      XYmin.x = std::min(XYmin.x, x);
-      XYmin.y = std::min(XYmin.y, y);
-
-      XYmax.x = std::max(XYmax.x, x);
-      XYmax.y = std::max(XYmax.y, y);
-    }
-  }
-
-  std::vector<Point> basePoints;
-
-  int rows = XYmax.y - XYmin.y + 2;
-  int cols = XYmax.x - XYmin.x + 2;
-  if (rows <= 0 || cols <= 0)
-    return;
-
-  std::vector<std::vector<char>> matrix;
-  matrix.resize(rows);
-  for (int i = 0; i < rows; i++)
-    matrix[i].resize(cols, 0);
-
-  for (auto iter = contours.begin(); iter != contours.end(); ++iter)
-  {
-    for (size_t i = 0; i < iter->size(); i++)
-    {
-      x = iter->getPoint(i).x - XYmin.x + 1;
-      y = iter->getPoint(i).y - XYmin.y + 1;
-
-      matrix[y][x]++;
-    }
-  }
-
-  for (size_t i = 0; i < fixers.size(); i++)
-  {
-    fixers[i]->calcReplaces(matrix, XYmin);
-  }
-
-}
 
 template<class ContourContainer>
 void exportToPolygon(const ContourContainer& contours, gpc_polygon* polygon)
@@ -135,82 +83,6 @@ std::vector<Contour> importToContours(gpc_polygon* polygon, int isHole = TRUE)
 }
 
 
-LineBorder calcHoleBorder(Contour& contour, LineBorder& fitBorder, LineBorder oneLenBorder)
-{
-  int from = oneLenBorder.getToIndex();
-  int to = fitBorder.getFromIndex();
-  int distance1 = contour.distance(from, to);
-  LineBorder holeBorder(contour, from, to);
-
-  from = fitBorder.getToIndex();
-  to = oneLenBorder.getFromIndex();
-  int distance2 = contour.distance(from, to);
-  if (distance2 < distance1)
-  {
-    holeBorder = LineBorder(contour, from, to);
-  }
-
-  return holeBorder;
-}
-
-
-size_t defineFitBordersIdx(Contour& contour1, Contour& contour2, const std::vector<std::pair<LineBorder, LineBorder>>& allBorders, size_t oneLenBorderIdx, bool isFirstBorder = true)
-{
-  int minDistance = INT_MAX;
-  size_t minBordersIdx = 0;
-
-  const LineBorder* oneLenBorder;
-  const LineBorder* curBorder;
-  Contour* contour;
-
-  for (int _ = 0; _ < 2; _++)
-  {
-    if (_ == 0)
-    {
-      oneLenBorder = &allBorders[oneLenBorderIdx].first;
-      contour = &contour1;
-    }
-    else
-    {
-      oneLenBorder = &allBorders[oneLenBorderIdx].second;
-      contour = &contour2;
-    }
-
-    for (size_t i = 0; i < allBorders.size(); i++)
-    {
-      if (i == oneLenBorderIdx)
-        continue;
-
-      if (_ == 0)
-        curBorder = &allBorders[i].first;
-      else
-        curBorder = &allBorders[i].second;
-
-
-      int from = oneLenBorder->getToIndex();
-      int to = curBorder->getFromIndex();
-      int distance = contour->distance(from, to);
-      if (distance < minDistance)
-      {
-        minBordersIdx = i;
-        minDistance = distance;
-      }
-
-      from = curBorder->getToIndex();
-      to = oneLenBorder->getFromIndex();
-      distance = contour->distance(from, to);
-      if (distance < minDistance)
-      {
-        minBordersIdx = i;
-        minDistance = distance;
-      }
-    }
-  }
-
-  return minBordersIdx;
-}
-
-
 std::vector<Contour> defineExtraHoles(std::vector<Contour>& unionContours)
 {
   std::vector<Contour> holes;
@@ -266,7 +138,7 @@ std::vector<Contour> defineExtraHoles(std::vector<Contour>& unionContours)
 
 
 template<class ContourContainer>
-std::pair<std::vector<Contour>, std::vector<Contour>> unionContours(ContourContainer& contours)
+std::pair<std::vector<Contour>, std::vector<Contour>> unionContours(const ContourContainer& contours)
 {
   gpc_polygon* polygon1 = new gpc_polygon;
   exportToPolygon(contours, polygon1);
@@ -293,16 +165,14 @@ std::pair<std::vector<Contour>, std::vector<Contour>> unionContours(ContourConta
 }
 
 
-std::vector<Contour> GPCAdapter::searchHoles(const std::list<Contour>& unprocessedContours)
+std::vector<Contour> GPCAdapter::searchHoles(const std::list<Contour>& contours)
 {
-  std::list<Contour> contours(unprocessedContours);
-
   auto result = unionContours(contours);
   
-  std::vector<Contour> unionContours = std::move(result.first);
+  std::vector<Contour> unionedContours = std::move(result.first);
   std::vector<Contour> holes = std::move(result.second);
 
-  std::vector<Contour> extraHoles = defineExtraHoles(unionContours);
+  std::vector<Contour> extraHoles = defineExtraHoles(unionedContours);
   for (size_t i = 0; i < extraHoles.size(); i++)
     if (std::find(holes.begin(), holes.end(), extraHoles[i]) == holes.end())
       holes.push_back(std::move(extraHoles[i]));

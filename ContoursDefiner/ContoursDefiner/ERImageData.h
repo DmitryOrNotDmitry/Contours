@@ -1,8 +1,8 @@
 #pragma once
-#include "ImageDataManager.h"
+#include "AbstractImageData.h"
 #include "ERInterface.h"
 
-class ERImageData : public ImageDataManager
+class ERImageData : public AbstractImageData
 {
 
   HIMAGE hImage;
@@ -15,7 +15,6 @@ class ERImageData : public ImageDataManager
 public:
 
   ERImageData(HIMAGE hImage);
-  //ERImageData(const ERImageData& other);
   virtual ~ERImageData();
 
   int getPointValue(const Point& point, int offset = 0) override;

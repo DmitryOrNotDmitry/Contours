@@ -26,21 +26,6 @@ ERImageData::ERImageData(HIMAGE hImage)
   }
 }
 
-//ERImageData::ERImageData(const ERImageData& other)
-//  : hImage(other.hImage)
-//  , kolLines(other.kolLines)
-//  , kolPix(other.kolPix)
-//  , QChans(other.QChans)
-//{
-//  imageLines = new unsigned char* [kolLines];
-//  for (int i = 0; i < kolLines; i++)
-//  {
-//    imageLines[i] = new unsigned char[kolPix * QChans];
-//    for (int j = 0; j < kolLines; j++)
-//      imageLines[i][j] = other.imageLines[i][j];
-//  }
-//}
-
 ERImageData::~ERImageData()
 {
   if (kolLines > 0)

@@ -134,7 +134,7 @@ void DialogListContours::OnBnClickedCalcControlPoints()
   auto firstCont = std::next(conts.begin(), selectedRows[0]);
   auto secondCont = std::next(conts.begin(), selectedRows[1]);
 
-  std::vector<std::pair<LineBorder, LineBorder>> borders = GeneralBorderCalculator::defineGeneralBorders(*firstCont, *secondCont, 0);
+  std::vector<std::pair<LineBorder, LineBorder>> borders = GeneralBorderCalculator::defineAllGeneralBorders(*firstCont, *secondCont, 0);
 
   for (size_t i = 0; i < borders.size(); i++)
   {

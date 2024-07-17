@@ -72,17 +72,6 @@ void Contour::insertPoint(Point point, int index)
   points.insert(points.begin() + index, point);
 }
 
-void Contour::setPoint(int idx, Point point)
-{
-  points[idx] = point;
-}
-
-
-void Contour::addPoint(int x, int y)
-{
-  addPoint(Point(x, y));
-}
-
 
 std::vector<Point>& Contour::getPoints()
 {
@@ -229,21 +218,6 @@ double Contour::signArea(int from, int to) const
   return area;
 }
 
-bool Contour::haveRepeatPoints() const
-{
-  bool haveRepeat = false;
-  for (size_t i = 1; i < size(); i++)
-  {
-    if (points[i] == points[i - 1])
-    {
-      haveRepeat = true;
-    }
-  }
-  if (points.size() > 1 && (*points.rbegin() == points[0]))
-    haveRepeat = true;
-
-  return haveRepeat;
-}
 
 Point Contour::getPoint(int index) const
 {
@@ -273,22 +247,6 @@ double Contour::distanceTo(const Point& destination) const
   return destination.DistanceTo(getPoint(nearestPointIdx));
 }
 
-Point Contour::getAvaragePoint()
-{
-  long long x = 0;
-  long long y = 0;
-
-  for (size_t i = 0; i < size(); i++)
-  {
-    x += points[i].x;
-    y += points[i].y;
-  }
-
-  x /= size();
-  y /= size();
-
-  return Point(x, y);
-}
 
 double Contour::area() const
 {
@@ -310,10 +268,6 @@ bool Contour::isClockwise() const
   return isClockwise(0, size() - 1);
 }
 
-void Contour::reverse()
-{
-  std::reverse(points.begin(), points.end());
-}
 
 void Contour::deletePins()
 {
@@ -507,91 +461,6 @@ std::vector<Contour> Contour::separate()
 }
 
 
-std::pair<int, int> Contour::getBorderInsideRect(const Rect& rect)
-{
-  int len = size();
-  std::vector<int> startIdxs;
-  std::vector<int> endIdxs;
-
-  bool isStartIdxFirst = false;
-
-  for (int i = 0; i < len; i++) 
-  {
-    
-    if (rect.isInner(getPoint(i)))
-    {
-      Point prevPoint = getPoint(getNextIdx(i, -1));
-      Point nextPoint = getPoint(getNextIdx(i));
-
-      if (!rect.isInner(prevPoint))
-      {
-        startIdxs.push_back(i);
-        if (endIdxs.size() == 0)
-          isStartIdxFirst = true;
-      }
-
-      if (!rect.isInner(nextPoint))
-        endIdxs.push_back(i);
-    }
-  }
-
-  if (isStartIdxFirst)
-  {
-    startIdxs.push_back(*startIdxs.begin());
-    startIdxs.erase(startIdxs.begin());
-  }
-
-  if (startIdxs.size() != endIdxs.size()) // TODO
-    int t = 0;
-
-  std::pair<int, int> result = std::make_pair(0, size() - 1);
-
-  if (startIdxs.size() == 1)
-    result = std::make_pair(startIdxs[0], endIdxs[0]);
-  else
-  {
-    int minDistance = INT_MAX;
-    int curDist = 0;
-    for (size_t i = 0; i < startIdxs.size(); i++)
-    {
-      curDist = distance(startIdxs[i], endIdxs[i]);
-      if (curDist < minDistance)
-      {
-        minDistance = curDist;
-        result = std::make_pair(startIdxs[i], endIdxs[i]);
-      }
-    }
-  }
-
-
-  return result;
-}
-
-
-Rect Contour::defineRect() const
-{
-  int xMax = -1;
-  int xMin = INT_MAX;
-  int yMax = -1;
-  int yMin = INT_MAX;
-
-  int len = size();
-  Point curPoint;
-  for (int i = 0; i < len; i++)
-  {
-    curPoint = getPoint(i);
-
-    xMax = max(xMax, curPoint.x);
-    xMin = min(xMin, curPoint.x);
-    
-    yMax = max(yMax, curPoint.y);
-    yMin = min(yMin, curPoint.y);
-  }
-
-  return Rect(Point(xMin, yMin), Point(xMax, yMax));
-}
-
-
 void Contour::smooth(double epsilon, std::list<Contour>& allContours)
 {
   std::vector<std::pair<Point, Point>> savedPointsThis;
@@ -608,7 +477,7 @@ void Contour::smooth(double epsilon, std::list<Contour>& allContours)
     if (&(*iter) == this)
       continue;
 
-    auto bordersWithContour = GeneralBorderCalculator::defineGeneralBorders(*this, *iter, 0);
+    auto bordersWithContour = GeneralBorderCalculator::defineAllGeneralBorders(*this, *iter, 0);
     allBorders.insert(allBorders.end(), bordersWithContour.begin(), bordersWithContour.end());
   }
 

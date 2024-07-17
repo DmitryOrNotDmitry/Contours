@@ -18,7 +18,7 @@ ContourDefiner::ContourDefiner(const ContourDefiner& other)
   this->imageManager = other.imageManager;
 }
 
-ContourDefiner::ContourDefiner(ImageDataManager* imageManager)
+ContourDefiner::ContourDefiner(AbstractImageData* imageManager)
   : imageManager(imageManager)
 {
 }

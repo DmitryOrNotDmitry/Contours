@@ -1,18 +1,18 @@
 #pragma once
-#include "ImageDataManager.h"
+#include "AbstractImageData.h"
 #include "Contour.h"
 #include "Point.h"
 
 class ContourDefiner
 {
 
-  ImageDataManager* imageManager;
+  AbstractImageData* imageManager;
 
 public:
 
   ContourDefiner();
   ContourDefiner(const ContourDefiner& other);
-  ContourDefiner(ImageDataManager* imageManager);
+  ContourDefiner(AbstractImageData* imageManager);
   ~ContourDefiner();
 
   ContourDefiner& operator=(const ContourDefiner& other);

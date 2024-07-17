@@ -1,15 +1,8 @@
 #include "LineBorderVector.h"
-
-int max(int a, int b)
-{
-  int result = a;
-  if (a < b)
-    result = b;
-  return result;
-}
+#include <algorithm>
 
 LineBorderVector::LineBorderVector(const std::vector<Point>& points)
-  : LineBorder(Contour(), 0, max(0, points.size() - 1))
+  : LineBorder( Contour(), 0, std::max(0, static_cast<int>(points.size() - 1) ))
   , points(points)
 {
 

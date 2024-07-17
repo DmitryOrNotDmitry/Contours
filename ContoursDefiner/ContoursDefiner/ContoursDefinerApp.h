@@ -12,7 +12,7 @@
 #include "ObjectsDrawing.h"
 #include "Contour.h"
 #include "ContourDefiner.h"
-#include "ImageDataManager.h"
+#include "AbstractImageData.h"
 #include "DialogListContours.h"
 #include "DataStorageManager.h"
 
@@ -30,7 +30,7 @@ public:
   ObjectsDrawing* contoursDrawer;
   Contour contour;
   HIMAGE hImage;
-  ImageDataManager* imageManager;
+  AbstractImageData* imageManager;
   ContourDefiner conDefiner;
   DataStorageManager& dataManager;
 

@@ -1,7 +1,6 @@
 #pragma once
 #include "Point.h"
 #include "ContourState.h"
-#include "Rect.h"
 
 #include <vector>
 #include <list>
@@ -21,16 +20,16 @@ public:
 
   Contour& operator=(const Contour& other);
 
-  void addPoint(int x, int y);
   void addPoint(Point point);
   void insertPoint(Point point, int index);
-
-  void setPoint(int idx, Point point);
 
   std::vector<Point>& getPoints();
 
   ContourState getState() const;
   void setState(ContourState state);
+
+  Point getPoint(int index) const;
+  int getNextIdx(int fromIndex, int step = 1) const;
 
   size_t size() const;
   
@@ -47,14 +46,7 @@ public:
 
   void removeSamePointsAtEnds();
 
-  bool haveRepeatPoints() const;
-
-  Point getPoint(int index) const;
-  int getNextIdx(int fromIndex, int step = 1) const;
-
   double distanceTo(const Point& destination) const;
-
-  Point getAvaragePoint();
 
   double area() const;
   double area(int from, int to) const;
@@ -62,8 +54,6 @@ public:
 
   bool isClockwise(int from, int to) const;
   bool isClockwise() const;
-
-  void reverse();
 
   std::vector<Contour*> calcNeighbors(std::list<Contour>& contours);
 
@@ -80,9 +70,6 @@ public:
   int minStep(int from, int to) const;
 
   std::vector<Contour> separate();
-
-  std::pair<int, int> getBorderInsideRect(const Rect& rect);
-  Rect defineRect() const;
 
   void smooth(double epsilon, std::list<Contour>& allContours);
 };

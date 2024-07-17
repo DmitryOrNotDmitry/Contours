@@ -1,5 +1,4 @@
 #include "LineSmoother.h"
-
 #include <stack>
 
 double LineSmoother::distanceToLine(const Point& point, const Point& startLine, const Point& endLine)

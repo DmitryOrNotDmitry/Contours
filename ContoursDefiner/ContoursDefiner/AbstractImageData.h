@@ -1,7 +1,7 @@
 #pragma once
 #include "Point.h"
 
-class ImageDataManager
+class AbstractImageData
 {
 
 public:
@@ -11,7 +11,7 @@ public:
   virtual int lineSize();
   virtual int getCountLines();
 
-  virtual ~ImageDataManager();
+  virtual ~AbstractImageData();
 
 };
 

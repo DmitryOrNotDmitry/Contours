@@ -119,8 +119,6 @@ void HoleReducer::reduceHoleMultiBorders()
       nearbyContours[i]->deletePins();
     }
 
-    //break; // TODO
-
     std::vector<Contour> restHoles;
     restHoles.reserve(atomicHoles.size());
     for (size_t i = 0; i < atomicHoles.size(); i++)
