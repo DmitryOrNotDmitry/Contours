@@ -17,7 +17,7 @@ HoleReducer::HoleReducer(double minSquare, double maxSquare)
 }
 
 
-void HoleReducer::prepareContours(std::list<Contour>& contours)
+void HoleReducer::prepareContours(std::vector<Contour>& contours)
 {
   nearbyContours = reducedHole->calcNeighbors(contours);
 
@@ -165,7 +165,7 @@ void HoleReducer::defineSkippedContours(std::vector<Contour>& holes)
 }
 
 
-void HoleReducer::processMulti(Contour& hole, std::list<Contour>& contours)
+void HoleReducer::processMulti(Contour& hole, std::vector<Contour>& contours)
 {
   reducedHole = &hole;
 
@@ -198,7 +198,7 @@ void addPointWithCondition(std::vector<Point>& newBorder,
   Point p);
 void sortPointsByProximity(std::vector<Point>& points, const Point& anchorPoint);
 
-void HoleReducer::process(Contour& hole, std::list<Contour>& contours)
+void HoleReducer::process(Contour& hole, std::vector<Contour>& contours)
 {
   reducedHole = &hole;
 
@@ -214,7 +214,7 @@ void HoleReducer::process(Contour& hole, std::list<Contour>& contours)
   reduceHole(hole, contours);
 }
 
-void HoleReducer::reduceHole(Contour& hole, std::list<Contour>& contours)
+void HoleReducer::reduceHole(Contour& hole, std::vector<Contour>& contours)
 {
   if (hole.area() < (minSquare + EPSILON))
   {

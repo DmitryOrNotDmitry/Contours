@@ -382,7 +382,7 @@ bool Contour::isInner(const Point& point) const  {
 }
 
 
-std::vector<Contour*> Contour::calcNeighbors(std::list<Contour>& contours)
+std::vector<Contour*> Contour::calcNeighbors(std::vector<Contour>& contours)
 {
   std::vector<Contour*> neighbors;
 
@@ -461,7 +461,7 @@ std::vector<Contour> Contour::separate()
 }
 
 
-void Contour::smooth(double epsilon, std::list<Contour>& allContours)
+void Contour::smooth(double epsilon, std::vector<Contour>& allContours)
 {
   std::vector<std::pair<Point, Point>> savedPointsThis;
   std::vector<std::pair<Point, Point>> savedPointsOthers;

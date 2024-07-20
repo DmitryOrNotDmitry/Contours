@@ -58,10 +58,14 @@ public:
   void setContoursStates() const;
 
 public:
+
   HIMAGE hImage;
 
   void addColumn(int fmt, int width, char* capture, int numCol);
   void addRow(int rowNum, CString name);
+
+  std::vector<Contour> listToVector(std::list<Contour>& listContours);
+  void vectorToList(std::list<Contour>& listContours, std::vector<Contour>& contours);
 
 };
 

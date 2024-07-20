@@ -3,7 +3,6 @@
 #include "ContourState.h"
 
 #include <vector>
-#include <list>
 #include <algorithm>
 
 class Contour
@@ -55,7 +54,7 @@ public:
   bool isClockwise(int from, int to) const;
   bool isClockwise() const;
 
-  std::vector<Contour*> calcNeighbors(std::list<Contour>& contours);
+  std::vector<Contour*> calcNeighbors(std::vector<Contour>& contours);
 
   bool contains(const Point& point) const;
   bool isInner(const Point& point) const;
@@ -71,6 +70,6 @@ public:
 
   std::vector<Contour> separate();
 
-  void smooth(double epsilon, std::list<Contour>& allContours);
+  void smooth(double epsilon, std::vector<Contour>& allContours);
 };
 

@@ -165,7 +165,7 @@ std::pair<std::vector<Contour>, std::vector<Contour>> unionContours(const Contou
 }
 
 
-std::vector<Contour> GPCAdapter::searchHoles(const std::list<Contour>& contours)
+std::vector<Contour> GPCAdapter::searchHoles(const std::vector<Contour>& contours)
 {
   auto result = unionContours(contours);
   

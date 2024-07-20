@@ -4,6 +4,9 @@
 #include "HoleSeparator.h"
 #include "LineSmoother.h"
 
+#include "ContourDefinerFacade.h"
+
+
 IMPLEMENT_DYNAMIC(DialogListContours, CDialog)
 
 BEGIN_MESSAGE_MAP(DialogListContours, CDialog)
@@ -92,6 +95,20 @@ void DialogListContours::addRow(int rowNum, CString name)
   contoursTable.SetCheck(rowNum, true); //По-умолчанию делаем все каналы
 }
 
+std::vector<Contour> DialogListContours::listToVector(std::list<Contour>& listContours)
+{
+  return std::vector<Contour>(listContours.begin(), listContours.end());
+}
+
+void DialogListContours::vectorToList(std::list<Contour>& listContours, std::vector<Contour>& contours)
+{
+  listContours.clear();
+  for (auto iterContour = contours.begin(); iterContour != contours.end(); ++iterContour)
+  {
+    listContours.push_back(std::move(*iterContour));
+  }
+}
+
 void DialogListContours::setContoursStates() const
 {
   std::list<Contour>& contours = dataManager.getContours();
@@ -166,32 +183,21 @@ void DialogListContours::OnBnClickedSearhHoles()
     return;
   }
 
-  std::vector<Contour> dataHoles = GPCAdapter::searchHoles(dataManager.getContours());
-  int countNewHoles = dataHoles.size();
-  for (size_t i = 0; i < dataHoles.size(); i++)
+  std::list<Contour>& listContours = dataManager.getContours();
+  std::vector<Contour> contours = listToVector(listContours);
+
+  std::vector<Contour> newHoles = GPCAdapter::searchHoles(contours);
+  for (size_t i = 0; i < newHoles.size(); i++)
   {
-    dataManager.addHole(std::move(dataHoles[i]));
+    dataManager.addHole(std::move(newHoles[i]));
   }
-
-  std::vector<Contour>& holes = dataManager.getHoles();
-  std::vector<Contour> copyHoles = holes;
-
-  std::list<Contour>& contours = dataManager.getContours();
-
-  size_t countHoles = holes.size();
 
   int maxSquare = getIntFromDlgItem(IDC_EDITmax_square_distribution);
   int minSquare = getIntFromDlgItem(IDC_EDITmin_square_distribution);
-  
-  HoleReducer holeReducer(minSquare, maxSquare);
 
-  for (size_t i = countHoles - countNewHoles; i < countHoles; i++)
-  {
-    holeReducer.processMulti(holes[i], contours);
-  }
+  removeHolesBetweenContours(contours, minSquare, maxSquare);
 
-  holes.clear();
-  holes = copyHoles;
+  vectorToList(listContours, contours);
 
   RecalcImageViews(hImage);
 }
@@ -222,12 +228,12 @@ void DialogListContours::OnBnClickedSmoothContours()
 {
   const double epsilon = getDoubleFromDlgItem(IDC_EDITsmooth_epsilon);
 
-  std::list<Contour>& contours = dataManager.getContours();
-  
-  for (auto contour = contours.begin(); contour != contours.end(); ++contour)
-  {
-    contour->smooth(epsilon, contours);
-  }
+  std::list<Contour>& listContours = dataManager.getContours();
+  std::vector<Contour> contours = listToVector(listContours);
+
+  smoothContours(contours, epsilon);
+
+  vectorToList(listContours, contours);
 
   RecalcImageViews(hImage);
 }
