@@ -1,7 +1,6 @@
 #include "ContourDefinerFacade.h"
 
 #include "ContourDefiner.h"
-#include "ERImageData.h"
 #include "GPCAdapter.h"
 #include "HoleReducer.h"
 

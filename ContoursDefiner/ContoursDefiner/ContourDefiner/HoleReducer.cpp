@@ -1,7 +1,6 @@
 #include "HoleReducer.h"
 #include "LineBorderVector.h"
 #include "GeneralBorderCalculator.h"
-#include "DataStorageManager.h"
 #include "HoleSeparator.h"
 
 

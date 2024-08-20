@@ -1,5 +1,3 @@
-#include "StdAfx.h"
-
 #include "ContourDefiner.h"
 
 #include <vector>

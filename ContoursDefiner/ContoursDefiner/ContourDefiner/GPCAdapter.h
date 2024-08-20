@@ -1,5 +1,5 @@
 #pragma once
-#include "GPC/gpc.h"
+#include "../GPC/gpc.h"
 #include "Contour.h"
 
 #include <vector>

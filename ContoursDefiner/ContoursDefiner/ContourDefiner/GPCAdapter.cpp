@@ -1,5 +1,4 @@
 #include "GPCAdapter.h"
-#include "GPC/gpc.cpp"
 #include "BresenhamLine.h"
 #include "GeneralBorderCalculator.h"
 
@@ -43,7 +42,7 @@ void exportToPolygon(const ContourContainer& contours, gpc_polygon* polygon)
 }
 
 
-std::vector<Contour> importToContours(gpc_polygon* polygon, int isHole = TRUE)
+std::vector<Contour> importToContours(gpc_polygon* polygon, int isHole = 1)
 {
   std::vector<Contour> holes;
   holes.reserve(polygon->num_contours);
@@ -155,8 +154,8 @@ std::pair<std::vector<Contour>, std::vector<Contour>> unionContours(const Contou
   delete polygon1;
   delete polygon2;
 
-  std::vector<Contour> holes = importToContours(result, TRUE);
-  std::vector<Contour> unionContours = importToContours(result, FALSE);
+  std::vector<Contour> holes = importToContours(result, 1);
+  std::vector<Contour> unionContours = importToContours(result, 0);
 
   gpc_free_polygon(result);
   delete result;

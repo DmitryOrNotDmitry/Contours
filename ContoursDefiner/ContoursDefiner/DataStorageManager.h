@@ -1,15 +1,17 @@
 #pragma once
 #include <vector>
 #include <list>
+#include <map>
 
-#include "Contour.h"
+#include "ContourDefiner/Contour.h"
 #include "ContourState.h"
-#include "LineBorder.h"
+#include "ContourDefiner/LineBorder.h"
 
 class DataStorageManager
 {
 
   std::list<Contour> contours;
+  std::map<Contour*, ContourState> contoursStates;
 
   std::vector<LineBorder> borders;
 
@@ -29,6 +31,10 @@ public:
   int getCountContours();
 
   std::list<Contour>& getContours();
+
+  void setContourState(Contour& c, ContourState state);
+  
+  ContourState getContourState(Contour& c);
 
 
   void addBorder(const LineBorder& border);

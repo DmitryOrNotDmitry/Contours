@@ -1,6 +1,5 @@
 #pragma once
 #include "Point.h"
-#include "ContourState.h"
 
 #include <vector>
 #include <algorithm>
@@ -9,8 +8,6 @@ class Contour
 {
 
   std::vector<Point> points;
-  
-  ContourState state;
 
 public:
   Contour();
@@ -23,9 +20,6 @@ public:
   void insertPoint(Point point, int index);
 
   std::vector<Point>& getPoints();
-
-  ContourState getState() const;
-  void setState(ContourState state);
 
   Point getPoint(int index) const;
   int getNextIdx(int fromIndex, int step = 1) const;

@@ -1,6 +1,6 @@
 #pragma once
 #include "Contour.h"
-#include "ERInterface.h"
+#include "ERImageData.h"
 
 // Создает контуры на основе начальных внутренних точек контуров, hImage - растр
 std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoints, HIMAGE hImage);

@@ -4,10 +4,10 @@
 
 #include "stdafx.h"
 #include "ContoursDefinerApp.h"
-#include "ContourDefiner.h"
+#include "ContourDefiner/ContourDefiner.h"
 #include "DialogListContours.h"
-#include "ERImageData.h"
-#include "GeneralBorderCalculator.h"
+#include "ContourDefiner/ERImageData.h"
+#include "ContourDefiner/GeneralBorderCalculator.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

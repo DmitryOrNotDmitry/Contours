@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ERInterface.h"
-#include "Contour.h"
-#include "LineBorder.h"
+#include "ContourDefiner/Contour.h"
+#include "ContourDefiner/LineBorder.h"
 #include "DialogListContours.h"
 #include "ContourState.h"
 #include "DataStorageManager.h"

@@ -64,3 +64,13 @@ std::vector<Contour>& DataStorageManager::getHoles()
 {
   return holes;
 }
+
+void DataStorageManager::setContourState(Contour& c, ContourState state)
+{
+  contoursStates[&c] = state;
+}
+
+ContourState DataStorageManager::getContourState(Contour& c)
+{
+  return contoursStates[&c];
+}

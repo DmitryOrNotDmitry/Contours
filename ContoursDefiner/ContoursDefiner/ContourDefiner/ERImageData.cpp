@@ -1,22 +1,12 @@
 #include "ERImageData.h"
 
 ERImageData::ERImageData(HIMAGE hImage)
-  : hImage(hImage)
 {
   if (hImage)
   {
     CImageInterface image(hImage);
 
-    kolLines = *image.dwImageKolLines;
-    kolPix = *image.dwImageKolPix;
-    QChans = *image.dwQChans;
-
-    imageLines = new unsigned char* [kolLines];
-    for (DWORD i = 0; i < kolLines; i++)
-    {
-      imageLines[i] = new unsigned char[kolPix * QChans];
-      image.ReadDataStream(imageLines[i], i, FORMAT_8);
-    }
+    initData(image);
   }
   else
   {
@@ -24,6 +14,11 @@ ERImageData::ERImageData(HIMAGE hImage)
     kolPix = 0;
     QChans = 0;
   }
+}
+
+ERImageData::ERImageData(CImageInterface& image)
+{
+  initData(image);
 }
 
 ERImageData::~ERImageData()
@@ -52,4 +47,18 @@ int ERImageData::lineSize()
 int ERImageData::getCountLines()
 {
   return kolLines;
+}
+
+void ERImageData::initData(CImageInterface& image)
+{
+  kolLines = *image.dwImageKolLines;
+  kolPix = *image.dwImageKolPix;
+  QChans = *image.dwQChans;
+
+  imageLines = new unsigned char* [kolLines];
+  for (DWORD i = 0; i < kolLines; i++)
+  {
+    imageLines[i] = new unsigned char[kolPix * QChans];
+    image.ReadDataStream(imageLines[i], i, FORMAT_8);
+  }
 }

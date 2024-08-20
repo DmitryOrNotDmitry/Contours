@@ -10,9 +10,9 @@
 #include "resource.h"		// основные символы
 #include "ERInterface.h"
 #include "ObjectsDrawing.h"
-#include "Contour.h"
-#include "ContourDefiner.h"
-#include "AbstractImageData.h"
+#include "ContourDefiner/Contour.h"
+#include "ContourDefiner/ContourDefiner.h"
+#include "ContourDefiner/AbstractImageData.h"
 #include "DialogListContours.h"
 #include "DataStorageManager.h"
 

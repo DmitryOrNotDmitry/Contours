@@ -1,12 +1,12 @@
 #pragma once
 #include "stdafx.h"
-#include "Point.h"
+#include "ContourDefiner/Point.h"
 #include "ERInterface.h"
 #include "ContourState.h"
-#include "GeneralBorderCalculator.h"
+#include "ContourDefiner/GeneralBorderCalculator.h"
 #include "DataStorageManager.h"
-#include "BresenhamLine.h"
-#include "GPCAdapter.h"
+#include "ContourDefiner/BresenhamLine.h"
+#include "ContourDefiner/GPCAdapter.h"
 
 #include <iterator>
 #include <vector>

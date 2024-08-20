@@ -1,10 +1,10 @@
 #include "DialogListContours.h"
-#include "LineBorderVector.h"
-#include "HoleReducer.h"
-#include "HoleSeparator.h"
-#include "LineSmoother.h"
+#include "ContourDefiner/LineBorderVector.h"
+#include "ContourDefiner/HoleReducer.h"
+#include "ContourDefiner/HoleSeparator.h"
+#include "ContourDefiner/LineSmoother.h"
+#include "ContourDefiner/ContourDefinerFacade.h"
 
-#include "ContourDefinerFacade.h"
 
 
 IMPLEMENT_DYNAMIC(DialogListContours, CDialog)
@@ -118,17 +118,17 @@ void DialogListContours::setContoursStates() const
   {
     if (!contoursTable.GetCheck(i))
     {
-      contoursIter->setState(HIDDEN);
+      dataManager.setContourState(*contoursIter, HIDDEN);
     }
 
     else if (isRowSelected(i))
     {
-      contoursIter->setState(SELECTED);
+      dataManager.setContourState(*contoursIter, SELECTED);
     }
     
     else 
     {
-      contoursIter->setState(VISIBLE);
+      dataManager.setContourState(*contoursIter, VISIBLE);
     }
 
     ++contoursIter;

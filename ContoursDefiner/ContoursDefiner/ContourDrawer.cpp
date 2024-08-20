@@ -6,7 +6,7 @@ void ContourDrawer::drawLines(HDC& hDC, double scaleX, double scaleY, ContourSta
 
   for (auto iter = contours.begin(); iter != contours.end(); ++iter)
   {
-    if (iter->getState() != state)
+    if (dataManager.getContourState(*iter) != state)
       continue;
 
     size_t numPoints = iter->size();
@@ -31,7 +31,7 @@ void ContourDrawer::drawPoints(HDC& hDC, double scaleX, double scaleY, ContourSt
 
   for (auto iter = contours.begin(); iter != contours.end(); ++iter)
   {
-    if (iter->getState() != state)
+    if (dataManager.getContourState(*iter) != state)
       continue;
 
     size_t numPoints = iter->size();

@@ -8,7 +8,7 @@ void BorderDrawer::draw(HDC& hDC, double scaleX, double scaleY)
   for (size_t i = 0; i < borders.size(); i++)
   {
     LineBorder& border = borders[i];
-    if (border.getOwner().getState() == HIDDEN)
+    if (dataManager.getContourState(border.getOwner()) == HIDDEN)
       continue;
 
     int size = border.size();

@@ -1,5 +1,3 @@
-#include "StdAfx.h"
-
 #include "Contour.h"
 #include "LineSmoother.h"
 #include "LineBorder.h"
@@ -29,7 +27,6 @@ Contour::Contour()
 
 Contour::Contour(const Contour& other)
   : points(other.points)
-  , state(other.state)
 {
 }
 
@@ -41,7 +38,6 @@ Contour::~Contour()
 Contour& Contour::operator=(const Contour& other)
 {
   points = other.points;
-  state = other.state;
 
   return *this;
 }
@@ -76,18 +72,6 @@ void Contour::insertPoint(Point point, int index)
 std::vector<Point>& Contour::getPoints()
 {
   return points;
-}
-
-
-ContourState Contour::getState() const
-{
-  return state;
-}
-
-
-void Contour::setState(ContourState state)
-{
-  this->state = state;
 }
 
 
@@ -423,7 +407,7 @@ std::vector<Contour> Contour::separate()
     if (samePointIdx != -1)
     {
       curScore++;
-      maxScore = max(maxScore, curScore);
+      maxScore = std::max(maxScore, curScore);
       scores[samePointIdx] = curScore;
     }
 
