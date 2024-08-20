@@ -42,6 +42,25 @@ Contour& Contour::operator=(const Contour& other)
   return *this;
 }
 
+void Contour::addInnerContour(Contour* innerContour)
+{
+  innerContours.push_back(innerContour);
+}
+
+Contour* Contour::getInnerContour(size_t idx)
+{
+  if (idx >= 0 && idx < innerContours.size())
+    return innerContours[idx];
+
+  return nullptr;
+}
+
+void Contour::removeInnerContour(size_t idx)
+{
+  if (idx >= 0 && idx < innerContours.size())
+    innerContours.erase(innerContours.begin() + idx);
+}
+
 
 void Contour::addPoint(Point point)
 {
