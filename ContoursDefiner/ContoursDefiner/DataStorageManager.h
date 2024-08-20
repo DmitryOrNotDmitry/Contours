@@ -36,6 +36,8 @@ public:
   
   ContourState getContourState(Contour& c);
 
+  void clearState(Contour& c);
+
 
   void addBorder(const LineBorder& border);
 

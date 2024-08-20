@@ -102,10 +102,21 @@ std::vector<Contour> DialogListContours::listToVector(std::list<Contour>& listCo
 
 void DialogListContours::vectorToList(std::list<Contour>& listContours, std::vector<Contour>& contours)
 {
+  std::vector<ContourState> savedStates;
+  for (auto iterContour = listContours.begin(); iterContour != listContours.end(); ++iterContour)
+  {
+    savedStates.push_back(dataManager.getContourState(*iterContour));
+    dataManager.clearState(*iterContour);
+  }
+
   listContours.clear();
+  int i = 0;
   for (auto iterContour = contours.begin(); iterContour != contours.end(); ++iterContour)
   {
     listContours.push_back(std::move(*iterContour));
+    dataManager.setContourState(listContours.back(), savedStates[i]);
+    
+    i++;
   }
 }
 

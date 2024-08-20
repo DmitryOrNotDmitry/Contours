@@ -74,3 +74,8 @@ ContourState DataStorageManager::getContourState(Contour& c)
 {
   return contoursStates[&c];
 }
+
+void DataStorageManager::clearState(Contour& c)
+{
+  contoursStates.erase(&c);
+}
