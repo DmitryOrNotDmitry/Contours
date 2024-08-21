@@ -1,42 +1,27 @@
 #include "ERImageData.h"
 
 ERImageData::ERImageData(HIMAGE hImage)
+  : hImage(hImage)
 {
-  if (hImage)
-  {
-    CImageInterface image(hImage);
-
-    initData(image);
-  }
-  else
-  {
-    kolLines = 0;
-    kolPix = 0;
-    QChans = 0;
-  }
+  initData();
 }
 
 ERImageData::ERImageData(CImageInterface& image)
+  : hImage(image.hAttachImage)
 {
-  initData(image);
+  initData();
 }
 
 ERImageData::~ERImageData()
 {
-  if (kolLines > 0)
-  {
-    for (DWORD i = 0; i < kolLines; i++)
-    {
-      if (imageLines[i])
-        delete[] imageLines[i];
-    }
-    delete[] imageLines;
-  }
 }
 
 bool ERImageData::isContourPoint(const Point& point)
 {
-  return imageLines[point.y][point.x * QChans] == 0;
+  BYTE buf[3];
+  ReadDataStream(hImage, buf, point.y, FORMAT_8, point.x, 1);
+
+  return buf[0] == 0 && buf[1] == 0 && buf[2] == 0;
 }
 
 int ERImageData::lineSize()
@@ -49,16 +34,16 @@ int ERImageData::getCountLines()
   return kolLines;
 }
 
-void ERImageData::initData(CImageInterface& image)
+void ERImageData::initData()
 {
-  kolLines = *image.dwImageKolLines;
-  kolPix = *image.dwImageKolPix;
-  QChans = *image.dwQChans;
-
-  imageLines = new unsigned char* [kolLines];
-  for (DWORD i = 0; i < kolLines; i++)
+  if (hImage)
   {
-    imageLines[i] = new unsigned char[kolPix * QChans];
-    image.ReadDataStream(imageLines[i], i, FORMAT_8);
+    kolLines = DI_dwImageKolLines(hImage);
+    kolPix = DI_dwImageKolPix(hImage);
+  }
+  else
+  {
+    kolLines = 0;
+    kolPix = 0;
   }
 }

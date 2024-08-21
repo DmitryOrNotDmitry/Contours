@@ -7,10 +7,8 @@ class ERImageData : public AbstractImageData
 
   HIMAGE hImage;
 
-  unsigned char** imageLines;
   DWORD kolLines;
   DWORD kolPix;
-  DWORD QChans;
 
 public:
 
@@ -24,6 +22,6 @@ public:
   int getCountLines() override;
 
 private:
-  void initData(CImageInterface& image);
+  void initData();
 };
 
