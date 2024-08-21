@@ -36,27 +36,42 @@ Contour ContourDefiner::defineContour(const Point& startPoint)
 {
   Contour contour;
 
+  if (imageManager->isContourPoint(startPoint)) // ƒана неправильна€ внутренн€€ точка
+    return contour;
+
   Point startContourPoint = getPointNearContour(startPoint);
-  
+
+  if (startContourPoint.x == imageManager->lineSize() - 1) //  ƒойд€ до правой границы изображени€, не найдена точка контура
+    return contour;
+
   Point lastAddedPoint = addContourPointsAround(startContourPoint, contour);
-  Point currentInsidePoint = getNextPoint(startContourPoint, lastAddedPoint);
+  
+  bool isClosedStartPointAround = imageManager->isContourPoint(startContourPoint.toBottom())
+                               && imageManager->isContourPoint(startContourPoint.toLeft())
+                               && imageManager->isContourPoint(startContourPoint.toUp())
+                               && imageManager->isContourPoint(startContourPoint.toRight());
 
-  int countIterations = 0;
-
-  while (currentInsidePoint != startContourPoint)
+  if (!isClosedStartPointAround)
   {
-    lastAddedPoint = addContourPointsAround(currentInsidePoint, contour);
-    if (lastAddedPoint == Point(-1, -1))
-      lastAddedPoint = contour[contour.size() - 1];
+    Point currentInsidePoint = getNextPoint(startContourPoint, lastAddedPoint);
 
-    currentInsidePoint = getNextPoint(currentInsidePoint, lastAddedPoint);
+    int countIterations = 0;
 
-    countIterations++;
-    if (countIterations > MAX_ITERATIONS)
-      break;
+    while (currentInsidePoint != startContourPoint)
+    {
+      lastAddedPoint = addContourPointsAround(currentInsidePoint, contour);
+      if (lastAddedPoint == Point(-1, -1))
+        lastAddedPoint = contour[contour.size() - 1];
+
+      currentInsidePoint = getNextPoint(currentInsidePoint, lastAddedPoint);
+
+      countIterations++;
+      if (countIterations > MAX_ITERATIONS)
+        break;
+    }
+
+    addContourPointsAround(currentInsidePoint, contour);
   }
-
-  addContourPointsAround(currentInsidePoint, contour);
 
   contour.removeSamePointsAtEnds();
   
@@ -68,7 +83,7 @@ Point ContourDefiner::getPointNearContour(const Point& startPoint)
 {
   Point nearContourPoint = startPoint;
 
-  while (!imageManager->isContourPoint(nearContourPoint) && nearContourPoint.x < imageManager->lineSize())
+  while (nearContourPoint.x < imageManager->lineSize() && !imageManager->isContourPoint(nearContourPoint))
   {
     nearContourPoint = nearContourPoint.toRight();
   }
@@ -147,7 +162,7 @@ Point ContourDefiner::getNextPoint(const Point& basePoint, const Point& lastCont
     basePoint.toUp().toRight(),
   };
   int numPoints = sizeof(pointsForCheck) / sizeof(pointsForCheck[0]);
-
+  
   int startIdx = 0;
   for (int i = 0; i < numPoints; i++)
   {
