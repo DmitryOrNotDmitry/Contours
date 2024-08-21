@@ -5,6 +5,9 @@
 // Создает контуры на основе начальных внутренних точек контуров, hImage - растр
 std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoints, HIMAGE hImage);
 
+std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoints, AbstractImageData* imageData);
+
+
 // Удаляет внутренние контура ("дырки") между контурами.
 // Дырки с площадью от 0 до minSquare распределяются в пользу контура с наибольшей границей,
 // от minSquare до maxSquare распределяются равномерно между контурами,

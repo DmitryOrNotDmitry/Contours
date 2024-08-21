@@ -33,6 +33,8 @@ Contour::Contour(const Contour& other)
 
 Contour::~Contour()
 {
+  for (size_t i = 0; i < innerContours.size(); i++)
+    delete innerContours[i];
 }
 
 Contour& Contour::operator=(const Contour& other)
@@ -58,9 +60,19 @@ Contour* Contour::getInnerContour(size_t idx)
 void Contour::removeInnerContour(size_t idx)
 {
   if (idx >= 0 && idx < innerContours.size())
+  {
+    Contour* deletedCont = innerContours[idx];
+    delete deletedCont;
+
     innerContours.erase(innerContours.begin() + idx);
+  }
+   
 }
 
+size_t Contour::countInnerContours()
+{
+  return innerContours.size();
+}
 
 void Contour::addPoint(Point point)
 {

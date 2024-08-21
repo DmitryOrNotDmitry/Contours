@@ -1,9 +1,9 @@
 #include "AbstractImageData.h"
 
 
-int AbstractImageData::getPointValue(const Point& point, int offset)
+bool AbstractImageData::isContourPoint(const Point& point)
 {
-  return 0;
+  return false;
 }
 
 int AbstractImageData::lineSize()

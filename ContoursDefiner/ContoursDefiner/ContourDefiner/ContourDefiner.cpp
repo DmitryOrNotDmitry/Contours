@@ -68,7 +68,7 @@ Point ContourDefiner::getPointNearContour(const Point& startPoint)
 {
   Point nearContourPoint = startPoint;
 
-  while (isInternalPoint(startPoint, nearContourPoint) && nearContourPoint.x < imageManager->lineSize())
+  while (!imageManager->isContourPoint(nearContourPoint) && nearContourPoint.x < imageManager->lineSize())
   {
     nearContourPoint = nearContourPoint.toRight();
   }
@@ -116,7 +116,7 @@ Point ContourDefiner::addContourPointsAround(const Point& basePoint, Contour& co
       
     if (contour[contour.size() - 1].DistanceTo(checkedPoint) < 1.999)
     {
-      if (!isInternalPoint(basePoint, checkedPoint))
+      if (imageManager->isContourPoint(checkedPoint))
       {
         lastAddedPoint = checkedPoint;
         contour.addPoint(checkedPoint);
@@ -133,11 +133,6 @@ Point ContourDefiner::addContourPointsAround(const Point& basePoint, Contour& co
   return lastAddedPoint;
 }
 
-
-bool ContourDefiner::isInternalPoint(const Point& innerPoint, const Point& checkedPoint)
-{
-  return imageManager->getPointValue(innerPoint) == imageManager->getPointValue(checkedPoint);
-}
 
 Point ContourDefiner::getNextPoint(const Point& basePoint, const Point& lastContourPoint)
 {
@@ -166,7 +161,7 @@ Point ContourDefiner::getNextPoint(const Point& basePoint, const Point& lastCont
   int idx = startIdx;
   for (int i = 0; i < numPoints; i++)
   {
-    if (isInternalPoint(basePoint, pointsForCheck[idx]))
+    if (!imageManager->isContourPoint(pointsForCheck[idx]))
       break;
 
     idx = (idx + 1) % numPoints;

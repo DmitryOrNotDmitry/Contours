@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 
+
 class Contour
 {
 
@@ -21,6 +22,7 @@ public:
   void addInnerContour(Contour* innerContour);
   Contour* getInnerContour(size_t idx);
   void removeInnerContour(size_t idx);
+  size_t countInnerContours();
 
   void addPoint(Point point);
   void insertPoint(Point point, int index);

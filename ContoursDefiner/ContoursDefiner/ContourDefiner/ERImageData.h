@@ -18,7 +18,7 @@ public:
   ERImageData(CImageInterface& image);
   virtual ~ERImageData();
 
-  int getPointValue(const Point& point, int offset = 0) override;
+  bool isContourPoint(const Point& point) override;
 
   int lineSize() override;
   int getCountLines() override;

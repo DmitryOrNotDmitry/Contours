@@ -34,9 +34,9 @@ ERImageData::~ERImageData()
   }
 }
 
-int ERImageData::getPointValue(const Point& point, int offset)
+bool ERImageData::isContourPoint(const Point& point)
 {
-  return imageLines[point.y][point.x * QChans + offset];
+  return imageLines[point.y][point.x * QChans] == 0;
 }
 
 int ERImageData::lineSize()

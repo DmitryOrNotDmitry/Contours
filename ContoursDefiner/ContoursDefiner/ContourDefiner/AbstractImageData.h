@@ -6,7 +6,7 @@ class AbstractImageData
 
 public:
 
-  virtual int getPointValue(const Point& point, int offset = 0);
+  virtual bool isContourPoint(const Point& point);
 
   virtual int lineSize();
   virtual int getCountLines();

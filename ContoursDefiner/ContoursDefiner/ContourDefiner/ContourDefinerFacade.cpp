@@ -6,10 +6,17 @@
 
 std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoints, HIMAGE hImage)
 {
+  ERImageData imageData(hImage);
+
+  return createContours(insideContoursPoints, &imageData);
+}
+
+
+std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoints, AbstractImageData* imageData)
+{
   std::vector<Contour> contours;
 
-  ERImageData imageData(hImage);
-  ContourDefiner definer(&imageData);
+  ContourDefiner definer(imageData);
 
   for (auto iterPoint = insideContoursPoints.begin(); iterPoint != insideContoursPoints.end(); ++iterPoint)
   {
@@ -18,6 +25,7 @@ std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoin
 
   return contours;
 }
+
 
 void removeHolesBetweenContours(std::vector<Contour>& contours, double minSquare, double maxSquare)
 {
