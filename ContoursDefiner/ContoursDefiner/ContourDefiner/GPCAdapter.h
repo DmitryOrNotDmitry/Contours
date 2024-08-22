@@ -8,7 +8,7 @@ class GPCAdapter
 {
 public:
 
-  static std::vector<Contour> searchHoles(const std::vector<Contour>& contours);
+  static std::vector<Contour> searchHoles(const std::vector<Contour*>& contours);
 
 };
 

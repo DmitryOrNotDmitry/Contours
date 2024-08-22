@@ -397,7 +397,7 @@ bool Contour::isInner(const Point& point) const  {
 }
 
 
-std::vector<Contour*> Contour::calcNeighbors(std::vector<Contour>& contours)
+std::vector<Contour*> Contour::calcNeighbors(std::vector<Contour*>& contours)
 {
   std::vector<Contour*> neighbors;
 
@@ -405,7 +405,7 @@ std::vector<Contour*> Contour::calcNeighbors(std::vector<Contour>& contours)
 
   for (auto iter = contours.begin(); iter != contours.end(); ++iter)
   {
-    Contour& cont = *iter;
+    Contour& cont = **iter;
     for (size_t i = 0; i < cont.size(); i++)
     {
       if (ourPoints.find(cont[i]) != ourPoints.end())
@@ -420,7 +420,7 @@ std::vector<Contour*> Contour::calcNeighbors(std::vector<Contour>& contours)
 }
 
 
-std::vector<Contour> Contour::separate()
+std::vector<Contour> Contour::separate() const
 {
   std::vector<int> scores(size(), -1);
 
@@ -476,7 +476,7 @@ std::vector<Contour> Contour::separate()
 }
 
 
-void Contour::smooth(double epsilon, std::vector<Contour>& allContours)
+void Contour::smooth(double epsilon, std::vector<Contour*>& allContours)
 {
   std::vector<std::pair<Point, Point>> savedPointsThis;
   std::vector<std::pair<Point, Point>> savedPointsOthers;
@@ -489,13 +489,15 @@ void Contour::smooth(double epsilon, std::vector<Contour>& allContours)
   std::vector<std::pair<LineBorder, LineBorder>> allBorders;
   for (auto iter = allContours.begin(); iter != allContours.end(); ++iter)
   {
-    if (&(*iter) == this)
-      continue;
+    Contour* otherCont = *iter;
 
-    auto bordersWithContour = GeneralBorderCalculator::defineAllGeneralBorders(*this, *iter, 0);
+    if (otherCont == this)
+      continue;
+    
+    auto bordersWithContour = GeneralBorderCalculator::defineAllGeneralBorders(*this, *otherCont, 0);
     allBorders.insert(allBorders.end(), bordersWithContour.begin(), bordersWithContour.end());
   }
-
+  
   if (allBorders.size() == 0)
   {
     std::vector<Point> smoothedRegion;

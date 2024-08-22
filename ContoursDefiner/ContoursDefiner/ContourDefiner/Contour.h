@@ -56,7 +56,7 @@ public:
   bool isClockwise(int from, int to) const;
   bool isClockwise() const;
 
-  std::vector<Contour*> calcNeighbors(std::vector<Contour>& contours);
+  std::vector<Contour*> calcNeighbors(std::vector<Contour*>& contours);
 
   bool contains(const Point& point) const;
   bool isInner(const Point& point) const;
@@ -70,8 +70,8 @@ public:
   int distance(int from, int to) const;
   int minStep(int from, int to) const;
 
-  std::vector<Contour> separate();
+  std::vector<Contour> separate() const;
 
-  void smooth(double epsilon, std::vector<Contour>& allContours);
+  void smooth(double epsilon, std::vector<Contour*>& allContours);
 };
 

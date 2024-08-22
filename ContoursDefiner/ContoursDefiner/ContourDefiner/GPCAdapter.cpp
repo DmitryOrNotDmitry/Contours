@@ -28,15 +28,18 @@ void exportToPolygon(const ContourContainer& contours, gpc_polygon* polygon)
   auto contoursIter = contours.begin();
   for (size_t i = 0; i < countContours; i++)
   {
-    gpc_vertex_list& cur_vertex_list = polygon->contour[i];
-    cur_vertex_list.num_vertices = contoursIter->size();
-    cur_vertex_list.vertex = new gpc_vertex[contoursIter->size()];
+    Contour* curCont = *contoursIter;
 
-    for (size_t j = 0; j < contoursIter->size(); j++)
+    gpc_vertex_list& cur_vertex_list = polygon->contour[i];
+    cur_vertex_list.num_vertices = curCont->size();
+    cur_vertex_list.vertex = new gpc_vertex[curCont->size()];
+
+    for (size_t j = 0; j < curCont->size(); j++)
     {
-      cur_vertex_list.vertex[j].x = (*contoursIter)[j].x;
-      cur_vertex_list.vertex[j].y = (*contoursIter)[j].y;
+      cur_vertex_list.vertex[j].x = curCont->getPoint(j).x;
+      cur_vertex_list.vertex[j].y = curCont->getPoint(j).y;
     }
+
     ++contoursIter;
   }
 }
@@ -164,7 +167,7 @@ std::pair<std::vector<Contour>, std::vector<Contour>> unionContours(const Contou
 }
 
 
-std::vector<Contour> GPCAdapter::searchHoles(const std::vector<Contour>& contours)
+std::vector<Contour> GPCAdapter::searchHoles(const std::vector<Contour*>& contours)
 {
   auto result = unionContours(contours);
   

@@ -29,6 +29,16 @@ std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoin
 
 void removeHolesBetweenContours(std::vector<Contour>& contours, double minSquare, double maxSquare)
 {
+  std::vector<Contour*> pContours;
+  for (size_t i = 0; i < contours.size(); i++)
+    pContours.push_back(&contours[i]);
+
+  removeHolesBetweenContours(pContours, minSquare, maxSquare);
+}
+
+
+void removeHolesBetweenContours(std::vector<Contour*>& contours, double minSquare, double maxSquare)
+{
   std::vector<Contour> holes = GPCAdapter::searchHoles(contours);
 
   HoleReducer holeReducer(minSquare, maxSquare);
@@ -39,10 +49,21 @@ void removeHolesBetweenContours(std::vector<Contour>& contours, double minSquare
   }
 }
 
+
 void smoothContours(std::vector<Contour>& contours, const double epsilon)
+{
+  std::vector<Contour*> pContours;
+  for (size_t i = 0; i < contours.size(); i++)
+    pContours.push_back(&contours[i]);
+
+  smoothContours(pContours, epsilon);
+}
+
+
+void smoothContours(std::vector<Contour*>& contours, const double epsilon)
 {
   for (auto contour = contours.begin(); contour != contours.end(); ++contour)
   {
-    contour->smooth(epsilon, contours);
+    (*contour)->smooth(epsilon, contours);
   }
 }

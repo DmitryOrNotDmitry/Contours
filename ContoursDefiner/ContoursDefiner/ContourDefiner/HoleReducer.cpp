@@ -16,7 +16,7 @@ HoleReducer::HoleReducer(double minSquare, double maxSquare)
 }
 
 
-void HoleReducer::prepareContours(std::vector<Contour>& contours)
+void HoleReducer::prepareContours(std::vector<Contour*>& contours)
 {
   nearbyContours = reducedHole->calcNeighbors(contours);
 
@@ -31,7 +31,7 @@ void HoleReducer::prepareContours(std::vector<Contour>& contours)
 }
 
 
-Contour* HoleReducer::getContourWithMaxBorder(Contour& hole, std::vector<Contour*> contours)
+Contour* HoleReducer::getContourWithMaxBorder(Contour& hole, std::vector<Contour*>& contours)
 {
   Contour* contWithMaxBorder = nullptr;
   double maxBorderSize = 0;
@@ -164,7 +164,7 @@ void HoleReducer::defineSkippedContours(std::vector<Contour>& holes)
 }
 
 
-void HoleReducer::processMulti(Contour& hole, std::vector<Contour>& contours)
+void HoleReducer::processMulti(Contour& hole, std::vector<Contour*>& contours)
 {
   reducedHole = &hole;
 
@@ -197,7 +197,7 @@ void addPointWithCondition(std::vector<Point>& newBorder,
   Point p);
 void sortPointsByProximity(std::vector<Point>& points, const Point& anchorPoint);
 
-void HoleReducer::process(Contour& hole, std::vector<Contour>& contours)
+void HoleReducer::process(Contour& hole, std::vector<Contour*>& contours)
 {
   reducedHole = &hole;
 
@@ -210,10 +210,10 @@ void HoleReducer::process(Contour& hole, std::vector<Contour>& contours)
 
   prepareContours(contours);
 
-  reduceHole(hole, contours);
+  reduceHole(hole);
 }
 
-void HoleReducer::reduceHole(Contour& hole, std::vector<Contour>& contours)
+void HoleReducer::reduceHole(Contour& hole)
 {
   if (hole.area() < (minSquare + EPSILON))
   {
@@ -236,7 +236,7 @@ void HoleReducer::reduceHole(Contour& hole, std::vector<Contour>& contours)
     
     for (size_t i = 0; i < sepHoles.size(); i++)
       if (sepHoles[i].area() > EPSILON)
-        reduceHole(sepHoles[i], contours);
+        reduceHole(sepHoles[i]);
   }
 }
 

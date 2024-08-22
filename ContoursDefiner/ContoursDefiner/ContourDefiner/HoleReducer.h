@@ -34,11 +34,11 @@ class HoleReducer
 
   void reduceHoleMultiBorders();
 
-  void prepareContours(std::vector<Contour>& contours);
+  void prepareContours(std::vector<Contour*>& contours);
 
   void includeIntoDominant(Contour& hole);
 
-  Contour* getContourWithMaxBorder(Contour& hole, std::vector<Contour*> contours);
+  Contour* getContourWithMaxBorder(Contour& hole, std::vector<Contour*>& contours);
 
   void distributeHolesToContours(std::vector<Contour>& holes);
 
@@ -48,15 +48,15 @@ public:
 
   HoleReducer(double minSquare, double maxSquare);
 
-  void processMulti(Contour& hole, std::vector<Contour>& contours);
+  void processMulti(Contour& hole, std::vector<Contour*>& contours);
 
 
 
 private:
   // DEPRECATED - for the dominant contour
-  void process(Contour& hole, std::vector<Contour>& contours);
+  void process(Contour& hole, std::vector<Contour*>& contours);
 
-  void reduceHole(Contour& hole, std::vector<Contour>& contours);
+  void reduceHole(Contour& hole);
 
   int givePartHoleToContour(Contour& hole, Contour& contour);
   // DEPRECATED - end

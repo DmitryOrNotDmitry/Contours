@@ -14,5 +14,10 @@ std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoin
 // от maxSquare не учавствуют в распределении
 void removeHolesBetweenContours(std::vector<Contour>& contours, double minSquare, double maxSquare);
 
+void removeHolesBetweenContours(std::vector<Contour*>& contours, double minSquare, double maxSquare);
+
+
 // Оптимизирует векторное описание контуров с помощью алгоритма Дугласа-Пекера
 void smoothContours(std::vector<Contour>& contours, const double epsilon);
+
+void smoothContours(std::vector<Contour*>& contours, const double epsilon);

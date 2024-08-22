@@ -95,31 +95,6 @@ void DialogListContours::addRow(int rowNum, CString name)
   contoursTable.SetCheck(rowNum, true); //По-умолчанию делаем все каналы
 }
 
-std::vector<Contour> DialogListContours::listToVector(std::list<Contour>& listContours)
-{
-  return std::vector<Contour>(listContours.begin(), listContours.end());
-}
-
-void DialogListContours::vectorToList(std::list<Contour>& listContours, std::vector<Contour>& contours)
-{
-  std::vector<ContourState> savedStates;
-  for (auto iterContour = listContours.begin(); iterContour != listContours.end(); ++iterContour)
-  {
-    savedStates.push_back(dataManager.getContourState(*iterContour));
-    dataManager.clearState(*iterContour);
-  }
-
-  listContours.clear();
-  int i = 0;
-  for (auto iterContour = contours.begin(); iterContour != contours.end(); ++iterContour)
-  {
-    listContours.push_back(std::move(*iterContour));
-    dataManager.setContourState(listContours.back(), savedStates[i]);
-    
-    i++;
-  }
-}
-
 void DialogListContours::setContoursStates() const
 {
   std::list<Contour>& contours = dataManager.getContours();
@@ -176,13 +151,18 @@ void DialogListContours::OnBnClickedCalcControlPoints()
 
 void DialogListContours::OnBnClickedSearhHoles()
 {
-  //std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(dataManager.getContours());
+  //std::list<Contour>& listContours1 = dataManager.getContours();
+
+  //std::vector<Contour*> pContours1;
+  //for (auto iterCont = listContours1.begin(); iterCont != listContours1.end(); ++iterCont)
+  //  pContours1.push_back(&(*iterCont));
+
+  //std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(pContours1);
   //std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[0]);
 
   //for (size_t i = 0; i < atomicHoles.size(); i++)
   //{
   //  dataManager.addHole(std::move(atomicHoles[i]));
-  //  //addRow(dataManager.getCountContours() - 1, "unionContour");
   //}
 
   //RecalcImageViews(hImage);
@@ -195,9 +175,12 @@ void DialogListContours::OnBnClickedSearhHoles()
   }
 
   std::list<Contour>& listContours = dataManager.getContours();
-  std::vector<Contour> contours = listToVector(listContours);
 
-  std::vector<Contour> newHoles = GPCAdapter::searchHoles(contours);
+  std::vector<Contour*> pContours;
+  for (auto iterCont = listContours.begin(); iterCont != listContours.end(); ++iterCont)
+    pContours.push_back(&(*iterCont));
+
+  std::vector<Contour> newHoles = GPCAdapter::searchHoles(pContours);
   for (size_t i = 0; i < newHoles.size(); i++)
   {
     dataManager.addHole(std::move(newHoles[i]));
@@ -206,9 +189,7 @@ void DialogListContours::OnBnClickedSearhHoles()
   int maxSquare = getIntFromDlgItem(IDC_EDITmax_square_distribution);
   int minSquare = getIntFromDlgItem(IDC_EDITmin_square_distribution);
 
-  removeHolesBetweenContours(contours, minSquare, maxSquare);
-
-  vectorToList(listContours, contours);
+  removeHolesBetweenContours(pContours, minSquare, maxSquare);
 
   RecalcImageViews(hImage);
 }
@@ -240,11 +221,12 @@ void DialogListContours::OnBnClickedSmoothContours()
   const double epsilon = getDoubleFromDlgItem(IDC_EDITsmooth_epsilon);
 
   std::list<Contour>& listContours = dataManager.getContours();
-  std::vector<Contour> contours = listToVector(listContours);
 
-  smoothContours(contours, epsilon);
+  std::vector<Contour*> pContours;
+  for (auto iterCont = listContours.begin(); iterCont != listContours.end(); ++iterCont)
+    pContours.push_back(&(*iterCont));
 
-  vectorToList(listContours, contours);
+  smoothContours(pContours, epsilon);
 
   RecalcImageViews(hImage);
 }
@@ -257,14 +239,14 @@ void DialogListContours::setValueToDlgItem(int dlgItem, int value)
   SetDlgItemText(dlgItem, str);
 }
 
-int DialogListContours::getIntFromDlgItem(int dlgItem)
+int DialogListContours::getIntFromDlgItem(int dlgItem) const
 {
   CString str;
   GetDlgItemText(dlgItem, str);
   return atoi(str);
 }
 
-double DialogListContours::getDoubleFromDlgItem(int dlgItem)
+double DialogListContours::getDoubleFromDlgItem(int dlgItem) const
 {
   CString str;
   GetDlgItemText(dlgItem, str);

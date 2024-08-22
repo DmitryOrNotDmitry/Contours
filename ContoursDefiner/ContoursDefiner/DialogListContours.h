@@ -22,8 +22,8 @@ class DialogListContours : public CDialog
 
   void setValueToDlgItem(int dlgItem, int value);
 
-  int getIntFromDlgItem(int dlgItem);
-  double getDoubleFromDlgItem(int dlgItem);
+  int getIntFromDlgItem(int dlgItem) const;
+  double getDoubleFromDlgItem(int dlgItem) const;
 
 protected:
   virtual void DoDataExchange(CDataExchange* pDX);
@@ -63,9 +63,5 @@ public:
 
   void addColumn(int fmt, int width, char* capture, int numCol);
   void addRow(int rowNum, CString name);
-
-  std::vector<Contour> listToVector(std::list<Contour>& listContours);
-  void vectorToList(std::list<Contour>& listContours, std::vector<Contour>& contours);
-
 };
 
