@@ -8,7 +8,7 @@ std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoin
 std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoints, AbstractImageData* imageData);
 
 
-// Удаляет внутренние контура ("дырки") между контурами.
+// Удаляет внутренние контура ("дырки") между контурами contours.
 // Дырки с площадью от 0 до minSquare распределяются в пользу контура с наибольшей границей,
 // от minSquare до maxSquare распределяются равномерно между контурами,
 // от maxSquare не учавствуют в распределении

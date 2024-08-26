@@ -74,6 +74,12 @@ size_t Contour::countInnerContours()
   return innerContours.size();
 }
 
+std::vector<Contour*> Contour::getAllInnerContour()
+{
+  return innerContours;
+}
+
+
 void Contour::addPoint(Point point)
 {
   if (points.size() > 0)
