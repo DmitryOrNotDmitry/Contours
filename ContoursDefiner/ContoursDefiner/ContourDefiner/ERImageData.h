@@ -2,13 +2,15 @@
 #include "AbstractImageData.h"
 #include "..\ERInterface.h"
 
+#include <cstdint>
+
 class ERImageData : public AbstractImageData
 {
 
   HIMAGE hImage;
 
-  DWORD kolLines;
-  DWORD kolPix;
+  uint32_t kolLines;
+  uint32_t kolPix;
 
 public:
 

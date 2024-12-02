@@ -2,6 +2,16 @@
 #include "Contour.h"
 #include "ERImageData.h"
 
+
+/*
+  Для работы модуля необходимо, чтобы
+    
+    1. файл "ERInterface.h" находился на 1-ом уровне с папкой модуля "ContourDefiner"
+    
+    2. была подключена библиотека GPC, причем папка библиотеки должна называться "GPC"
+    и находиться на 1-ом уровне с папкой модуля "ContourDefiner"
+*/
+
 // Создает контуры на основе начальных внутренних точек контуров, hImage - растр
 std::vector<Contour> createContours(const std::vector<Point>& insideContoursPoints, HIMAGE hImage);
 

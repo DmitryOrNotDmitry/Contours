@@ -18,7 +18,7 @@ ERImageData::~ERImageData()
 
 bool ERImageData::isContourPoint(const Point& point)
 {
-  BYTE buf[3];
+  uint8_t buf[3];
   ReadDataStream(hImage, buf, point.y, FORMAT_8, point.x, 1);
 
   return buf[0] == 0 && buf[1] == 0 && buf[2] == 0;
