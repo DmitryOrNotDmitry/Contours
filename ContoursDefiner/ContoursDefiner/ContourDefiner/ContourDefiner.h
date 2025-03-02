@@ -5,6 +5,7 @@
 
 class ContourDefiner
 {
+protected:
 
   AbstractImageData* imageManager;
 
@@ -13,11 +14,11 @@ public:
   ContourDefiner();
   ContourDefiner(const ContourDefiner& other);
   ContourDefiner(AbstractImageData* imageManager);
-  ~ContourDefiner();
+  virtual ~ContourDefiner();
 
   ContourDefiner& operator=(const ContourDefiner& other);
 
-  Contour defineContour(const Point& basePoint);
+  virtual Contour defineContour(const Point& startPoint);
   
   Point getPointNearContour(const Point& startPoint);
 

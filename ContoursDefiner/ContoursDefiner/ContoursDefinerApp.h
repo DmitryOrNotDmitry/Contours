@@ -31,7 +31,7 @@ public:
   Contour contour;
   HIMAGE hImage;
   AbstractImageData* imageManager;
-  ContourDefiner conDefiner;
+  ContourDefiner* conDefiner;
   DataStorageManager& dataManager;
 
 

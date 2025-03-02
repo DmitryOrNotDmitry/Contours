@@ -12,6 +12,7 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+#include "BugContoursDefiner.h"
 
 
 #define MOUSE_FILTER_NAME "MouseHandler"
@@ -26,7 +27,7 @@ CContoursDefinerApp::CContoursDefinerApp()
 {
   hImage = DI_ActiveObject;
   imageManager = new ERImageData(hImage);
-  conDefiner = ContourDefiner(imageManager);
+  conDefiner = new BugContoursDefiner(imageManager);
 }
 
 
@@ -34,7 +35,7 @@ CContoursDefinerApp::~CContoursDefinerApp()
 {
   if (imageManager)
     delete imageManager;
-
+  delete conDefiner;
 }
 
 CContoursDefinerApp theApp;
@@ -77,7 +78,7 @@ void MouseProc(void* pContext,            // Контекст
 
     CContoursDefinerApp* app = pcc->app;
 
-    app->contour = app->conDefiner.defineContour(startPoint);
+    app->contour = app->conDefiner->defineContour(startPoint);
 
     app->dataManager.addContour(app->contour);
 
