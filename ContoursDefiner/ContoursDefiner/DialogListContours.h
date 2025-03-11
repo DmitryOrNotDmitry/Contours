@@ -11,12 +11,21 @@
 #include <iterator>
 #include <vector>
 
+
+enum AlgorithmType {
+  MY, BUG, IMPROVED_BUG
+};
+
+enum AlgorithmStage {
+  HOLE_SEPARATE, HOLE_DISTRIBUTION
+};
+
+
 class DialogListContours : public CDialog
 {
   DECLARE_DYNAMIC(DialogListContours)
 
   enum { IDD = IDD_DIALOG_first_point_setting };
-
 
   DataStorageManager& dataManager;
 
@@ -59,9 +68,15 @@ public:
 
 public:
 
+  AlgorithmType currentType;
+  AlgorithmStage currentStage;
+
   HIMAGE hImage;
 
   void addColumn(int fmt, int width, char* capture, int numCol);
   void addRow(int rowNum, CString name);
+
+  void OnRadioButtonClickedAlgorithmDefinerType();
+  void OnRadioButtonClickedAlgorithmStageSelect();
 };
 

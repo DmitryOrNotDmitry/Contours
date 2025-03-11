@@ -6,6 +6,8 @@ class HoleSeparator
 {
 public:
 
+  static bool deleteCoverHoles;
+
   static std::vector<Contour> separateToAtomicParts(const Contour& hole);
 
 };

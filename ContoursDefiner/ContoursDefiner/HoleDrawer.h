@@ -10,7 +10,7 @@ public:
 
   HoleDrawer(DataStorageManager& dataManager)
     : AbstractDrawer(dataManager)
-    , pen( CreatePen(PS_SOLID, PEN_WIDTH, RGB(0, 0, 255)) )
+    , pen( CreatePen(PS_SOLID, PEN_WIDTH, RGB(0, 255, 0)) )
   {
   }
 

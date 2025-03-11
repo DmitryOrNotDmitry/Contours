@@ -1,5 +1,7 @@
 #include "HoleSeparator.h"
 
+bool HoleSeparator::deleteCoverHoles = true;
+
 std::vector<Contour> HoleSeparator::separateToAtomicParts(const Contour& hole)
 {
   std::vector<Contour> atomicHoles;
@@ -84,7 +86,7 @@ std::vector<Contour> HoleSeparator::separateToAtomicParts(const Contour& hole)
         fitPoints.push_back(Point((j) + xOffset, (i + 1) + yOffset));
       }
 
-      if (fitPoints.size() == 3)
+      if (deleteCoverHoles && fitPoints.size() == 3)
       {
         int countInnerPoint = 0;
         for (size_t k = 0; k < fitPoints.size(); k++)

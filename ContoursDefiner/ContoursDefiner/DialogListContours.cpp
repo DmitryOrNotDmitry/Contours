@@ -18,6 +18,11 @@ BEGIN_MESSAGE_MAP(DialogListContours, CDialog)
   ON_BN_CLICKED(IDC_CHECKshow_init_holes, &DialogListContours::OnBnClickedShowInitHoles)
   ON_BN_CLICKED(IDC_BUTTONreset, &DialogListContours::OnBnClickedReset)
   ON_BN_CLICKED(IDC_BUTTONsmooth_contours, &DialogListContours::OnBnClickedSmoothContours)
+  ON_BN_CLICKED(IDC_RADIOmy, &DialogListContours::OnRadioButtonClickedAlgorithmDefinerType)
+  ON_BN_CLICKED(IDC_RADIObug, &DialogListContours::OnRadioButtonClickedAlgorithmDefinerType)
+  ON_BN_CLICKED(IDC_RADIOimprovedBug, &DialogListContours::OnRadioButtonClickedAlgorithmDefinerType)
+  ON_BN_CLICKED(IDC_RADIOholesDistribution, &DialogListContours::OnRadioButtonClickedAlgorithmStageSelect)
+  ON_BN_CLICKED(IDC_RADIOholesSeparate, &DialogListContours::OnRadioButtonClickedAlgorithmStageSelect)
 END_MESSAGE_MAP()
 
 void DialogListContours::DoDataExchange(CDataExchange* pDX)
@@ -34,6 +39,8 @@ DialogListContours::DialogListContours(CWnd* pParent /*=NULL*/)
   : CDialog(DialogListContours::IDD, pParent)
   , dataManager(DataStorageManager::getInstance())
 {
+  currentType = AlgorithmType::MY;
+  currentStage = AlgorithmStage::HOLE_DISTRIBUTION;
 }
 
 DialogListContours::~DialogListContours()
@@ -65,7 +72,7 @@ BOOL DialogListContours::OnInitDialog()
   column.mask = LVCF_FMT | LVCF_WIDTH;
   contoursTable.InsertColumn(0, &column);
 
-  addColumn(LVCFMT_LEFT, 170, "Контур", 1);
+  addColumn(LVCFMT_LEFT, 150, "Контур", 1);
 
   spinMaxSquare.SetRange(0, 1000);
   spinMaxSquare.SetPos(300);
@@ -73,6 +80,11 @@ BOOL DialogListContours::OnInitDialog()
   spinMinSquare.SetPos(4);
 
   checkBoxShowHoles.SetCheck(BST_CHECKED);
+
+  CheckRadioButton(IDC_RADIOmy, IDC_RADIOimprovedBug, IDC_RADIOmy);
+  CheckRadioButton(IDC_RADIOholesSeparate, IDC_RADIOholesDistribution, IDC_RADIOholesDistribution);
+
+  CheckDlgButton(IDC_CHECKis_delete_cover_tri, BST_CHECKED);
 
   return TRUE;
 }
@@ -151,45 +163,61 @@ void DialogListContours::OnBnClickedCalcControlPoints()
 
 void DialogListContours::OnBnClickedSearhHoles()
 {
-  //std::list<Contour>& listContours1 = dataManager.getContours();
-
-  //std::vector<Contour*> pContours1;
-  //for (auto iterCont = listContours1.begin(); iterCont != listContours1.end(); ++iterCont)
-  //  pContours1.push_back(&(*iterCont));
-
-  //std::vector<Contour> dataHoles1 = GPCAdapter::searchHoles(pContours1);
-  //std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles1[0]);
-
-  //for (size_t i = 0; i < atomicHoles.size(); i++)
-  //{
-  //  dataManager.addHole(std::move(atomicHoles[i]));
-  //}
-
-  //RecalcImageViews(hImage);
-  //return;
-
-  if (dataManager.getContours().size() == 0)
+  HoleSeparator::deleteCoverHoles = IsDlgButtonChecked(IDC_CHECKis_delete_cover_tri) == TRUE;
+  
+  if (currentStage == HOLE_SEPARATE)
   {
-    MessageBox("Необходимо создать хотя бы 1 контур!", "Построение контуров");
-    return;
+    if (dataManager.getContours().size() == 0)
+    {
+      MessageBox("Необходимо создать хотя бы 1 контур!", "Построение контуров");
+      return;
+    }
+
+    std::list<Contour>& listContours = dataManager.getContours();
+
+    std::vector<Contour*> pContours;
+    for (auto iterCont = listContours.begin(); iterCont != listContours.end(); ++iterCont)
+      pContours.push_back(&(*iterCont));
+
+    std::vector<Contour> dataHoles = GPCAdapter::searchHoles(pContours);
+
+    for (size_t i = 0; i < dataHoles.size(); i++)
+    {
+      std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles[i]);
+
+      for (size_t j = 0; j < atomicHoles.size(); j++)
+      {
+        dataManager.addHole(std::move(atomicHoles[j]));
+      }
+    }
   }
 
-  std::list<Contour>& listContours = dataManager.getContours();
 
-  std::vector<Contour*> pContours;
-  for (auto iterCont = listContours.begin(); iterCont != listContours.end(); ++iterCont)
-    pContours.push_back(&(*iterCont));
-
-  std::vector<Contour> newHoles = GPCAdapter::searchHoles(pContours);
-  for (size_t i = 0; i < newHoles.size(); i++)
+  if (currentStage == HOLE_DISTRIBUTION)
   {
-    dataManager.addHole(std::move(newHoles[i]));
+    if (dataManager.getContours().size() == 0)
+    {
+      MessageBox("Необходимо создать хотя бы 1 контур!", "Построение контуров");
+      return;
+    }
+
+    std::list<Contour>& listContours = dataManager.getContours();
+
+    std::vector<Contour*> pContours;
+    for (auto iterCont = listContours.begin(); iterCont != listContours.end(); ++iterCont)
+      pContours.push_back(&(*iterCont));
+
+    std::vector<Contour> newHoles = GPCAdapter::searchHoles(pContours);
+    for (size_t i = 0; i < newHoles.size(); i++)
+    {
+      dataManager.addHole(std::move(newHoles[i]));
+    }
+
+    int maxSquare = getIntFromDlgItem(IDC_EDITmax_square_distribution);
+    int minSquare = getIntFromDlgItem(IDC_EDITmin_square_distribution);
+
+    removeHolesBetweenContours(pContours, minSquare, maxSquare);
   }
-
-  int maxSquare = getIntFromDlgItem(IDC_EDITmax_square_distribution);
-  int minSquare = getIntFromDlgItem(IDC_EDITmin_square_distribution);
-
-  removeHolesBetweenContours(pContours, minSquare, maxSquare);
 
   RecalcImageViews(hImage);
 }
@@ -291,4 +319,38 @@ std::vector<int> DialogListContours::getSelectedRows() const
   }
 
   return selectedRows;
+}
+
+
+void DialogListContours::OnRadioButtonClickedAlgorithmDefinerType()
+{
+  int checked = GetCheckedRadioButton(IDC_RADIOmy, IDC_RADIOimprovedBug);
+
+  if (checked == IDC_RADIOmy)
+  {
+    currentType = AlgorithmType::MY;
+  }
+  else if (checked == IDC_RADIObug)
+  {
+    currentType = AlgorithmType::BUG;
+  }
+  else if (checked == IDC_RADIOimprovedBug)
+  {
+    currentType = AlgorithmType::IMPROVED_BUG;
+  }
+}
+
+
+void DialogListContours::OnRadioButtonClickedAlgorithmStageSelect()
+{
+  int checked = GetCheckedRadioButton(IDC_RADIOholesSeparate, IDC_RADIOholesDistribution);
+
+  if (checked == IDC_RADIOholesSeparate)
+  {
+    currentStage = AlgorithmStage::HOLE_SEPARATE;
+  }
+  else if (checked == IDC_RADIOholesDistribution)
+  {
+    currentStage = AlgorithmStage::HOLE_DISTRIBUTION;
+  }
 }

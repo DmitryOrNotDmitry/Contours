@@ -27,13 +27,18 @@ public:
 	virtual BOOL InitApplication();
   virtual BOOL InitInstance();
 
+  ContourDefiner* getContourDefiner();
+
   ObjectsDrawing* contoursDrawer;
-  Contour contour;
+
   HIMAGE hImage;
   AbstractImageData* imageManager;
   ContourDefiner* conDefiner;
+  DialogListContours* dlg;
+
   DataStorageManager& dataManager;
 
+  AlgorithmType lastType;
 
   void __main__();
 

@@ -21,6 +21,11 @@ protected:
     return (int)((coordinate + 0.5) * scale);
   }
 
+  int toFloatDraw(double coordinate, double scale)
+  {
+    return (int)((coordinate + 0.5) * scale);
+  }
+
 public:
 
   virtual void draw(HDC& hDC, double scaleX, double scaleY) = 0;
