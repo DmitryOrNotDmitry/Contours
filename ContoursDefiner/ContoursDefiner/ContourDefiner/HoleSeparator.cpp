@@ -1,6 +1,22 @@
 #include "HoleSeparator.h"
 
-bool HoleSeparator::deleteCoverHoles = true;
+DoublePoint getCentroid(std::vector<Point>& points) 
+{
+  double sumX = 0.0, sumY = 0.0;
+  int count = points.size();
+
+  for (int i = 0; i < points.size(); i++) 
+  {
+    sumX += static_cast<double>(points[i].x);
+    sumY += static_cast<double>(points[i].y);
+  }
+
+  DoublePoint p;
+  p.x = sumX / count;
+  p.y = sumY / count;
+  return p;
+}
+
 
 std::vector<Contour> HoleSeparator::separateToAtomicParts(const Contour& hole)
 {
@@ -86,17 +102,11 @@ std::vector<Contour> HoleSeparator::separateToAtomicParts(const Contour& hole)
         fitPoints.push_back(Point((j) + xOffset, (i + 1) + yOffset));
       }
 
-      if (deleteCoverHoles && fitPoints.size() == 3)
+      if (fitPoints.size() == 3)
       {
-        int countInnerPoint = 0;
-        for (size_t k = 0; k < fitPoints.size(); k++)
-          if (!hole.contains(fitPoints[k]))
-          {
-            countInnerPoint++;
-            break;
-          }
+        DoublePoint triangleCentroid = getCentroid(fitPoints);
 
-        if (countInnerPoint == 0)
+        if (!hole.isInner(triangleCentroid))
           continue;
       }
 

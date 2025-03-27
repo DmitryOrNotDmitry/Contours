@@ -163,8 +163,6 @@ void DialogListContours::OnBnClickedCalcControlPoints()
 
 void DialogListContours::OnBnClickedSearhHoles()
 {
-  HoleSeparator::deleteCoverHoles = IsDlgButtonChecked(IDC_CHECKis_delete_cover_tri) == TRUE;
-  
   if (currentStage == HOLE_SEPARATE)
   {
     if (dataManager.getContours().size() == 0)
@@ -354,3 +352,4 @@ void DialogListContours::OnRadioButtonClickedAlgorithmStageSelect()
     currentStage = AlgorithmStage::HOLE_DISTRIBUTION;
   }
 }
+

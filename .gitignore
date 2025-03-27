@@ -6,6 +6,7 @@ ContoursDefiner/ContourTests/*
 !ContoursDefiner/ContourTests/*.cpp
 
 ContoursDefiner/Debug
+ContoursDefiner/Release
 ContoursDefiner/packages
 ContoursDefiner/ContoursDefiner.sdf
 ContoursDefiner/ContoursDefiner.opensdf

@@ -5,6 +5,13 @@
 #include <algorithm>
 
 
+struct DoublePoint
+{
+  double x;
+  double y;
+};
+
+
 class Contour
 {
 
@@ -61,6 +68,7 @@ public:
 
   bool contains(const Point& point) const;
   bool isInner(const Point& point) const;
+  bool isInner(const DoublePoint& point) const;
 
   void deletePins();
 

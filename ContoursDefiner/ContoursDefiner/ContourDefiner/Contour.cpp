@@ -402,6 +402,34 @@ bool Contour::isInner(const Point& point) const  {
   return windingNumber != 0;
 }
 
+bool isLeft(DoublePoint v1, DoublePoint v2, DoublePoint p) {
+  return ((v2.x - v1.x) * (p.y - v1.y) - (p.x - v1.x) * (v2.y - v1.y)) > 0;
+}
+
+bool Contour::isInner(const DoublePoint& point) const
+{
+  int len = size();
+  int windingNumber = 0;
+
+  for (int i = 0; i < len; i++) {
+    DoublePoint v1 = { static_cast<double>(getPoint(i % len).x), static_cast<double>(getPoint(i % len).y) };
+    DoublePoint v2 = { static_cast<double>(getPoint((i + 1) % len).x), static_cast<double>(getPoint((i + 1) % len).y) };
+
+    if (v1.y <= point.y) {
+      if (v2.y > point.y && isLeft(v1, v2, point)) {
+        windingNumber++;
+      }
+    }
+    else {
+      if (v2.y <= point.y && !isLeft(v1, v2, point)) {
+        windingNumber--;
+      }
+    }
+  }
+
+  return windingNumber != 0;
+}
+
 
 std::vector<Contour*> Contour::calcNeighbors(std::vector<Contour*>& contours)
 {
