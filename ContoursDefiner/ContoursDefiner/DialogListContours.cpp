@@ -12,17 +12,12 @@ IMPLEMENT_DYNAMIC(DialogListContours, CDialog)
 BEGIN_MESSAGE_MAP(DialogListContours, CDialog)
   ON_BN_CLICKED(IDOK, &DialogListContours::OnBnClickedOk)
   ON_BN_CLICKED(IDCANCEL, &DialogListContours::OnBnClickedCancel)
-  ON_BN_CLICKED(IDC_BUTTONcalc_control_points, &DialogListContours::OnBnClickedCalcControlPoints)
-  ON_BN_CLICKED(IDC_BUTTONsearch_holes, &DialogListContours::OnBnClickedSearhHoles)
   ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTcontours_table, &DialogListContours::OnLvnItemchangedChanlist)
   ON_BN_CLICKED(IDC_CHECKshow_init_holes, &DialogListContours::OnBnClickedShowInitHoles)
   ON_BN_CLICKED(IDC_BUTTONreset, &DialogListContours::OnBnClickedReset)
-  ON_BN_CLICKED(IDC_BUTTONsmooth_contours, &DialogListContours::OnBnClickedSmoothContours)
   ON_BN_CLICKED(IDC_RADIOmy, &DialogListContours::OnRadioButtonClickedAlgorithmDefinerType)
   ON_BN_CLICKED(IDC_RADIObug, &DialogListContours::OnRadioButtonClickedAlgorithmDefinerType)
-  ON_BN_CLICKED(IDC_RADIOimprovedBug, &DialogListContours::OnRadioButtonClickedAlgorithmDefinerType)
-  ON_BN_CLICKED(IDC_RADIOholesDistribution, &DialogListContours::OnRadioButtonClickedAlgorithmStageSelect)
-  ON_BN_CLICKED(IDC_RADIOholesSeparate, &DialogListContours::OnRadioButtonClickedAlgorithmStageSelect)
+  ON_BN_CLICKED(IDC_BUTTONnext_stage, &DialogListContours::OnBnClickedButtonNextStage)
 END_MESSAGE_MAP()
 
 void DialogListContours::DoDataExchange(CDataExchange* pDX)
@@ -39,8 +34,13 @@ DialogListContours::DialogListContours(CWnd* pParent /*=NULL*/)
   : CDialog(DialogListContours::IDD, pParent)
   , dataManager(DataStorageManager::getInstance())
 {
-  currentType = AlgorithmType::MY;
-  currentStage = AlgorithmStage::HOLE_DISTRIBUTION;
+  currentType = AlgorithmType::WITH_RECT_ANGLES;
+  currentStage = VECTORIZATION;
+
+  groupsBoxForStages.insert(std::make_pair(ProgramStage::VECTORIZATION, IDC_STATICvectorization));
+  groupsBoxForStages.insert(std::make_pair(ProgramStage::FIND_AND_PREPARE_HOLES, IDC_STATICfind_holes));
+  groupsBoxForStages.insert(std::make_pair(ProgramStage::DISTRIBUTE_HOLES, IDC_STATICdistribute_holes));
+  groupsBoxForStages.insert(std::make_pair(ProgramStage::THINNING_CONTOURS, IDC_STATICthinning));
 }
 
 DialogListContours::~DialogListContours()
@@ -61,6 +61,12 @@ void DialogListContours::OnBnClickedCancel()
 BOOL DialogListContours::OnInitDialog()
 {
   CDialog::OnInitDialog();
+  
+  setCurrentStageCapture(currentStage);
+
+  CSliderCtrl* pSlider = (CSliderCtrl*)GetDlgItem(IDC_SLIDERprocess);
+  pSlider->SetRange(0, 100);
+  setSliderPosition(currentStage);
 
   contoursTable.SetExtendedStyle(this->contoursTable.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 
@@ -72,7 +78,9 @@ BOOL DialogListContours::OnInitDialog()
   column.mask = LVCF_FMT | LVCF_WIDTH;
   contoursTable.InsertColumn(0, &column);
 
-  addColumn(LVCFMT_LEFT, 150, "Контур", 1);
+  addColumn(LVCFMT_LEFT, 130, "Контур (точка скола)", 1);
+
+  SetDlgItemText(IDC_EDITsmooth_epsilon, "1");
 
   spinMaxSquare.SetRange(0, 1000);
   spinMaxSquare.SetPos(300);
@@ -81,12 +89,139 @@ BOOL DialogListContours::OnInitDialog()
 
   checkBoxShowHoles.SetCheck(BST_CHECKED);
 
-  CheckRadioButton(IDC_RADIOmy, IDC_RADIOimprovedBug, IDC_RADIOmy);
-  CheckRadioButton(IDC_RADIOholesSeparate, IDC_RADIOholesDistribution, IDC_RADIOholesDistribution);
+  CheckRadioButton(IDC_RADIOmy, IDC_RADIObug, IDC_RADIOmy);
 
   CheckDlgButton(IDC_CHECKis_delete_cover_tri, BST_CHECKED);
 
   return TRUE;
+}
+
+CString DialogListContours::getGroupBoxCapture(ProgramStage stage)
+{
+  CWnd* pGroupBox = GetDlgItem(groupsBoxForStages[stage]);
+  if (pGroupBox)
+  {
+    CString strCaption;
+    pGroupBox->GetWindowText(strCaption);
+    return strCaption;
+  }
+
+  return "Подпись стадии не найдена";
+}
+
+void DialogListContours::setCurrentStageCapture(ProgramStage stage)
+{
+  CString capture = getGroupBoxCapture(stage);
+
+  CWnd* pStatic = GetDlgItem(IDC_STATICcurrent_stage);
+  if (pStatic) {
+    pStatic->SetWindowText(_T("Текущий этап: " + capture));
+  }
+}
+
+void DialogListContours::setSliderPosition(ProgramStage stage)
+{
+  int process = 1;
+  int countProcess = 4;
+
+  if (currentStage == VECTORIZATION)
+  {
+    process = 1;
+  }
+  else if (currentStage == FIND_AND_PREPARE_HOLES)
+  {
+    process = 2;
+  }
+  else if (currentStage == DISTRIBUTE_HOLES)
+  {
+    process = 3;
+  }
+  else if (currentStage == THINNING_CONTOURS)
+  {
+    process = 4;
+  }
+
+  CSliderCtrl* pSlider = (CSliderCtrl*)GetDlgItem(IDC_SLIDERprocess);
+  pSlider->SetPos((process - 1) * 100 / (countProcess - 1));
+}
+
+void DialogListContours::nextStage()
+{
+  if (currentStage == VECTORIZATION) 
+  {
+    currentStage = FIND_AND_PREPARE_HOLES;
+    findAndPreparingHoles();
+  }
+  else if (currentStage == FIND_AND_PREPARE_HOLES)
+  {
+    currentStage = DISTRIBUTE_HOLES;
+    distributeHoles();
+  }
+  else if (currentStage == DISTRIBUTE_HOLES)
+  {
+    currentStage = THINNING_CONTOURS;
+    thinningContours();
+  }
+
+  setCurrentStageCapture(currentStage);
+  setSliderPosition(currentStage);
+  
+  RecalcImageViews(hImage);
+}
+
+void DialogListContours::findAndPreparingHoles()
+{
+  double maxSquare = getDoubleFromDlgItem(IDC_EDITmax_square_distribution);
+  double minSquare = getDoubleFromDlgItem(IDC_EDITmin_square_distribution);
+
+  std::vector<Contour*> pContours = dataManager.getPContours();
+
+  std::vector<Contour> dataHoles = GPCAdapter::searchHoles(pContours);
+
+  for (size_t i = 0; i < dataHoles.size(); i++)
+  {
+    Contour& hole = dataHoles[i];
+    double holeArea = hole.area();
+
+    if (holeArea < minSquare)
+    {
+      dataManager.addHole(std::move(hole));
+    }
+    else if (holeArea <= maxSquare)
+    {
+      std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(hole);
+
+      for (size_t j = 0; j < atomicHoles.size(); j++)
+      {
+        dataManager.addHole(std::move(atomicHoles[j]));
+      }
+    }
+  }
+}
+
+void DialogListContours::distributeHoles()
+{
+  std::vector<Contour*> pContours = dataManager.getPContours();
+
+  //std::vector<Contour> newHoles = GPCAdapter::searchHoles(pContours);
+  //for (size_t i = 0; i < newHoles.size(); i++)
+  //{
+  //  dataManager.addHole(std::move(newHoles[i]));
+  //}
+
+  double maxSquare = getDoubleFromDlgItem(IDC_EDITmax_square_distribution);
+  double minSquare = getDoubleFromDlgItem(IDC_EDITmin_square_distribution);
+
+  removeHolesBetweenContours(pContours, minSquare, maxSquare);
+}
+
+void DialogListContours::thinningContours()
+{
+  const double epsilon = getDoubleFromDlgItem(IDC_EDITsmooth_epsilon);
+
+  std::vector<Contour*> pContours = dataManager.getPContours();
+
+  smoothContours(pContours, epsilon);
 }
 
 void DialogListContours::addColumn(int fmt, int width, char* capture, int numCol)
@@ -133,94 +268,6 @@ void DialogListContours::setContoursStates() const
   }
 }
 
-
-void DialogListContours::OnBnClickedCalcControlPoints()
-{
-  std::vector<int> selectedRows = getSelectedRows();
-
-  if (selectedRows.size() != 2)
-  {
-    MessageBox("Необходимо выбрать именно 2 контура", "Построение контуров");
-    return;
-  }
-
-  std::list<Contour>& conts = dataManager.getContours();
-
-  auto firstCont = std::next(conts.begin(), selectedRows[0]);
-  auto secondCont = std::next(conts.begin(), selectedRows[1]);
-
-  std::vector<std::pair<LineBorder, LineBorder>> borders = GeneralBorderCalculator::defineAllGeneralBorders(*firstCont, *secondCont, 0);
-
-  for (size_t i = 0; i < borders.size(); i++)
-  {
-    dataManager.addBorder(borders[i].first);
-    dataManager.addBorder(borders[i].second);
-  }
-
-  RecalcImageViews(hImage);
-}
-
-
-void DialogListContours::OnBnClickedSearhHoles()
-{
-  if (currentStage == HOLE_SEPARATE)
-  {
-    if (dataManager.getContours().size() == 0)
-    {
-      MessageBox("Необходимо создать хотя бы 1 контур!", "Построение контуров");
-      return;
-    }
-
-    std::list<Contour>& listContours = dataManager.getContours();
-
-    std::vector<Contour*> pContours;
-    for (auto iterCont = listContours.begin(); iterCont != listContours.end(); ++iterCont)
-      pContours.push_back(&(*iterCont));
-
-    std::vector<Contour> dataHoles = GPCAdapter::searchHoles(pContours);
-
-    for (size_t i = 0; i < dataHoles.size(); i++)
-    {
-      std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(dataHoles[i]);
-
-      for (size_t j = 0; j < atomicHoles.size(); j++)
-      {
-        dataManager.addHole(std::move(atomicHoles[j]));
-      }
-    }
-  }
-
-
-  if (currentStage == HOLE_DISTRIBUTION)
-  {
-    if (dataManager.getContours().size() == 0)
-    {
-      MessageBox("Необходимо создать хотя бы 1 контур!", "Построение контуров");
-      return;
-    }
-
-    std::list<Contour>& listContours = dataManager.getContours();
-
-    std::vector<Contour*> pContours;
-    for (auto iterCont = listContours.begin(); iterCont != listContours.end(); ++iterCont)
-      pContours.push_back(&(*iterCont));
-
-    std::vector<Contour> newHoles = GPCAdapter::searchHoles(pContours);
-    for (size_t i = 0; i < newHoles.size(); i++)
-    {
-      dataManager.addHole(std::move(newHoles[i]));
-    }
-
-    int maxSquare = getIntFromDlgItem(IDC_EDITmax_square_distribution);
-    int minSquare = getIntFromDlgItem(IDC_EDITmin_square_distribution);
-
-    removeHolesBetweenContours(pContours, minSquare, maxSquare);
-  }
-
-  RecalcImageViews(hImage);
-}
-
-
 void DialogListContours::OnBnClickedShowInitHoles()
 {
   if (checkBoxShowHoles.GetCheck() == BST_CHECKED)
@@ -239,37 +286,11 @@ void DialogListContours::OnBnClickedReset()
 
   contoursTable.DeleteAllItems();
 
-  RecalcImageViews(hImage);
-}
-
-void DialogListContours::OnBnClickedSmoothContours()
-{
-  const double epsilon = getDoubleFromDlgItem(IDC_EDITsmooth_epsilon);
-
-  std::list<Contour>& listContours = dataManager.getContours();
-
-  std::vector<Contour*> pContours;
-  for (auto iterCont = listContours.begin(); iterCont != listContours.end(); ++iterCont)
-    pContours.push_back(&(*iterCont));
-
-  smoothContours(pContours, epsilon);
+  currentStage = VECTORIZATION;
+  setCurrentStageCapture(currentStage);
+  setSliderPosition(currentStage);
 
   RecalcImageViews(hImage);
-}
-
-
-void DialogListContours::setValueToDlgItem(int dlgItem, int value)
-{
-  CString str;
-  str.Format("%d", value);
-  SetDlgItemText(dlgItem, str);
-}
-
-int DialogListContours::getIntFromDlgItem(int dlgItem) const
-{
-  CString str;
-  GetDlgItemText(dlgItem, str);
-  return atoi(str);
 }
 
 double DialogListContours::getDoubleFromDlgItem(int dlgItem) const
@@ -279,7 +300,6 @@ double DialogListContours::getDoubleFromDlgItem(int dlgItem) const
   str.Replace(',', '.');
   return atof(str);
 }
-
 
 void DialogListContours::OnLvnItemchangedChanlist(NMHDR* pNMHDR, LRESULT* pResult)
 {
@@ -322,34 +342,19 @@ std::vector<int> DialogListContours::getSelectedRows() const
 
 void DialogListContours::OnRadioButtonClickedAlgorithmDefinerType()
 {
-  int checked = GetCheckedRadioButton(IDC_RADIOmy, IDC_RADIOimprovedBug);
+  int checked = GetCheckedRadioButton(IDC_RADIOmy, IDC_RADIObug);
 
   if (checked == IDC_RADIOmy)
   {
-    currentType = AlgorithmType::MY;
+    currentType = AlgorithmType::WITH_RECT_ANGLES;
   }
   else if (checked == IDC_RADIObug)
   {
     currentType = AlgorithmType::BUG;
   }
-  else if (checked == IDC_RADIOimprovedBug)
-  {
-    currentType = AlgorithmType::IMPROVED_BUG;
-  }
 }
 
-
-void DialogListContours::OnRadioButtonClickedAlgorithmStageSelect()
+void DialogListContours::OnBnClickedButtonNextStage()
 {
-  int checked = GetCheckedRadioButton(IDC_RADIOholesSeparate, IDC_RADIOholesDistribution);
-
-  if (checked == IDC_RADIOholesSeparate)
-  {
-    currentStage = AlgorithmStage::HOLE_SEPARATE;
-  }
-  else if (checked == IDC_RADIOholesDistribution)
-  {
-    currentStage = AlgorithmStage::HOLE_DISTRIBUTION;
-  }
+  nextStage();
 }
-

@@ -13,11 +13,14 @@
 
 
 enum AlgorithmType {
-  MY, BUG, IMPROVED_BUG
+  WITH_RECT_ANGLES, BUG
 };
 
-enum AlgorithmStage {
-  HOLE_SEPARATE, HOLE_DISTRIBUTION
+enum ProgramStage {
+  VECTORIZATION,
+  FIND_AND_PREPARE_HOLES,
+  DISTRIBUTE_HOLES,
+  THINNING_CONTOURS
 };
 
 
@@ -29,18 +32,15 @@ class DialogListContours : public CDialog
 
   DataStorageManager& dataManager;
 
-  void setValueToDlgItem(int dlgItem, int value);
-
-  int getIntFromDlgItem(int dlgItem) const;
   double getDoubleFromDlgItem(int dlgItem) const;
 
 protected:
+  
   virtual void DoDataExchange(CDataExchange* pDX);
 
   virtual BOOL OnInitDialog();
-
-  
 public:
+
   DialogListContours(CWnd* pParent =NULL);
   virtual ~DialogListContours();
 
@@ -48,12 +48,12 @@ public:
 
   afx_msg void OnBnClickedOk();
   afx_msg void OnBnClickedCancel();
-  afx_msg void OnBnClickedCalcControlPoints();
-  afx_msg void OnBnClickedSearhHoles();
   afx_msg void OnBnClickedShowInitHoles();
   afx_msg void OnBnClickedReset();
-  afx_msg void OnBnClickedSmoothContours();
+  afx_msg void OnBnClickedButtonNextStage();
+
   void OnLvnItemchangedChanlist(NMHDR* pNMHDR, LRESULT* pResult);
+  void OnRadioButtonClickedAlgorithmDefinerType();
 
   CListCtrl contoursTable;
   CSpinButtonCtrl spinMaxSquare;
@@ -69,14 +69,23 @@ public:
 public:
 
   AlgorithmType currentType;
-  AlgorithmStage currentStage;
+
+  std::map<ProgramStage, int> groupsBoxForStages;
+  ProgramStage currentStage;
+
+  CString getGroupBoxCapture(ProgramStage stage);
+  void setCurrentStageCapture(ProgramStage stage);
+  void setSliderPosition(ProgramStage stage);
+
+  void nextStage();
+
+  void findAndPreparingHoles();
+  void distributeHoles();
+  void thinningContours();
 
   HIMAGE hImage;
 
   void addColumn(int fmt, int width, char* capture, int numCol);
   void addRow(int rowNum, CString name);
-
-  void OnRadioButtonClickedAlgorithmDefinerType();
-  void OnRadioButtonClickedAlgorithmStageSelect();
 };
 

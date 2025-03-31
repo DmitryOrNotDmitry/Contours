@@ -31,13 +31,13 @@ public:
   int getCountContours();
 
   std::list<Contour>& getContours();
+  std::vector<Contour*> getPContours();
 
   void setContourState(Contour& c, ContourState state);
   
   ContourState getContourState(Contour& c);
 
   void clearState(Contour& c);
-
 
   void addBorder(const LineBorder& border);
 

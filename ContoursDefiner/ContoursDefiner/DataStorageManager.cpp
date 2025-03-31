@@ -27,6 +27,14 @@ std::list<Contour>& DataStorageManager::getContours()
   return contours;
 }
 
+std::vector<Contour*> DataStorageManager::getPContours()
+{
+  std::vector<Contour*> pContours;
+  for (auto iterCont = contours.begin(); iterCont != contours.end(); ++iterCont)
+    pContours.push_back(&(*iterCont));
+  return pContours;
+}
+
 
 void DataStorageManager::addBorder(const LineBorder& border)
 {

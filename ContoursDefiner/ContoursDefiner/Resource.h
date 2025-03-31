@@ -22,16 +22,24 @@
 #define IDC_RADIOmy                     8023
 #define IDC_RADIObug                    8024
 #define IDC_RADIOimprovedBug            8025
+#define IDC_BUTTONnext_stage            8025
 #define IDC_RADIOholesSeparate          8026
+#define IDC_SLIDER                      8026
+#define IDC_SLIDERprocess               8026
 #define IDC_RADIOholesDistribution      8027
+#define IDC_STATICvectorization         8027
+#define IDC_STATICfind_holes            8028
+#define IDC_STATICdistribute_holes      8029
+#define IDC_STATICthinning              8030
+#define IDC_STATICcurrent_stage         8031
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        8003
+#define _APS_NEXT_RESOURCE_VALUE        8005
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         8026
+#define _APS_NEXT_CONTROL_VALUE         8032
 #define _APS_NEXT_SYMED_VALUE           8000
 #endif
 #endif

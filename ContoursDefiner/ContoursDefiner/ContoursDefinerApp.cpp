@@ -72,14 +72,12 @@ ContourDefiner* CContoursDefinerApp::getContourDefiner()
 
   delete conDefiner;
 
-  if (dlg->currentType == AlgorithmType::MY)
+  if (dlg->currentType == AlgorithmType::WITH_RECT_ANGLES)
     conDefiner = new ContourDefiner(imageManager);
 
   if (dlg->currentType == AlgorithmType::BUG)
     conDefiner = new BugContourDefiner(imageManager);
 
-  if (dlg->currentType == AlgorithmType::IMPROVED_BUG)
-    conDefiner = new ImprovedBugContourDefiner(imageManager);
 
   return conDefiner;
 }
