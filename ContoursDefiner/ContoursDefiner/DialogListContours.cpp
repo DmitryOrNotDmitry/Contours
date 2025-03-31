@@ -4,6 +4,7 @@
 #include "ContourDefiner/HoleSeparator.h"
 #include "ContourDefiner/LineSmoother.h"
 #include "ContourDefiner/ContourDefinerFacade.h"
+#include "AbstractDrawer.h"
 
 
 
@@ -203,16 +204,47 @@ void DialogListContours::distributeHoles()
 {
   std::vector<Contour*> pContours = dataManager.getPContours();
 
-  //std::vector<Contour> newHoles = GPCAdapter::searchHoles(pContours);
-  //for (size_t i = 0; i < newHoles.size(); i++)
-  //{
-  //  dataManager.addHole(std::move(newHoles[i]));
-  //}
-
   double maxSquare = getDoubleFromDlgItem(IDC_EDITmax_square_distribution);
   double minSquare = getDoubleFromDlgItem(IDC_EDITmin_square_distribution);
 
+  std::vector<Contour> dataHoles = GPCAdapter::searchHoles(pContours);
+
+  dataManager.getHoles().clear();
+  for (size_t i = 0; i < dataHoles.size(); i++)
+  {
+    Contour& hole = dataHoles[i];
+    double holeArea = hole.area();
+
+    if (holeArea < minSquare)
+    {
+      dataManager.addHole(std::move(hole));
+    }
+    else if (holeArea <= maxSquare)
+    {
+      std::vector<Contour> atomicHoles = HoleSeparator::separateToAtomicParts(hole);
+
+      for (size_t j = 0; j < atomicHoles.size(); j++)
+      {
+        dataManager.addHole(std::move(atomicHoles[j]));
+      }
+    }
+  }
+
   removeHolesBetweenContours(pContours, minSquare, maxSquare);
+  
+  std::vector<Contour>& allHoles = dataManager.getHoles();
+  for (size_t i = 0; i < allHoles.size(); i++)
+  {
+    Contour& hole = allHoles[i];
+    DoublePoint massCenter = AbstractDrawer::massCenter(hole);
+    for (size_t j = 0; j < pContours.size(); j++)
+    {
+      if (pContours[j]->isInner(massCenter))
+      {
+        dataManager.setHoleOwner(hole, *pContours[j]);
+      }
+    }
+  }
 }
 
 void DialogListContours::thinningContours()

@@ -79,6 +79,21 @@ std::vector<Contour>& DataStorageManager::getHoles()
   return holes;
 }
 
+COLORREF DataStorageManager::getHoleOwnerColor(Contour& hole)
+{
+  auto iter = holeOwner.find(&hole);
+  if (iter == holeOwner.end()) {
+    return RGB(0, 255, 0);
+  }
+
+  return getContourColor(*iter->second);
+}
+
+void DataStorageManager::setHoleOwner(Contour& hole, Contour& owner)
+{
+  holeOwner.insert(std::make_pair(&hole, &owner));
+}
+
 void DataStorageManager::setContourState(Contour& c, ContourState state)
 {
   contoursStates[&c].state = state;

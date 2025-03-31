@@ -33,6 +33,8 @@ class DataStorageManager
   DataStorageManager();
   static DataStorageManager instance;
 
+  std::map<Contour*, Contour*> holeOwner;
+
 public:
   
   static DataStorageManager& getInstance();
@@ -64,5 +66,8 @@ public:
   void addHole(const Contour& holes);
 
   std::vector<Contour>& getHoles();
+
+  COLORREF getHoleOwnerColor(Contour& hole);
+  void setHoleOwner(Contour& hole, Contour& owner);
 };
 

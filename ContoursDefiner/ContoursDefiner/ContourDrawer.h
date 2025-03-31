@@ -37,6 +37,7 @@ public:
   }
 
   void draw(HDC& hDC, double scaleX, double scaleY) override;
+  void draw(HDC& hDC, double scaleX, double scaleY, ContourState needState);
 
 };
 

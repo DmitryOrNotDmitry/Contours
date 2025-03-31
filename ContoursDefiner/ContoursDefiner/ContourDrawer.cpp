@@ -3,7 +3,7 @@
 
 void ContourDrawer::drawLines(HDC& hDC, double scaleX, double scaleY, Contour& contour)
 {
-  double offset = 0.25;
+  double offset = 0.0;
   double newX = 0;
   double newY = 0;
 
@@ -37,7 +37,7 @@ void ContourDrawer::drawPoints(HDC& hDC, double scaleX, double scaleY, Contour& 
 
   std::vector<Point>& points = contour.getPoints();
 
-  const double offset = 0.25;
+  const double offset = 0.0;
   const int offsetEnd = 5;
   double x, y;
 
@@ -83,38 +83,37 @@ HBRUSH ContourDrawer::getCachedBrush(COLORREF color)
   return newBrush;
 }
 
+
+
 void ContourDrawer::draw(HDC& hDC, double scaleX, double scaleY)
 {
   HGDIOBJ oldPen = SelectObject(hDC, visiblePen);
   HGDIOBJ oldBrush = SelectObject(hDC, visibleBrush);
 
+  draw(hDC, scaleX, scaleY, VISIBLE);
+  draw(hDC, scaleX, scaleY, SELECTED);
+
+  SelectObject(hDC, oldPen);
+  SelectObject(hDC, oldBrush);
+}
+
+void ContourDrawer::draw(HDC& hDC, double scaleX, double scaleY, ContourState needState)
+{
   std::list<Contour>& contours = dataManager.getContours();
 
   for (auto iter = contours.begin(); iter != contours.end(); ++iter)
   {
     ContourState state = dataManager.getContourState(*iter);
-
-    if (state == HIDDEN)
+    if (state != needState)
       continue;
 
-    if (state == SELECTED)
-    {
-      SelectObject(hDC, selectedPen);
-      SelectObject(hDC, selectedBrush);
-    }
-    else if (state == VISIBLE)
-    {
-      COLORREF color = dataManager.getContourColor(*iter);
+    COLORREF color = dataManager.getContourColor(*iter);
 
-      SelectObject(hDC, getCachedPen(color));
-      SelectObject(hDC, getCachedBrush(color));
-    }
+    SelectObject(hDC, getCachedPen(color));
+    SelectObject(hDC, getCachedBrush(color));
 
     drawPoints(hDC, scaleX, scaleY, *iter);
     drawLines(hDC, scaleX, scaleY, *iter);
   }
-
-  SelectObject(hDC, oldPen);
-  SelectObject(hDC, oldBrush);
 }
 

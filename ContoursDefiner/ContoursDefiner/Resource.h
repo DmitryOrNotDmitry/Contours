@@ -24,7 +24,6 @@
 #define IDC_RADIOimprovedBug            8025
 #define IDC_BUTTONnext_stage            8025
 #define IDC_RADIOholesSeparate          8026
-#define IDC_SLIDER                      8026
 #define IDC_SLIDERprocess               8026
 #define IDC_RADIOholesDistribution      8027
 #define IDC_STATICvectorization         8027
