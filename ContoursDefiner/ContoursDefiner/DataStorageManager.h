@@ -6,12 +6,24 @@
 #include "ContourDefiner/Contour.h"
 #include "ContourState.h"
 #include "ContourDefiner/LineBorder.h"
+#include "ColorsPool.h"
+
+struct ContourTraits
+{
+  ContourState state;
+  int colorId;
+
+  ContourTraits(ContourState state, int colorId) : state(state), colorId(colorId) {}
+  ContourTraits() : state(ContourState::VISIBLE), colorId(0) {}
+};
 
 class DataStorageManager
 {
 
+  ColorsPool* colorsPool;
+
   std::list<Contour> contours;
-  std::map<Contour*, ContourState> contoursStates;
+  std::map<Contour*, ContourTraits> contoursStates;
 
   std::vector<LineBorder> borders;
 
@@ -34,8 +46,9 @@ public:
   std::vector<Contour*> getPContours();
 
   void setContourState(Contour& c, ContourState state);
-  
   ContourState getContourState(Contour& c);
+
+  COLORREF getContourColor(Contour& c);
 
   void clearState(Contour& c);
 

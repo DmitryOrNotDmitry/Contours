@@ -10,8 +10,14 @@ class ContourDrawer : public AbstractDrawer
   const HBRUSH visibleBrush;
   const HBRUSH selectedBrush;
 
-  void drawLines(HDC& hDC, double scaleX, double scaleY, ContourState state);
-  void drawPoints(HDC& hDC, double scaleX, double scaleY, ContourState state);
+  void drawLines(HDC& hDC, double scaleX, double scaleY, Contour& contour);
+  void drawPoints(HDC& hDC, double scaleX, double scaleY, Contour& contour);
+
+  std::map<COLORREF, HPEN> cachedPens;
+  std::map<COLORREF, HBRUSH> cachedBrushes;
+  
+  HPEN getCachedPen(COLORREF color);
+  HBRUSH getCachedBrush(COLORREF color);
 
 public:
 

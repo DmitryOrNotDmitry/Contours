@@ -412,8 +412,8 @@ bool Contour::isInner(const DoublePoint& point) const
   int windingNumber = 0;
 
   for (int i = 0; i < len; i++) {
-    DoublePoint v1 = { static_cast<double>(getPoint(i % len).x), static_cast<double>(getPoint(i % len).y) };
-    DoublePoint v2 = { static_cast<double>(getPoint((i + 1) % len).x), static_cast<double>(getPoint((i + 1) % len).y) };
+    DoublePoint v1 = DoublePoint( static_cast<double>(getPoint(i % len).x), static_cast<double>(getPoint(i % len).y) );
+    DoublePoint v2 = DoublePoint(static_cast<double>(getPoint((i + 1) % len).x), static_cast<double>(getPoint((i + 1) % len).y) );
 
     if (v1.y <= point.y) {
       if (v2.y > point.y && isLeft(v1, v2, point)) {

@@ -9,6 +9,14 @@ struct DoublePoint
 {
   double x;
   double y;
+
+  DoublePoint(double x, double y) : x(x), y(y)
+  {
+  }
+
+  DoublePoint() : x(0.0), y(0.0)
+  {
+  }
 };
 
 

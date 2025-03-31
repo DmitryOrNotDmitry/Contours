@@ -1,5 +1,6 @@
 #include "DataStorageManager.h"
 
+
 DataStorageManager DataStorageManager::instance = DataStorageManager();
 
 DataStorageManager& DataStorageManager::getInstance()
@@ -10,11 +11,16 @@ DataStorageManager& DataStorageManager::getInstance()
 DataStorageManager::DataStorageManager()
 {
   showHoles = true;
+  colorsPool = ColorsPool::getInstance();
 }
 
 void DataStorageManager::addContour(Contour& contour)
 {
   contours.push_back(std::move(contour));
+
+  Contour& lastContour = contours.back();
+  contoursStates.insert(std::make_pair(&lastContour, ContourTraits()));
+  contoursStates[&lastContour].colorId = colorsPool->getNextColorId();
 }
 
 int DataStorageManager::getCountContours()
@@ -75,12 +81,17 @@ std::vector<Contour>& DataStorageManager::getHoles()
 
 void DataStorageManager::setContourState(Contour& c, ContourState state)
 {
-  contoursStates[&c] = state;
+  contoursStates[&c].state = state;
 }
 
 ContourState DataStorageManager::getContourState(Contour& c)
 {
-  return contoursStates[&c];
+  return contoursStates[&c].state;
+}
+
+COLORREF DataStorageManager::getContourColor(Contour& c)
+{
+  return colorsPool->getColorBy(contoursStates[&c].colorId);
 }
 
 void DataStorageManager::clearState(Contour& c)

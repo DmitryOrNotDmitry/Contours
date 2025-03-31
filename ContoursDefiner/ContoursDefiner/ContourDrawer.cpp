@@ -1,72 +1,120 @@
 #include "ContourDrawer.h"
+#include <map>
 
-void ContourDrawer::drawLines(HDC& hDC, double scaleX, double scaleY, ContourState state)
+void ContourDrawer::drawLines(HDC& hDC, double scaleX, double scaleY, Contour& contour)
 {
-  std::list<Contour>& contours = dataManager.getContours();
+  double offset = 0.25;
+  double newX = 0;
+  double newY = 0;
 
-  for (auto iter = contours.begin(); iter != contours.end(); ++iter)
+  size_t numPoints = contour.size();
+
+  if (numPoints < 1)
+    return;
+
+  std::vector<Point>& points = contour.getPoints();
+
+  DoublePoint centerMass = massCenter(contour);
+   
+  calcNewCoords(centerMass, points[0], offset, newX, newY);
+  MoveToEx(hDC, toFloatDraw(newX, scaleX), toFloatDraw(newY, scaleY), NULL);
+    
+  for (size_t j = 1; j < numPoints; j++)
   {
-    if (dataManager.getContourState(*iter) != state)
-      continue;
+    calcNewCoords(centerMass, points[j], offset, newX, newY);
+    LineTo(hDC, toFloatDraw(newX, scaleX), toFloatDraw(newY, scaleY)); 
+  }
+  calcNewCoords(centerMass, points[0], offset, newX, newY);
+  LineTo(hDC, toFloatDraw(newX, scaleX), toFloatDraw(newY, scaleY));
+}
 
-    size_t numPoints = iter->size();
+void ContourDrawer::drawPoints(HDC& hDC, double scaleX, double scaleY, Contour& contour)
+{
+  size_t numPoints = contour.size();
 
-    if (numPoints < 1)
-      continue;
+  if (numPoints < 1)
+    return;
 
-    std::vector<Point>& points = iter->getPoints();
+  std::vector<Point>& points = contour.getPoints();
 
-    MoveToEx(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY), NULL);
-    for (size_t j = 1; j < numPoints; j++)
-    {
-      LineTo(hDC, toFloatDraw(points[j].x, scaleX), toFloatDraw(points[j].y, scaleY));
-    }
-    LineTo(hDC, toFloatDraw(points[0].x, scaleX), toFloatDraw(points[0].y, scaleY));
+  const double offset = 0.25;
+  const int offsetEnd = 5;
+  double x, y;
+
+  DoublePoint centerMass = massCenter(contour);
+    
+  for (size_t j = 0; j < numPoints; j++)
+  {
+    calcNewCoords(centerMass, points[j], offset, x, y);
+      
+    x = toFloatDraw(x, scaleX);
+    y = toFloatDraw(y, scaleY);
+
+    Ellipse(hDC, x - offsetEnd, y - offsetEnd, x + offsetEnd, y + offsetEnd);
   }
 }
 
-void ContourDrawer::drawPoints(HDC& hDC, double scaleX, double scaleY, ContourState state)
+
+HPEN ContourDrawer::getCachedPen(COLORREF color)
 {
-  std::list<Contour>& contours = dataManager.getContours();
-
-  for (auto iter = contours.begin(); iter != contours.end(); ++iter)
+  auto iter = cachedPens.find(color);
+  if (iter != cachedPens.end())
   {
-    if (dataManager.getContourState(*iter) != state)
-      continue;
-
-    size_t numPoints = iter->size();
-
-    if (numPoints < 1)
-      continue;
-
-    std::vector<Point>& points = iter->getPoints();
-
-    const int offset = 5;
-    int x, y;
-    
-    for (size_t j = 0; j < numPoints; j++)
-    {
-      x = toFloatDraw(points[j].x, scaleX);
-      y = toFloatDraw(points[j].y, scaleY);
-      Ellipse(hDC, x - offset, y - offset, x + offset, y + offset);
-    }
+    return iter->second;
   }
+
+  HPEN newPen = CreatePen(PS_SOLID, PEN_WIDTH, color);
+  cachedPens[color] = newPen;
+
+  return newPen;
+}
+
+HBRUSH ContourDrawer::getCachedBrush(COLORREF color)
+{
+  auto iter = cachedBrushes.find(color);
+  if (iter != cachedBrushes.end())
+  {
+    return iter->second;
+  }
+
+  HBRUSH newBrush = CreateSolidBrush(color);
+  cachedBrushes[color] = newBrush;
+
+  return newBrush;
 }
 
 void ContourDrawer::draw(HDC& hDC, double scaleX, double scaleY)
 {
   HGDIOBJ oldPen = SelectObject(hDC, visiblePen);
   HGDIOBJ oldBrush = SelectObject(hDC, visibleBrush);
-  drawPoints(hDC, scaleX, scaleY, VISIBLE);
-  drawLines(hDC, scaleX, scaleY, VISIBLE);
 
-  SelectObject(hDC, selectedPen);
-  SelectObject(hDC, selectedBrush);
-  drawPoints(hDC, scaleX, scaleY, SELECTED);
-  drawLines(hDC, scaleX, scaleY, SELECTED);
+  std::list<Contour>& contours = dataManager.getContours();
+
+  for (auto iter = contours.begin(); iter != contours.end(); ++iter)
+  {
+    ContourState state = dataManager.getContourState(*iter);
+
+    if (state == HIDDEN)
+      continue;
+
+    if (state == SELECTED)
+    {
+      SelectObject(hDC, selectedPen);
+      SelectObject(hDC, selectedBrush);
+    }
+    else if (state == VISIBLE)
+    {
+      COLORREF color = dataManager.getContourColor(*iter);
+
+      SelectObject(hDC, getCachedPen(color));
+      SelectObject(hDC, getCachedBrush(color));
+    }
+
+    drawPoints(hDC, scaleX, scaleY, *iter);
+    drawLines(hDC, scaleX, scaleY, *iter);
+  }
 
   SelectObject(hDC, oldPen);
   SelectObject(hDC, oldBrush);
 }
-
 
