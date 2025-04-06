@@ -8,9 +8,21 @@ DataStorageManager& DataStorageManager::getInstance()
   return instance;
 }
 
+void DataStorageManager::reset()
+{
+  borders.clear();
+  holes.clear();
+  contours.clear();
+  contoursStates.clear();
+  holeOwner.clear();
+
+  colorsPool->reset();
+}
+
 DataStorageManager::DataStorageManager()
 {
   showHoles = true;
+  offsetContours = false;
   colorsPool = ColorsPool::getInstance();
 }
 
@@ -62,6 +74,16 @@ bool DataStorageManager::isShowHoles()
 bool DataStorageManager::setShowHoles(bool showHoles)
 {
   return this->showHoles = showHoles;
+}
+
+bool DataStorageManager::isOffsetContours()
+{
+  return offsetContours;
+}
+
+bool DataStorageManager::setOffsetContours(bool offsetContours)
+{
+  return this->offsetContours = offsetContours;
 }
 
 void DataStorageManager::addHole(Contour&& hole)

@@ -87,5 +87,6 @@ public:
 
   void addColumn(int fmt, int width, char* capture, int numCol);
   void addRow(int rowNum, CString name);
+  afx_msg void OnBnClickedCheckOffsetContours();
 };
 

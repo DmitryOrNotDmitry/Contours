@@ -10,6 +10,7 @@
 #define IDC_CHECKshow_init_holes        8011
 #define IDC_CHECKshow_init_holes2       8012
 #define IDC_CHECKis_delete_cover_tri    8012
+#define IDC_CHECKoffset_contours        8012
 #define IDC_EDITmin_square_distribution 8016
 #define IDC_SPINmin_square_distribution 8017
 #define IDC_EDITmax_square_distribution 8018
@@ -38,7 +39,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        8005
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         8032
+#define _APS_NEXT_CONTROL_VALUE         8033
 #define _APS_NEXT_SYMED_VALUE           8000
 #endif
 #endif

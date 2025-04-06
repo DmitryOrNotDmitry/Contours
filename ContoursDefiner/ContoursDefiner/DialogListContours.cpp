@@ -19,6 +19,7 @@ BEGIN_MESSAGE_MAP(DialogListContours, CDialog)
   ON_BN_CLICKED(IDC_RADIOmy, &DialogListContours::OnRadioButtonClickedAlgorithmDefinerType)
   ON_BN_CLICKED(IDC_RADIObug, &DialogListContours::OnRadioButtonClickedAlgorithmDefinerType)
   ON_BN_CLICKED(IDC_BUTTONnext_stage, &DialogListContours::OnBnClickedButtonNextStage)
+  ON_BN_CLICKED(IDC_CHECKoffset_contours, &DialogListContours::OnBnClickedCheckOffsetContours)
 END_MESSAGE_MAP()
 
 void DialogListContours::DoDataExchange(CDataExchange* pDX)
@@ -29,7 +30,6 @@ void DialogListContours::DoDataExchange(CDataExchange* pDX)
   DDX_Control(pDX, IDC_SPINmin_square_distribution, spinMinSquare);
   DDX_Control(pDX, IDC_CHECKshow_init_holes, checkBoxShowHoles);
 }
-
 
 DialogListContours::DialogListContours(CWnd* pParent /*=NULL*/)
   : CDialog(DialogListContours::IDD, pParent)
@@ -79,7 +79,7 @@ BOOL DialogListContours::OnInitDialog()
   column.mask = LVCF_FMT | LVCF_WIDTH;
   contoursTable.InsertColumn(0, &column);
 
-  addColumn(LVCFMT_LEFT, 130, "Контур (точка скола)", 1);
+  addColumn(LVCFMT_LEFT, 125, "Контур (точка скола)", 1);
 
   SetDlgItemText(IDC_EDITsmooth_epsilon, "1");
 
@@ -92,7 +92,7 @@ BOOL DialogListContours::OnInitDialog()
 
   CheckRadioButton(IDC_RADIOmy, IDC_RADIObug, IDC_RADIOmy);
 
-  CheckDlgButton(IDC_CHECKis_delete_cover_tri, BST_CHECKED);
+  CheckDlgButton(IDC_CHECKoffset_contours, BST_UNCHECKED);
 
   return TRUE;
 }
@@ -312,9 +312,7 @@ void DialogListContours::OnBnClickedShowInitHoles()
 
 void DialogListContours::OnBnClickedReset()
 {
-  dataManager.getBorders().clear();
-  dataManager.getHoles().clear();
-  dataManager.getContours().clear();
+  dataManager.reset();
 
   contoursTable.DeleteAllItems();
 
@@ -342,6 +340,7 @@ void DialogListContours::OnLvnItemchangedChanlist(NMHDR* pNMHDR, LRESULT* pResul
 
   RecalcImageViews(hImage);
 }
+
 
 bool DialogListContours::isRowSelected(int row) const
 {
@@ -389,4 +388,15 @@ void DialogListContours::OnRadioButtonClickedAlgorithmDefinerType()
 void DialogListContours::OnBnClickedButtonNextStage()
 {
   nextStage();
+}
+
+
+void DialogListContours::OnBnClickedCheckOffsetContours()
+{
+  if (IsDlgButtonChecked(IDC_CHECKoffset_contours) == BST_CHECKED)
+    dataManager.setOffsetContours(true);
+  else
+    dataManager.setOffsetContours(false);
+
+  RecalcImageViews(hImage);
 }

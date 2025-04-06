@@ -55,4 +55,9 @@ public:
 		return colors[id];
 	}
 
+	void reset()
+	{
+		nextId = 0;
+	}
+
 };

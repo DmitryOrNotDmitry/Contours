@@ -4,6 +4,11 @@
 void ContourDrawer::drawLines(HDC& hDC, double scaleX, double scaleY, Contour& contour)
 {
   double offset = 0.0;
+  if (dataManager.isOffsetContours()) 
+  {
+    offset = 0.25;
+  }
+
   double newX = 0;
   double newY = 0;
 
@@ -37,7 +42,10 @@ void ContourDrawer::drawPoints(HDC& hDC, double scaleX, double scaleY, Contour& 
 
   std::vector<Point>& points = contour.getPoints();
 
-  const double offset = 0.0;
+  double offset = 0.0;
+  if (dataManager.isOffsetContours())
+    offset = 0.25;
+
   const int offsetEnd = 5;
   double x, y;
 

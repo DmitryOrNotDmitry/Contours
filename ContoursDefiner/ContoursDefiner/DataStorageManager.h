@@ -29,16 +29,19 @@ class DataStorageManager
 
   bool showHoles;
   std::vector<Contour> holes;
+  std::map<Contour*, Contour*> holeOwner;
 
+  bool offsetContours;
+  
+  
   DataStorageManager();
   static DataStorageManager instance;
-
-  std::map<Contour*, Contour*> holeOwner;
 
 public:
   
   static DataStorageManager& getInstance();
 
+  void reset();
 
   void addContour(Contour& contour);
 
@@ -61,6 +64,9 @@ public:
 
   bool isShowHoles();
   bool setShowHoles(bool showHoles);
+
+  bool isOffsetContours();
+  bool setOffsetContours(bool offsetContours);
 
   void addHole(Contour&& holes);
   void addHole(const Contour& holes);
