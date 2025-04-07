@@ -40,9 +40,9 @@ void BresenhamLine::build(const Point& pointFrom, const Point& pointTo)
     y = factor * (x - x0) + y0;
 
     if (changeCoords)
-      curPoint = Point(y, x);
+      curPoint = Point(static_cast<int>(y), static_cast<int>(x));
     else
-      curPoint = Point(x, y);
+      curPoint = Point(static_cast<int>(x), static_cast<int>(y));
 
     
     if (*line.rbegin() != curPoint)

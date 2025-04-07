@@ -5,7 +5,7 @@ DoublePoint getCentroid(std::vector<Point>& points)
   double sumX = 0.0, sumY = 0.0;
   int count = points.size();
 
-  for (int i = 0; i < points.size(); i++) 
+  for (size_t i = 0; i < points.size(); i++) 
   {
     sumX += static_cast<double>(points[i].x);
     sumY += static_cast<double>(points[i].y);

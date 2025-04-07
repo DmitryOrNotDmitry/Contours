@@ -57,8 +57,8 @@ std::vector<Contour> importToContours(gpc_polygon* polygon, int isHole = 1)
       Contour hole;
       for (int j = 0; j < polygon->contour[i].num_vertices; j++)
       {
-        int x = polygon->contour[i].vertex[j].x;
-        int y = polygon->contour[i].vertex[j].y;
+        int x = static_cast<int>(polygon->contour[i].vertex[j].x);
+        int y = static_cast<int>(polygon->contour[i].vertex[j].y);
         Point nextPoint(x, y);
 
         if (hole.size() > 0)
@@ -93,7 +93,8 @@ std::vector<Contour> defineExtraHoles(std::vector<Contour>& unionContours)
   for (auto iter = unionContours.begin(); iter != unionContours.end(); ++iter)
   {
     Contour& contour = *iter;
-    for (int i = 0; i < contour.size(); i++)
+    int contourSize = static_cast<int>(contour.size());
+    for (int i = 0; i < contourSize; i++)
     {
       int idxSamePoint = contour.indexOf(contour.getPoint(i), contour.getNextIdx(i, 1), contour.size() - 1);
 

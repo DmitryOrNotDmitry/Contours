@@ -34,9 +34,9 @@ std::vector<Point> LineSmoother::DouglasPeucker(std::vector<Point>& points, doub
     stack.pop();
 
     double maxDist = 0;
-    size_t index = startIdx;
+    int index = startIdx;
 
-    for (size_t i = startIdx + 1; i < endIdx; i++)
+    for (int i = startIdx + 1; i < endIdx; i++)
     {
       if (keepedPoints[i])
       {
@@ -56,7 +56,7 @@ std::vector<Point> LineSmoother::DouglasPeucker(std::vector<Point>& points, doub
     }
     else
     {
-      for (size_t i = startIdx + 1; i < endIdx; i++)
+      for (int i = startIdx + 1; i < endIdx; i++)
         keepedPoints[i] = false;
     }
   }

@@ -93,13 +93,15 @@ void Contour::addPoint(Point point)
 
 void Contour::insertPoint(Point point, int index)
 {
+  int size = static_cast<int>(this->size());
+
   if (index > 0 && (*(points.begin() + index - 1) == point))
     return;
 
-  if (index < points.size() && (*(points.begin() + index) == point))
+  if (index < size && (*(points.begin() + index) == point))
     return;
 
-  if (index == points.size() && points.size() > 1 && (points[0] == point))
+  if (index == size && size > 1 && (points[0] == point))
     return;
 
   points.insert(points.begin() + index, point);
@@ -292,9 +294,10 @@ bool Contour::isClockwise() const
 
 void Contour::deletePins()
 {
-  for (int i = 0; i < size(); i++)
+  int size = static_cast<int>(this->size());
+  for (int i = 0; i < size; i++)
   {
-    int idxSamePoint = indexOf(getPoint(i), getNextIdx(i, 1), size() - 1);
+    int idxSamePoint = indexOf(getPoint(i), getNextIdx(i, 1), size - 1);
 
     if (idxSamePoint == -1)
       continue;
@@ -330,7 +333,8 @@ int Contour::indexOf(const Point& point, int from, int count) const
 
 int Contour::deletePoints(int from, int to)
 {
-  if (from > size() || to > size())
+  int countPoints = static_cast<int>(size());
+  if (from > countPoints || to > countPoints)
     return 0;
 
   int dist = distance(from, to);
@@ -456,11 +460,13 @@ std::vector<Contour*> Contour::calcNeighbors(std::vector<Contour*>& contours)
 
 std::vector<Contour> Contour::separate() const
 {
-  std::vector<int> scores(size(), -1);
+  std::vector<int> scores(static_cast<int>(size()), -1);
 
   int curScore = 0;
   int maxScore = 0;
-  for (int i = 0; i < size(); i++)
+  int size = static_cast<int>(this->size());
+  
+  for (int i = 0; i < size; i++)
   {
     if (scores[i] != -1)
     {
@@ -468,7 +474,7 @@ std::vector<Contour> Contour::separate() const
       continue;
     }
 
-    int samePointIdx = indexOf(getPoint(i), getNextIdx(i, 1), size() - 1);
+    int samePointIdx = indexOf(getPoint(i), getNextIdx(i, 1), size - 1);
     if (samePointIdx != -1)
     {
       curScore++;
@@ -485,7 +491,9 @@ std::vector<Contour> Contour::separate() const
   std::vector<Contour> possibleSubContours(maxScore + 1);
   
   int prevScore = 0;
-  for (int i = 0; i < size(); i++)
+  size = static_cast<int>(this->size());
+
+  for (int i = 0; i < size; i++)
   {
     curScore = scores[i];
 

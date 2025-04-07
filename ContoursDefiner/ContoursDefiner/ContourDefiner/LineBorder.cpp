@@ -137,7 +137,8 @@ bool LineBorder::isInsideBorder(int idx) const
   }
   else
   {
-    return ((idx >= fromIndex) && (idx < owner.size())) || ((idx >= 0) && (idx <= toIndex));
+    int size = owner.size();
+    return ((idx >= fromIndex) && (idx < size)) || ((idx >= 0) && (idx <= toIndex));
   }
 }
 
