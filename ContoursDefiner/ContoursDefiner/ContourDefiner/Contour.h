@@ -25,20 +25,12 @@ class Contour
 
   std::vector<Point> points;
 
-  std::vector<Contour*> innerContours;
-
 public:
   Contour();
   Contour(const Contour& other);
   ~Contour();
 
   Contour& operator=(const Contour& other);
-
-  void addInnerContour(Contour* innerContour);
-  Contour* getInnerContour(size_t idx);
-  void removeInnerContour(size_t idx);
-  size_t countInnerContours();
-  std::vector<Contour*> getAllInnerContour();
 
   void addPoint(Point point);
   void insertPoint(Point point, int index);

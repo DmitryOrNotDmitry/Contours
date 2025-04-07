@@ -30,11 +30,8 @@ Contour::Contour(const Contour& other)
 {
 }
 
-
 Contour::~Contour()
 {
-  for (size_t i = 0; i < innerContours.size(); i++)
-    delete innerContours[i];
 }
 
 Contour& Contour::operator=(const Contour& other)
@@ -42,41 +39,6 @@ Contour& Contour::operator=(const Contour& other)
   points = other.points;
 
   return *this;
-}
-
-void Contour::addInnerContour(Contour* innerContour)
-{
-  innerContours.push_back(innerContour);
-}
-
-Contour* Contour::getInnerContour(size_t idx)
-{
-  if (idx >= 0 && idx < innerContours.size())
-    return innerContours[idx];
-
-  return nullptr;
-}
-
-void Contour::removeInnerContour(size_t idx)
-{
-  if (idx >= 0 && idx < innerContours.size())
-  {
-    Contour* deletedCont = innerContours[idx];
-    delete deletedCont;
-
-    innerContours.erase(innerContours.begin() + idx);
-  }
-   
-}
-
-size_t Contour::countInnerContours()
-{
-  return innerContours.size();
-}
-
-std::vector<Contour*> Contour::getAllInnerContour()
-{
-  return innerContours;
 }
 
 
