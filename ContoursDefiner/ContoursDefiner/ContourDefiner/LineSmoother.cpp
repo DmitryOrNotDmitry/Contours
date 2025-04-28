@@ -1,7 +1,10 @@
 #include "LineSmoother.h"
 #include <stack>
 
-double LineSmoother::distanceToLine(const Point& point, const Point& startLine, const Point& endLine)
+LineSmoother* LineSmoother::instance = new LineSmoother();
+
+
+double LineSmoother::distanceToLine(const Point& point, const Point& startLine, const Point& endLine) const
 {
   int x1 = startLine.x;
   int y1 = startLine.y;
@@ -17,7 +20,16 @@ double LineSmoother::distanceToLine(const Point& point, const Point& startLine, 
   return 0;
 }
 
-std::vector<Point> LineSmoother::DouglasPeucker(std::vector<Point>& points, double epsilon)
+LineSmoother* LineSmoother::Instance()
+{
+  return instance;
+}
+
+LineSmoother::LineSmoother() {
+
+}
+
+std::vector<Point> LineSmoother::DouglasPeucker(std::vector<Point>& points, double epsilon) const
 {
   if (points.size() < 3)
     return points;

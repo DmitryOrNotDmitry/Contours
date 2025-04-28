@@ -268,7 +268,8 @@ void Contour::deletePins()
 
     if (partArea < 0.001)
     {
-      int countDeleted = deletePoints(i + 1, idxSamePoint);
+      deletePoints(i + 1, idxSamePoint);
+      size = static_cast<int>(this->size());
     }
   }
 }
@@ -501,6 +502,8 @@ void Contour::smooth(double epsilon, std::vector<Contour*>& allContours)
     auto bordersWithContour = GeneralBorderCalculator::defineAllGeneralBorders(*this, *otherCont, 0);
     allBorders.insert(allBorders.end(), bordersWithContour.begin(), bordersWithContour.end());
   }
+
+  LineSmoother* smoother = LineSmoother::Instance();
   
   if (allBorders.size() == 0)
   {
@@ -511,7 +514,7 @@ void Contour::smooth(double epsilon, std::vector<Contour*>& allContours)
     smoothedRegion.insert(smoothedRegion.begin(), *points.rbegin());
     smoothedRegion.push_back(*points.begin());
 
-    smoothedRegion = LineSmoother::DouglasPeucker(smoothedRegion, epsilon);
+    smoothedRegion = smoother->DouglasPeucker(smoothedRegion, epsilon);
 
     smoothedRegion.erase(smoothedRegion.begin());
     smoothedRegion.pop_back();
@@ -528,7 +531,7 @@ void Contour::smooth(double epsilon, std::vector<Contour*>& allContours)
 
     allContourBorders.insert(allBorders[i].first);
 
-    smoothedLines.push_back(LineBorderVector(LineSmoother::DouglasPeucker(allBorders[i].first.getPoints(), epsilon)));
+    smoothedLines.push_back(LineBorderVector(smoother->DouglasPeucker(allBorders[i].first.getPoints(), epsilon)));
   }
 
 
@@ -539,7 +542,7 @@ void Contour::smooth(double epsilon, std::vector<Contour*>& allContours)
 
     LineBorder border(*this, predLine->getToIndex(), lineIter->getFromIndex());
 
-    smoothedLinesAlone.push_back(LineBorderVector(LineSmoother::DouglasPeucker(border.getPoints(), epsilon)));
+    smoothedLinesAlone.push_back(LineBorderVector(smoother->DouglasPeucker(border.getPoints(), epsilon)));
 
     predLine = lineIter;
   }

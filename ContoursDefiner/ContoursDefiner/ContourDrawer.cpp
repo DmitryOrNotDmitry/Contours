@@ -46,7 +46,7 @@ void ContourDrawer::drawPoints(HDC& hDC, double scaleX, double scaleY, Contour& 
   if (dataManager.isOffsetContours())
     offset = 0.25;
 
-  const int offsetEnd = 5;
+  const int offsetEnd = 5 * scaleX / 30;
   double x, y;
 
   DoublePoint centerMass = massCenter(contour);
@@ -63,17 +63,17 @@ void ContourDrawer::drawPoints(HDC& hDC, double scaleX, double scaleY, Contour& 
 }
 
 
-HPEN ContourDrawer::getCachedPen(COLORREF color)
+HPEN ContourDrawer::getCachedPen(COLORREF color, double scale)
 {
-  auto iter = cachedPens.find(color);
-  if (iter != cachedPens.end())
-  {
-    return iter->second;
-  }
+  //auto iter = cachedPens.find(color);
+  //if (iter != cachedPens.end())
+  //{
+  //  return iter->second;
+  //}
 
-  HPEN newPen = CreatePen(PS_SOLID, PEN_WIDTH, color);
-  cachedPens[color] = newPen;
-
+  HPEN newPen = CreatePen(PS_SOLID, max(1, PEN_WIDTH * scale / 30), color);
+  //cachedPens[color] = newPen;
+  
   return newPen;
 }
 
@@ -117,11 +117,14 @@ void ContourDrawer::draw(HDC& hDC, double scaleX, double scaleY, ContourState ne
 
     COLORREF color = dataManager.getContourColor(*iter);
 
-    SelectObject(hDC, getCachedPen(color));
+    HPEN pen = getCachedPen(color, scaleX);
+    SelectObject(hDC, pen);
     SelectObject(hDC, getCachedBrush(color));
 
     drawPoints(hDC, scaleX, scaleY, *iter);
     drawLines(hDC, scaleX, scaleY, *iter);
+
+    DeleteObject(pen);
   }
 }
 

@@ -1,17 +1,21 @@
 #pragma once
 #include "Point.h"
-
-
 #include <vector>
 
 
 class LineSmoother
 {
-  static double distanceToLine(const Point& point, const Point& startLine, const Point& endLine);
+  double distanceToLine(const Point& point, const Point& startLine, const Point& endLine) const;
+
+  static LineSmoother* instance;
+
+  LineSmoother();
 
 public:
+
+  static LineSmoother* Instance();
   
-  static std::vector<Point> DouglasPeucker(std::vector<Point>& points, double epsilon);
+  std::vector<Point> DouglasPeucker(std::vector<Point>& points, double epsilon) const;
 
 };
 

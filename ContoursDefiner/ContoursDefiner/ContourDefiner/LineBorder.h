@@ -62,6 +62,5 @@ private:
 
   void insertLine(const LineBorder& line, int startIdx, int step = 1);
 
-
 };
 

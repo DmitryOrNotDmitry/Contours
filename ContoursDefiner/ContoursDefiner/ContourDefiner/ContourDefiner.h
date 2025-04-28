@@ -9,6 +9,12 @@ protected:
 
   AbstractImageData* imageManager;
 
+  Point getPointNearContour(const Point& startPoint);
+
+  Point addContourPointsAround(const Point& basePoint, Contour& contour);
+
+  Point getNextPoint(const Point& basePoint, const Point& lastContourPoint);
+
 public:
 
   ContourDefiner();
@@ -19,13 +25,5 @@ public:
   ContourDefiner& operator=(const ContourDefiner& other);
 
   virtual Contour defineContour(const Point& startPoint);
-  
-  Point getPointNearContour(const Point& startPoint);
-
-  Point addContourPointsAround(const Point& basePoint, Contour& contour);
-
-  //bool isInternalPoint(const Point& innerPoint, const Point& checkedPoint);
-
-  Point getNextPoint(const Point& basePoint, const Point& lastContourPoint);
 };
 

@@ -16,7 +16,7 @@ class ContourDrawer : public AbstractDrawer
   std::map<COLORREF, HPEN> cachedPens;
   std::map<COLORREF, HBRUSH> cachedBrushes;
   
-  HPEN getCachedPen(COLORREF color);
+  HPEN getCachedPen(COLORREF color, double scale);
   HBRUSH getCachedBrush(COLORREF color);
 
 public:
