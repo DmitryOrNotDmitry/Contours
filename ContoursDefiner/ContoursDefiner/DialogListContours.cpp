@@ -400,3 +400,4 @@ void DialogListContours::OnBnClickedCheckOffsetContours()
 
   RecalcImageViews(hImage);
 }
+
